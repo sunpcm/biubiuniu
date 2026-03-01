@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@niu/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import { Cookie } from "lucide-react";
 import * as React from "react";
 

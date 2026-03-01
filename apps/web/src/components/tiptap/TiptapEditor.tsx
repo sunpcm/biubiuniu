@@ -2,7 +2,7 @@
 
 import { generateAdminPresignedUploadUrl } from "@/actions/r2-resources";
 import { BLOGS_IMAGE_PATH } from "@/config/common";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import Blockquote from "@tiptap/extension-blockquote";
 import Bold from "@tiptap/extension-bold";

@@ -2,8 +2,8 @@
 
 import { actionResponse } from "@/lib/action-response";
 import { getSession } from "@/lib/auth/server";
-import { db } from "@/lib/db";
-import { creditLogs as creditLogsSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { creditLogs as creditLogsSchema } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { count, desc, eq } from "drizzle-orm";
 

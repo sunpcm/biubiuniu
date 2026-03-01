@@ -11,7 +11,7 @@
 
 import { actionResponse } from "@/lib/action-response";
 import { getErrorMessage } from "@/lib/error-utils";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import { sql } from "drizzle-orm";
 
 export interface UserCredits {

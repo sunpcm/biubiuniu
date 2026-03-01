@@ -1,4 +1,4 @@
-import { posts as postsSchema, tags as tagsSchema } from "@/lib/db/schema";
+import { posts as postsSchema, tags as tagsSchema } from "@niu/db/schema";
 
 export type Tag = typeof tagsSchema.$inferSelect;
 

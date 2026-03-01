@@ -5,7 +5,7 @@ import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link as I18nLink } from "@/i18n/routing";
 import { getSession } from "@/lib/auth/server";
-import { user as userSchema } from "@/lib/db/schema";
+import { user as userSchema } from "@niu/db/schema";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 

@@ -2,7 +2,7 @@
  * Shared types for payment verification
  */
 
-import { PaymentProvider } from "@/lib/db/schema";
+import { PaymentProvider } from "@niu/db/schema";
 
 export type Provider = PaymentProvider;
 

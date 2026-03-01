@@ -1,10 +1,8 @@
 import { sendEmail } from "@/actions/resend";
 import { siteConfig } from "@/config/site";
-import MagicLinkEmail from "@/emails/magic-link-email";
-import OTPCodeEmail from "@/emails/otp-code-email";
-import { UserWelcomeEmail } from "@/emails/user-welcome";
-import { db } from "@/lib/db";
-import { account, session, user, verification } from "@/lib/db/schema";
+import { MagicLinkEmail, OTPCodeEmail, UserWelcomeEmail } from "@niu/mail";
+import { db } from "@niu/db";
+import { account, session, user, verification } from "@niu/db/schema";
 import {
   buildUserSourceData,
   parseTrackingCookie,
@@ -151,6 +149,7 @@ export const auth = betterAuth({
                   name: createdUser.name,
                   email: createdUser.email,
                   unsubscribeLink: unsubscribeLink,
+                  site: siteConfig,
                 },
                 isAddContacts: true,
               });
@@ -185,6 +184,7 @@ export const auth = betterAuth({
           react: MagicLinkEmail,
           reactProps: {
             url,
+            site: siteConfig,
           },
         });
       },
@@ -201,6 +201,7 @@ export const auth = betterAuth({
           reactProps: {
             otp,
             type,
+            site: siteConfig,
           },
         });
       },

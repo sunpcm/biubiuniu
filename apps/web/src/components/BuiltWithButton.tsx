@@ -1,5 +1,5 @@
 import { buttonVariants } from "@niu/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import Link from "next/link";
 
 // BiuBiuNiu Affiliate Link: https://biubiuniu.com/

@@ -15,7 +15,7 @@ import { PricingCardDisplay } from "@/components/pricing/PricingCardDisplay";
 import FeatureBadge from "@/components/shared/FeatureBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@niu/ui/tabs";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { PricingPlanLangJsonb } from "@/types/pricing";
 import { Gift } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";

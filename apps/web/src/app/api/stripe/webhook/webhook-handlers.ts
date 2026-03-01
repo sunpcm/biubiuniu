@@ -5,12 +5,12 @@ import {
   sendInvoicePaymentFailedEmail,
   syncSubscriptionData,
 } from "@/actions/stripe";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   orders as ordersSchema,
   pricingPlans as pricingPlansSchema,
   user as userSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import {
   revokeOneTimeCredits,
   revokeRemainingSubscriptionCreditsOnEnd,

@@ -1,7 +1,7 @@
 import { Badge } from "@niu/ui/badge";
 import { Button } from "@niu/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@niu/ui/tooltip";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { isRecurringPaymentType } from "@/lib/payments/provider-utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, ExternalLink } from "lucide-react";

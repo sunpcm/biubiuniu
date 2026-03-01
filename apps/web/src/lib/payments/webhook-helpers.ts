@@ -11,8 +11,8 @@
  * 注文作成、冪等性チェック、通貨変換などの一般的なパターンをカプセル化します。
  */
 
-import { db } from "@/lib/db";
-import { orders as ordersSchema, PaymentProvider } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { orders as ordersSchema, PaymentProvider } from "@niu/db/schema";
 import { ORDER_TYPES } from "@/lib/payments/provider-utils";
 import type { CreateOrderResult, OrderInsertData } from "@/lib/payments/types";
 import { and, eq, inArray } from "drizzle-orm";

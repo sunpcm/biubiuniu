@@ -1,8 +1,9 @@
-import { siteConfig } from "@/config/site";
+import type { SiteInfo } from "./types";
 import * as React from "react";
 
 interface MagicLinkEmailProps {
   url: string;
+  site: SiteInfo;
 }
 
 const styles = {
@@ -87,28 +88,26 @@ const styles = {
   },
 };
 
-export const MagicLinkEmail: React.FC<Readonly<MagicLinkEmailProps>> = ({ url }) => (
+export const MagicLinkEmail: React.FC<Readonly<MagicLinkEmailProps>> = ({ url, site }) => (
   <div style={styles.container}>
     <div style={styles.card}>
       <div style={styles.logo}>
-        <img src={`${siteConfig.url}/logo.png`} alt={siteConfig.name} width={80} height={80} />
+        <img src={`${site.url}/logo.png`} alt={site.name} width={80} height={80} />
       </div>
 
       <h1 style={styles.headerTitle}>
-        <a href={siteConfig.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
-          {siteConfig.name}
+        <a href={site.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
+          {site.name}
         </a>
       </h1>
 
       <h2 style={styles.contentTitle}>Hi there!</h2>
 
-      <p style={styles.paragraph}>
-        Click the button below to sign in to your {siteConfig.name} account:
-      </p>
+      <p style={styles.paragraph}>Click the button below to sign in to your {site.name} account:</p>
 
       <div style={styles.buttonContainer}>
         <a href={url} style={styles.button}>
-          Sign In to {siteConfig.name}
+          Sign In to {site.name}
         </a>
       </div>
 
@@ -117,7 +116,7 @@ export const MagicLinkEmail: React.FC<Readonly<MagicLinkEmailProps>> = ({ url })
 
     <div style={styles.footer}>
       <p style={styles.footerText}>
-        © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+        © {new Date().getFullYear()} {site.name}. All rights reserved.
       </p>
     </div>
   </div>

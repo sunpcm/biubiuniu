@@ -4,7 +4,7 @@ import { postActionSchema } from "@/components/cms/post-config";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { actionResponse } from "@/lib/action-response";
 import { getSession, isAdmin } from "@/lib/auth/server";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   posts as postsSchema,
   PostStatus,
@@ -12,7 +12,7 @@ import {
   PostType,
   subscriptions as subscriptionsSchema,
   tags as tagsSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { PostWithTags, PublicPost, PublicPostWithContent } from "@/types/cms";
 import { and, count, desc, eq, getTableColumns, ilike, inArray, or, sql } from "drizzle-orm";

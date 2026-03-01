@@ -2,8 +2,8 @@
 
 import { actionResponse, ActionResult } from "@/lib/action-response";
 import { getSession } from "@/lib/auth/server";
-import { db } from "@/lib/db";
-import { orders as ordersSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { orders as ordersSchema } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { and, count, desc, eq, ilike, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";

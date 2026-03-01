@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@niu/ui/avatar";
 import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@niu/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/auth-client";
-import { user as userSchema } from "@/lib/db/schema";
+import { user as userSchema } from "@niu/db/schema";
 import { ExternalLink, LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 

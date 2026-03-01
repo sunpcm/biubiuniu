@@ -1,0 +1,30 @@
+{
+  "name": "@niu/mail",
+  "version": "0.1.0",
+  "description": "Email templates for the @niu monorepo",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint src --report-unused-disable-directives",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"(@niu/mail) no tests\""
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@niu/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "prettier": "@niu/prettier-config"
+}

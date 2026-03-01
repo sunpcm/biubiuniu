@@ -18,13 +18,13 @@
  * プロバイダーに依存せず、すべての支払いプロバイダー（Stripe、Creem など）で使用されます。
  */
 
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   creditLogs as creditLogsSchema,
   PaymentProvider,
   pricingPlans as pricingPlansSchema,
   usage as usageSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import { isMonthlyInterval, isYearlyInterval } from "@/lib/payments/provider-utils";
 import type { Order } from "@/lib/payments/types";
 import { eq, sql } from "drizzle-orm";

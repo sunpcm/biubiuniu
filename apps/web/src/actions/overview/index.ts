@@ -2,12 +2,12 @@
 
 import { actionResponse, ActionResult } from "@/lib/action-response";
 import { isAdmin } from "@/lib/auth/server";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   orders as ordersSchema,
   pricingPlans as pricingPlansSchema,
   user as userSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { ONE_TIME_ORDER_TYPES, SUBSCRIPTION_ORDER_TYPES } from "@/lib/payments/provider-utils";
 import { and, count, eq, gte, inArray, lt, sql } from "drizzle-orm";

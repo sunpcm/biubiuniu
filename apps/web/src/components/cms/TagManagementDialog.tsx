@@ -23,7 +23,7 @@ import {
 } from "@niu/ui/dialog";
 import { Input } from "@niu/ui/input";
 import { ScrollArea } from "@niu/ui/scroll-area";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { useTagStore } from "@/stores/tagStore";
 import { Tag } from "@/types/cms";
 import { Check, Edit3, Loader2, Tags, Trash2, X } from "lucide-react";

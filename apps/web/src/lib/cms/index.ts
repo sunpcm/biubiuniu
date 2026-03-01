@@ -5,7 +5,7 @@ import {
 } from "@/actions/posts/posts";
 import { POST_CONFIGS } from "@/components/cms/post-config";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { PostBase, PublicPost, PublicPostWithContent } from "@/types/cms";
 import dayjs from "dayjs";
 import fs from "fs";

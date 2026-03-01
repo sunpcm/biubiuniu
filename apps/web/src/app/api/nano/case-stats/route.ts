@@ -1,7 +1,7 @@
 // [CUSTOM: START] - Nano case stats tracking
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import { sql } from "drizzle-orm";
 import { headers } from "next/headers";
 

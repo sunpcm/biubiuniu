@@ -1,8 +1,8 @@
 // [CUSTOM: START] - JWT token generation for cross-domain SSO (LearnFeynmanHelper)
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { user as userSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { user as userSchema } from "@niu/db/schema";
 import { eq } from "drizzle-orm";
 import { generateToken } from "@/lib/jwt";
 import { headers } from "next/headers";

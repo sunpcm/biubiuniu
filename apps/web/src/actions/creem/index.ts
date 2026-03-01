@@ -1,10 +1,10 @@
 "use server";
 import { retrieveCreemSubscription } from "@/lib/creem/client";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   pricingPlans as pricingPlansSchema,
   subscriptions as subscriptionsSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import { eq, InferInsertModel } from "drizzle-orm";
 
 function toDate(value?: string | null) {

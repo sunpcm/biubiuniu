@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@niu/ui/dropdown-menu";
 import { Link as I18nLink } from "@/i18n/routing";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { PostWithTags } from "@/types/cms";
 import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@niu/ui/card";
 import { Separator } from "@niu/ui/separator";
-import { formatValue } from "@/lib/utils";
+import { formatValue } from "@niu/utils";
 import { GrowthIndicator } from "./GrowthIndicator";
 
 interface StatData {

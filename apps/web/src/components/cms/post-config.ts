@@ -1,5 +1,5 @@
 import { BLOGS_IMAGE_PATH, GLOSSARY_IMAGE_PATH } from "@/config/common";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { z } from "zod";
 
 export const tagSchema = z.object({

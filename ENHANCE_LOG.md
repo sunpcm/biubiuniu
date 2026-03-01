@@ -44,3 +44,14 @@
 
 - `@typescript-eslint/no-explicit-any`: 199 个（`warn` 级别，留待后续逐步补全类型）
 - `react-hooks/exhaustive-deps`: ~12 个（暂不修改，避免运行时行为变化）
+
+---
+
+## Phase 2 改进
+
+| 改进项                  | 阶段          | 说明                                                                                                                               |
+| ----------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| formatCurrency 环境解耦 | Phase 2 (S4)  | `formatCurrency` 原依赖 `process.env.NEXT_PUBLIC_DEFAULT_CURRENCY`，改为 `defaultCurrency` 参数，消除共享包对 Node.js 运行时的依赖 |
+| 邮件模板 Props 化       | Phase 2 (S7)  | 所有邮件模板原直接导入 `siteConfig`，改为通过 Props 注入 `site: SiteInfo`，符合 React 纯函数思想，Serverless 友好                  |
+| DB 包自包含化           | Phase 2 (S1)  | 数据库 schema/config/seed/migrations/drizzle.config 全部内聚到 `@niu/db` 包，db:generate/push/studio 命令由包自身管理              |
+| apps/web 依赖精简       | Phase 2 (S10) | 从 apps/web 移除直接 DB 驱动依赖（postgres, pg, @types/pg, drizzle-kit），改为通过 @niu/db 间接依赖                                |

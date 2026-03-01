@@ -5,8 +5,8 @@ import CurrentUserBenefitsDisplay from "@/components/layout/CurrentUserBenefitsD
 import { Button } from "@niu/ui/button";
 import { Link as I18nLink } from "@/i18n/routing";
 import { getSession } from "@/lib/auth/server";
-import { db } from "@/lib/db";
-import { subscriptions as subscriptionsSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { subscriptions as subscriptionsSchema } from "@niu/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { PortalButton } from "./PortalButton";

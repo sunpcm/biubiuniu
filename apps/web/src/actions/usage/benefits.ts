@@ -2,12 +2,12 @@
 
 import { actionResponse, ActionResult } from "@/lib/action-response";
 import { getSession } from "@/lib/auth/server";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   creditLogs as creditLogsSchema,
   subscriptions as subscriptionsSchema,
   usage as usageSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 export interface UserBenefits {

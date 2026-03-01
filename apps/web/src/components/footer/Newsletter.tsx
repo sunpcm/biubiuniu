@@ -2,7 +2,7 @@
 
 import { subscribeToNewsletter } from "@/actions/newsletter";
 import { normalizeEmail, validateEmail } from "@/lib/email";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import { Send } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";

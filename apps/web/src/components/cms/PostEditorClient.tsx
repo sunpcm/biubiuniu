@@ -4,7 +4,7 @@ import { createPostAction, getPostByIdAction, updatePostAction } from "@/actions
 import { PostForm } from "@/components/cms/PostForm";
 import { getPostConfig } from "@/components/cms/post-config";
 import { Button } from "@niu/ui/button";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { type PostWithTags } from "@/types/cms";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";

@@ -13,7 +13,7 @@ import { getPublicPricingPlans } from "@/actions/prices/public";
 import { PricingCardDisplay } from "@/components/pricing/PricingCardDisplay";
 import FeatureBadge from "@/components/shared/FeatureBadge";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { PricingPlanLangJsonb } from "@/types/pricing";
 import { getLocale, getTranslations } from "next-intl/server";
 

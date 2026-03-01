@@ -2,7 +2,7 @@
 
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { actionResponse } from "@/lib/action-response";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { getClientIPFromHeaders, redis } from "@/lib/upstash";
 import { REDIS_KEYS_CONFIGS } from "@/lib/upstash/redis-keys";

@@ -1,6 +1,6 @@
 import { isAdmin } from "@/lib/auth/server";
-import { db } from "@/lib/db";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { constructMetadata } from "@/lib/metadata";
 import { eq } from "drizzle-orm";
 import { Metadata } from "next";

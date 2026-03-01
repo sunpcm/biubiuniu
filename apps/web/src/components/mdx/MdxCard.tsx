@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   href?: string;

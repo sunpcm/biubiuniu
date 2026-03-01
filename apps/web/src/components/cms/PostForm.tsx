@@ -18,7 +18,7 @@ import { Input } from "@niu/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@niu/ui/select";
 import { Textarea } from "@niu/ui/textarea";
 import { DEFAULT_LOCALE, Locale, LOCALE_NAMES, LOCALES } from "@/i18n/routing";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import type { PostWithTags } from "@/types/cms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";

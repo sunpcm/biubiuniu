@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import type { SiteInfo } from "./types";
 import * as React from "react";
 
 interface InvoicePaymentFailedEmailProps {
@@ -10,6 +10,7 @@ interface InvoicePaymentFailedEmailProps {
   nextPaymentAttemptDate?: string;
   updatePaymentMethodLink: string;
   supportLink: string;
+  site: SiteInfo;
 }
 
 const commonStyles = {
@@ -104,10 +105,11 @@ const EnglishVersion: React.FC<InvoicePaymentFailedEmailProps> = ({
   updatePaymentMethodLink,
   supportLink,
   invoiceId,
+  site,
 }) => (
   <div style={commonStyles.card}>
     <div style={commonStyles.logo}>
-      <img src={`${siteConfig.url}/logo.png`} alt={siteConfig.name} width={80} height={80} />
+      <img src={`${site.url}/logo.png`} alt={site.name} width={80} height={80} />
     </div>
 
     <h1
@@ -118,8 +120,8 @@ const EnglishVersion: React.FC<InvoicePaymentFailedEmailProps> = ({
         color: "#3b82f6",
       }}
     >
-      <a href={siteConfig.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
-        {siteConfig.name}
+      <a href={site.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
+        {site.name}
       </a>
     </h1>
     <h2 style={commonStyles.title}>Action Required: Payment Failed</h2>
@@ -170,7 +172,7 @@ export const InvoicePaymentFailedEmail: React.FC<InvoicePaymentFailedEmailProps>
 
       <div style={commonStyles.footer}>
         <p style={commonStyles.footerText}>
-          © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+          © {new Date().getFullYear()} {props.site.name}. All rights reserved.
         </p>
       </div>
     </div>

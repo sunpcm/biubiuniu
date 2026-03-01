@@ -1,7 +1,7 @@
 "use server";
 import { removeUserFromContacts, sendEmail } from "@/actions/resend";
 import { siteConfig } from "@/config/site";
-import { NewsletterWelcomeEmail } from "@/emails/newsletter-welcome";
+import { NewsletterWelcomeEmail } from "@niu/mail";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { actionResponse, ActionResult } from "@/lib/action-response";
 import { normalizeEmail, validateEmail } from "@/lib/email";
@@ -47,6 +47,7 @@ export async function subscribeToNewsletter(
       reactProps: {
         email: normalizedEmail,
         unsubscribeLink: unsubscribeLink,
+        site: siteConfig,
       },
       isAddContacts: true,
     });

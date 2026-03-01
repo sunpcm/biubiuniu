@@ -6,7 +6,7 @@ import { Button } from "@niu/ui/button";
 import { Input } from "@niu/ui/input";
 import { Label } from "@niu/ui/label";
 import { authClient } from "@/lib/auth/auth-client";
-import { user as userSchema } from "@/lib/db/schema";
+import { user as userSchema } from "@niu/db/schema";
 import {
   AVATAR_ACCEPT_ATTRIBUTE,
   AVATAR_ALLOWED_EXTENSIONS,

@@ -1,7 +1,7 @@
 "use client";
 
 import { Locale, LOCALE_NAMES, LOCALES } from "@/i18n/routing";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { useCompletion } from "@ai-sdk/react";
 import { Editor } from "@tiptap/react";
 import { Info, LanguagesIcon } from "lucide-react";

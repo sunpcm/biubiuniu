@@ -2,7 +2,7 @@
 
 import { Button } from "@niu/ui/button";
 import { Link as I18nLink, LOCALE_NAMES, routing } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import { useLocaleStore } from "@/stores/localeStore";
 import { ArrowRight, Globe, X } from "lucide-react";
 import { useLocale } from "next-intl";

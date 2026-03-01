@@ -2,8 +2,8 @@
 
 import { actionResponse, ActionResult } from "@/lib/action-response";
 import { isAdmin } from "@/lib/auth/server";
-import { db } from "@/lib/db";
-import { pricingPlanGroups } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { pricingPlanGroups } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { SLUG_REGEX } from "@/lib/pricing/slug";
 import { PricingPlanGroup } from "@/types/pricing";

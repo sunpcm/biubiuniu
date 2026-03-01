@@ -20,7 +20,7 @@ import {
 } from "@niu/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@niu/ui/popover";
 import { SLUG_REGEX } from "@/lib/pricing/slug";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import { usePricingGroupStore } from "@/stores/pricingGroupStore";
 import { PricingPlanGroup } from "@/types/pricing";
 import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";

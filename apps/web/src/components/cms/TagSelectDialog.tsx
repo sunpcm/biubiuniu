@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@niu/ui/dialog";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { Tag } from "@/types/cms";
 import { Check, Loader2, Plus, X } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";

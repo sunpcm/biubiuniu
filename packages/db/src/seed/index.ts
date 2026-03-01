@@ -12,15 +12,11 @@
  * pnpm db:seed
  */
 
-import { loadEnvConfig } from "@next/env";
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { pricingPlanGroups, pricingPlans as pricingPlansTable } from "../schema";
 import { pricingGroups, pricingPlans } from "./pricing-config";
-
-const projectDir = process.cwd();
-loadEnvConfig(projectDir);
 
 async function main() {
   const connectionString = process.env.DATABASE_URL;
@@ -125,7 +121,7 @@ async function main() {
 
     console.log("\n🎉 Database seeded successfully!");
     console.log("\nNext steps:");
-    console.log("  - Edit lib/db/seed/pricing-config.ts to modify pricing");
+    console.log("  - Edit src/seed/pricing-config.ts to modify pricing");
     console.log("  - Run `pnpm db:seed` to sync changes to database");
     console.log("  - Run `pnpm db:export-pricing` to export database to config");
   } catch (error) {

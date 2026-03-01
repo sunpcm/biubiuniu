@@ -1,9 +1,10 @@
-import { siteConfig } from "@/config/site";
+import type { SiteInfo } from "./types";
 import * as React from "react";
 
 interface OTPCodeEmailProps {
   otp: string;
   type: "sign-in" | "email-verification" | "forget-password";
+  site: SiteInfo;
 }
 
 const styles = {
@@ -96,16 +97,16 @@ const getTypeMessage = (type: OTPCodeEmailProps["type"]) => {
   }
 };
 
-export const OTPCodeEmail: React.FC<Readonly<OTPCodeEmailProps>> = ({ otp, type }) => (
+export const OTPCodeEmail: React.FC<Readonly<OTPCodeEmailProps>> = ({ otp, type, site }) => (
   <div style={styles.container}>
     <div style={styles.card}>
       <div style={styles.logo}>
-        <img src={`${siteConfig.url}/logo.png`} alt={siteConfig.name} width={80} height={80} />
+        <img src={`${site.url}/logo.png`} alt={site.name} width={80} height={80} />
       </div>
 
       <h1 style={styles.headerTitle}>
-        <a href={siteConfig.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
-          {siteConfig.name}
+        <a href={site.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
+          {site.name}
         </a>
       </h1>
 
@@ -124,7 +125,7 @@ export const OTPCodeEmail: React.FC<Readonly<OTPCodeEmailProps>> = ({ otp, type 
 
     <div style={styles.footer}>
       <p style={styles.footerText}>
-        © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+        © {new Date().getFullYear()} {site.name}. All rights reserved.
       </p>
     </div>
   </div>

@@ -1,10 +1,11 @@
-import { siteConfig } from "@/config/site";
+import type { SiteInfo } from "./types";
 import * as React from "react";
 
 interface UserWelcomeEmailProps {
   name?: string;
   email: string;
   unsubscribeLink?: string;
+  site: SiteInfo;
 }
 
 const commonStyles = {
@@ -99,19 +100,20 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
   name,
   email,
   unsubscribeLink,
+  site,
 }) => {
   const displayName = name || email.split("@")[0];
-  const siteName = siteConfig.name;
+  const siteName = site.name;
 
   return (
     <div style={commonStyles.container}>
       <div style={commonStyles.card}>
         <div style={commonStyles.logo}>
-          <img src={`${siteConfig.url}/logo.png`} alt={siteName} width={80} height={80} />
+          <img src={`${site.url}/logo.png`} alt={siteName} width={80} height={80} />
         </div>
 
         <h1 style={commonStyles.title}>
-          <a href={siteConfig.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
+          <a href={site.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
             {siteName}
           </a>
         </h1>
@@ -126,9 +128,9 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
         <div style={commonStyles.socialContainer}>
           <p style={commonStyles.socialTitle}>Connect with us:</p>
           <div style={commonStyles.socialLinks}>
-            {siteConfig.socialLinks?.github && (
+            {site.socialLinks?.github && (
               <a
-                href={siteConfig.socialLinks.github}
+                href={site.socialLinks.github}
                 target="_blank"
                 rel="noreferrer nofollow noopener"
                 style={commonStyles.socialLink}
@@ -136,9 +138,9 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
                 GitHub
               </a>
             )}
-            {siteConfig.socialLinks?.twitter && (
+            {site.socialLinks?.twitter && (
               <a
-                href={siteConfig.socialLinks.twitter}
+                href={site.socialLinks.twitter}
                 target="_blank"
                 rel="noreferrer nofollow noopener"
                 style={commonStyles.socialLink}
@@ -146,9 +148,9 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
                 Twitter
               </a>
             )}
-            {siteConfig.socialLinks?.youtube && (
+            {site.socialLinks?.youtube && (
               <a
-                href={siteConfig.socialLinks.youtube}
+                href={site.socialLinks.youtube}
                 target="_blank"
                 rel="noreferrer nofollow noopener"
                 style={commonStyles.socialLink}
@@ -156,9 +158,9 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
                 YouTube
               </a>
             )}
-            {siteConfig.socialLinks?.instagram && (
+            {site.socialLinks?.instagram && (
               <a
-                href={siteConfig.socialLinks.instagram}
+                href={site.socialLinks.instagram}
                 target="_blank"
                 rel="noreferrer nofollow noopener"
                 style={commonStyles.socialLink}
@@ -166,9 +168,9 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
                 Instagram
               </a>
             )}
-            {siteConfig.socialLinks?.tiktok && (
+            {site.socialLinks?.tiktok && (
               <a
-                href={siteConfig.socialLinks.tiktok}
+                href={site.socialLinks.tiktok}
                 target="_blank"
                 rel="noreferrer nofollow noopener"
                 style={commonStyles.socialLink}
@@ -176,9 +178,9 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
                 TikTok
               </a>
             )}
-            {siteConfig.socialLinks?.discord && (
+            {site.socialLinks?.discord && (
               <a
-                href={siteConfig.socialLinks.discord}
+                href={site.socialLinks.discord}
                 target="_blank"
                 rel="noreferrer nofollow noopener"
                 style={commonStyles.socialLink}
@@ -186,9 +188,9 @@ export const UserWelcomeEmail: React.FC<UserWelcomeEmailProps> = ({
                 Discord
               </a>
             )}
-            {siteConfig.socialLinks?.email && (
+            {site.socialLinks?.email && (
               <a
-                href={`mailto:${siteConfig.socialLinks.email}`}
+                href={`mailto:${site.socialLinks.email}`}
                 target="_blank"
                 rel="noreferrer nofollow noopener"
                 style={commonStyles.socialLink}

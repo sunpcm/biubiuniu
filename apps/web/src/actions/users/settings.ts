@@ -5,8 +5,8 @@ import { actionResponse } from "@/lib/action-response";
 import { getSession } from "@/lib/auth/server";
 import { deleteFile, serverUploadFile } from "@/lib/cloudflare/r2";
 import { generateR2Key } from "@/lib/cloudflare/r2-utils";
-import { db } from "@/lib/db";
-import { user as userSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { user as userSchema } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import {
   AVATAR_ALLOWED_FILE_TYPES,

@@ -2,8 +2,8 @@
 
 import { getSession } from "@/lib/auth/server";
 import { createCreemCustomerPortalLink } from "@/lib/creem/client";
-import { db } from "@/lib/db";
-import { subscriptions as subscriptionsSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { subscriptions as subscriptionsSchema } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { and, desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";

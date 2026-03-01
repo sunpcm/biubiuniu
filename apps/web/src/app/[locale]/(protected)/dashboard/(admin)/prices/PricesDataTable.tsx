@@ -5,7 +5,7 @@ import { Input } from "@niu/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@niu/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@niu/ui/table";
 import { Link as I18nLink } from "@/i18n/routing";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import {
   ColumnDef,
   ColumnFiltersState,

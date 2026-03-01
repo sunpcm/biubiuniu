@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import { userSource } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { userSource } from "@niu/db/schema";
 import Bowser from "bowser";
 import { headers } from "next/headers";
 

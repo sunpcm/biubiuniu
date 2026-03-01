@@ -12,7 +12,7 @@ import {
   type VideoModelCapabilities,
   getVideoModelsByType,
 } from "@/config/ai-models";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import { Clock, FileText, ImagePlus, Layers, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";

@@ -1,0 +1,48 @@
+{
+  "name": "@niu/db",
+  "version": "0.1.0",
+  "description": "Database layer for the @niu monorepo (Drizzle ORM + PostgreSQL)",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./schema": {
+      "types": "./src/schema.ts",
+      "default": "./src/schema.ts"
+    },
+    "./config": {
+      "types": "./src/config.ts",
+      "default": "./src/config.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint src --report-unused-disable-directives",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"(@niu/db) no tests\"",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/seed/index.ts",
+    "db:export-pricing": "tsx src/seed/export.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "@niu/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "dotenv": "^17.2.2",
+    "drizzle-kit": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "prettier": "@niu/prettier-config"
+}

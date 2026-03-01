@@ -1,5 +1,5 @@
 import { siteConfig } from "@/config/site";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 
 export const LOWER_CASE_SITE_NAME = siteConfig.name.trim().toLowerCase().replace(/\s+/g, "-");
 

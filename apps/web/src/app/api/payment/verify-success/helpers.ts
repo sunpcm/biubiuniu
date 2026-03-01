@@ -3,8 +3,8 @@
  */
 
 import { apiResponse } from "@/lib/api-response";
-import { db } from "@/lib/db";
-import { orders as ordersSchema, subscriptions as subscriptionsSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { orders as ordersSchema, subscriptions as subscriptionsSchema } from "@niu/db/schema";
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import type { OrderData, Provider, SubscriptionData } from "./types";

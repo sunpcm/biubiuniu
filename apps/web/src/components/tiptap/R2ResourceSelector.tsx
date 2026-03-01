@@ -9,7 +9,7 @@ import { Skeleton } from "@niu/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@niu/ui/tabs";
 import { R2_CATEGORIES } from "@/config/common";
 import { getFileType } from "@/lib/cloudflare/r2-utils";
-import { formatBytes } from "@/lib/utils";
+import { formatBytes } from "@niu/utils";
 import dayjs from "dayjs";
 import { Check, FileIcon, Search, Video, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";

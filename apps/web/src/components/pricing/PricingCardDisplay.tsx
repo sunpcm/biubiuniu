@@ -1,6 +1,6 @@
 import PricingCTA from "@/components/pricing/PricingCTA";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
-import { cn } from "@/lib/utils";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
+import { cn } from "@niu/utils";
 import { PricingPlanFeature, PricingPlanTranslation } from "@/types/pricing";
 import { Check, X } from "lucide-react";
 

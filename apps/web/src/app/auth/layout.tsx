@@ -1,6 +1,6 @@
 // [CUSTOM: START] - Standalone auth layout for cross-login page (separate from [locale]/layout.tsx)
 import { AuthProvider } from "@/components/providers/AuthProvider";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";

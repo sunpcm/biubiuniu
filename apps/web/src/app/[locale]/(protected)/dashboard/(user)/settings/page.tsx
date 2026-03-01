@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth/server";
-import { user as userSchema } from "@/lib/db/schema";
+import { user as userSchema } from "@niu/db/schema";
 import { constructMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
 import { Locale } from "next-intl";

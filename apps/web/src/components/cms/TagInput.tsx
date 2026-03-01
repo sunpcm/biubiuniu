@@ -2,7 +2,7 @@
 
 import { Badge } from "@niu/ui/badge";
 import { Button } from "@niu/ui/button";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { useTagStore } from "@/stores/tagStore";
 import { Tag } from "@/types/cms";
 import { Tag as TagIcon, X } from "lucide-react";

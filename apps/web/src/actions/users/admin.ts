@@ -3,12 +3,12 @@
 import type { ActionResult } from "@/lib/action-response";
 import { actionResponse } from "@/lib/action-response";
 import { isAdmin } from "@/lib/auth/server";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   session as sessionSchema,
   user as userSchema,
   userSource as userSourceSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { count, desc, eq, ilike, or } from "drizzle-orm";
 

@@ -12,7 +12,7 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@niu/ui/sidebar";
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/auth-client";
-import { user as userSchema } from "@/lib/db/schema";
+import { user as userSchema } from "@niu/db/schema";
 import { ChevronsUpDown, LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 

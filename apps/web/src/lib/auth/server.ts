@@ -1,8 +1,8 @@
 import "server-only";
 
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { user as userSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { user as userSchema } from "@niu/db/schema";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";

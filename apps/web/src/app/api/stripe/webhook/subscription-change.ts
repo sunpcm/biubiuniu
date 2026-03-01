@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 

@@ -2,8 +2,8 @@
 
 import { ActionResult, actionResponse } from "@/lib/action-response";
 import { isAdmin } from "@/lib/auth/server";
-import { db } from "@/lib/db";
-import { orders as ordersSchema, user as userSchema } from "@/lib/db/schema";
+import { db } from "@niu/db";
+import { orders as ordersSchema, user as userSchema } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { OrderWithUser } from "@/types/admin/orders";
 import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";

@@ -1,5 +1,5 @@
 import { getRelatedPostsAction } from "@/actions/posts/posts";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { PostBase, PublicPost } from "@/types/cms";
 import dayjs from "dayjs";
 import { ReactElement } from "react";

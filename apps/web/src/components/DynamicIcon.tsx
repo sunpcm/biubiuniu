@@ -1,4 +1,4 @@
-import { kebabToPascalCase } from "@/lib/utils";
+import { kebabToPascalCase } from "@niu/utils";
 import { LucideProps, icons } from "lucide-react";
 
 export const DynamicIcon = ({ name, ...props }: LucideProps & { name: string }) => {

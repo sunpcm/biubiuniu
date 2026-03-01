@@ -1,8 +1,8 @@
 "use server";
 
 import { actionResponse, ActionResult } from "@/lib/action-response";
-import { db, isDatabaseEnabled } from "@/lib/db";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { db, isDatabaseEnabled } from "@niu/db";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { and, asc, eq } from "drizzle-orm";
 import "server-only";

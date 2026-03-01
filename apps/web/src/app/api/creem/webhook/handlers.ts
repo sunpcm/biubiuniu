@@ -9,12 +9,12 @@ import {
   CreemSubscriptionUpdateEvent,
   CreemTransaction,
 } from "@/lib/creem/types";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   orders as ordersSchema,
   pricingPlans as pricingPlansSchema,
   subscriptions as subscriptionsSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import {
   revokeOneTimeCredits,
   revokeRemainingSubscriptionCreditsOnEnd,

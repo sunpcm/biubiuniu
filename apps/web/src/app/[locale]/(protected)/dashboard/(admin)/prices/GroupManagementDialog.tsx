@@ -24,7 +24,7 @@ import {
 import { Input } from "@niu/ui/input";
 import { ScrollArea } from "@niu/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@niu/ui/tooltip";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { SLUG_REGEX } from "@/lib/pricing/slug";
 import { usePricingGroupStore } from "@/stores/pricingGroupStore";
 import { PricingPlanGroup } from "@/types/pricing";

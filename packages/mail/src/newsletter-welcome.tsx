@@ -1,9 +1,10 @@
-import { siteConfig } from "@/config/site";
+import type { SiteInfo } from "./types";
 import * as React from "react";
 
 interface NewsletterWelcomeEmailProps {
   email: string;
   unsubscribeLink: string;
+  site: SiteInfo;
 }
 
 const commonStyles = {
@@ -74,17 +75,18 @@ const commonStyles = {
   },
 };
 
-const EnglishVersion: React.FC<{ unsubscribeLink: string }> = ({
+const EnglishVersion: React.FC<{ unsubscribeLink: string; site: SiteInfo }> = ({
   unsubscribeLink: _unsubscribeLink,
+  site,
 }) => (
   <div style={commonStyles.card}>
     <div style={commonStyles.logo}>
-      <img src={`${siteConfig.url}/logo.png`} alt={siteConfig.name} width={80} height={80} />
+      <img src={`${site.url}/logo.png`} alt={site.name} width={80} height={80} />
     </div>
 
     <h1 style={commonStyles.title}>
-      <a href={siteConfig.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
-        {siteConfig.name}
+      <a href={site.url} style={{ textDecoration: "none", color: "#3b82f6" }}>
+        {site.name}
       </a>
     </h1>
     <h2
@@ -95,12 +97,12 @@ const EnglishVersion: React.FC<{ unsubscribeLink: string }> = ({
         color: "#1f2937",
       }}
     >
-      You've Successfully Subscribed to {siteConfig.name} Updates!
+      You've Successfully Subscribed to {site.name} Updates!
     </h2>
     <p style={commonStyles.paragraph}>Here's what you'll receive in your inbox:</p>
     <ul style={commonStyles.list}>
-      <li>{siteConfig.name} version updates</li>
-      <li>Latest promotions and events from {siteConfig.name}</li>
+      <li>{site.name} version updates</li>
+      <li>Latest promotions and events from {site.name}</li>
     </ul>
     <p style={commonStyles.paragraph}>
       If you have any questions, feel free to reply to this email.
@@ -110,14 +112,15 @@ const EnglishVersion: React.FC<{ unsubscribeLink: string }> = ({
 
 export const NewsletterWelcomeEmail: React.FC<NewsletterWelcomeEmailProps> = ({
   unsubscribeLink,
+  site,
 }) => {
   return (
     <div style={commonStyles.container}>
-      <EnglishVersion unsubscribeLink={unsubscribeLink} />
+      <EnglishVersion unsubscribeLink={unsubscribeLink} site={site} />
 
       <div style={commonStyles.footer}>
         <p style={commonStyles.footerText}>
-          © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+          © {new Date().getFullYear()} {site.name}. All rights reserved.
         </p>
         <p style={commonStyles.unsubscribe}>
           To unsubscribe from these updates,{" "}

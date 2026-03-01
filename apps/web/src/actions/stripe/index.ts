@@ -2,17 +2,19 @@
 
 import { sendEmail } from "@/actions/resend";
 import { siteConfig } from "@/config/site";
-import { CreditUpgradeFailedEmail } from "@/emails/credit-upgrade-failed";
-import { FraudRefundUserEmail } from "@/emails/fraud-refund-user";
-import { FraudWarningAdminEmail } from "@/emails/fraud-warning-admin";
-import { InvoicePaymentFailedEmail } from "@/emails/invoice-payment-failed";
+import {
+  CreditUpgradeFailedEmail,
+  FraudRefundUserEmail,
+  FraudWarningAdminEmail,
+  InvoicePaymentFailedEmail,
+} from "@niu/mail";
 import { getSession } from "@/lib/auth/server";
-import { db } from "@/lib/db";
+import { db } from "@niu/db";
 import {
   pricingPlans as pricingPlansSchema,
   subscriptions as subscriptionsSchema,
   user as userSchema,
-} from "@/lib/db/schema";
+} from "@niu/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { isRecurringPaymentType } from "@/lib/payments/provider-utils";
 import { stripe } from "@/lib/stripe";
@@ -404,6 +406,7 @@ export async function sendCreditUpgradeFailedEmail({
         planId: planId,
         errorMessage,
         errorStack,
+        site: siteConfig,
       }),
     });
     console.log(`Sent credit upgrade failure email to ${adminEmail} for order ${orderId}`);
@@ -505,6 +508,7 @@ export async function sendInvoicePaymentFailedEmail({
         nextPaymentAttemptDate: nextPaymentAttemptDate,
         updatePaymentMethodLink: updatePaymentMethodLink,
         supportLink: supportLink,
+        site: siteConfig,
       };
 
       try {
@@ -575,6 +579,7 @@ export async function sendFraudWarningAdminEmail({
       chargeDescription,
       actionsTaken,
       dashboardUrl,
+      site: siteConfig,
     };
 
     await sendEmail({
@@ -670,6 +675,7 @@ export async function sendFraudRefundUserEmail({
       refundDate,
       supportLink,
       dashboardLink,
+      site: siteConfig,
     };
 
     const subject = `Important: Transaction Refunded - ${siteConfig.name}`;

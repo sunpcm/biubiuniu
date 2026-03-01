@@ -20,9 +20,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@niu/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@niu/ui/tooltip";
 import { DEFAULT_LOCALE, LOCALES, useRouter } from "@/i18n/routing";
-import { pricingPlans as pricingPlansSchema } from "@/lib/db/schema";
+import { pricingPlans as pricingPlansSchema } from "@niu/db/schema";
 import { extractJsonFromText, isValidJsonString } from "@/lib/safeJson";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@niu/utils";
 import { useCompletion } from "@ai-sdk/react";
 import {
   closestCenter,

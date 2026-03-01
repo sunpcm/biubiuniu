@@ -1,7 +1,7 @@
 "use client";
 
 import { incrementUniqueViewCountAction, incrementViewCountAction } from "@/actions/posts/views";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { useLocale } from "next-intl";
 import { useEffect } from "react";
 

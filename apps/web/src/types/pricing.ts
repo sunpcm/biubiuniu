@@ -1,4 +1,4 @@
-import { pricingPlanGroups } from "@/lib/db/schema";
+import { pricingPlanGroups } from "@niu/db/schema";
 
 export type PricingPlanGroup = typeof pricingPlanGroups.$inferSelect;
 

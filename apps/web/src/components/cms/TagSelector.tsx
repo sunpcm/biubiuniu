@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import { Tag } from "@/types/cms";
 
 interface TagSelectorProps {

@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import type { SiteInfo } from "./types";
 
 interface CreditUpgradeFailedEmailProps {
   userId: string;
@@ -7,6 +7,7 @@ interface CreditUpgradeFailedEmailProps {
   errorMessage: string;
   errorStack?: string;
   webhookUrl?: string;
+  site: SiteInfo;
 }
 
 const CreditUpgradeFailedEmail = ({
@@ -16,11 +17,12 @@ const CreditUpgradeFailedEmail = ({
   errorMessage,
   errorStack,
   webhookUrl: _webhookUrl = "https://dashboard.stripe.com/webhooks",
+  site,
 }: CreditUpgradeFailedEmailProps) => (
   <div style={main}>
     <div style={card}>
       <div style={logo}>
-        <img src={`${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`} width={80} height={80} />
+        <img src={`${site.url}/logo.png`} width={80} height={80} />
       </div>
 
       <h1 style={heading}>🚨 Critical Error: Credit Upgrade Failed</h1>
@@ -57,8 +59,7 @@ const CreditUpgradeFailedEmail = ({
       <h3 style={subHeading}>Next Steps:</h3>
       <p style={list}>
         1. <strong>Verify Order:</strong> Go to the{" "}
-        <a href={`${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/orders`}>Dashboard</a> to confirm
-        the order record exists.
+        <a href={`${site.url}/dashboard/orders`}>Dashboard</a> to confirm the order record exists.
       </p>
       <p style={list}>
         2. <strong>Check User Credits:</strong> Inspect the <code>usage</code> and{" "}
@@ -69,18 +70,17 @@ const CreditUpgradeFailedEmail = ({
         3. <strong>Manually Grant Credits:</strong> If the payment was successful, manually insert
         the corresponding records into the <code>usage</code> and <code>credit_logs</code> tables.
       </p>
-      {siteConfig.socialLinks?.discord && (
+      {site.socialLinks?.discord && (
         <p style={list}>
           4. <strong>Seek Support:</strong> If you are unable to resolve the issue, please contact
-          the {siteConfig.name} team on <a href={siteConfig.socialLinks?.discord}>Discord</a> for
-          assistance.
+          the {site.name} team on <a href={site.socialLinks?.discord}>Discord</a> for assistance.
         </p>
       )}
     </div>
 
     <div style={footer}>
       <p style={footerText}>
-        © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+        © {new Date().getFullYear()} {site.name}. All rights reserved.
       </p>
     </div>
   </div>

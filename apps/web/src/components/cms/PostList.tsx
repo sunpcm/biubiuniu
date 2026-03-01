@@ -1,7 +1,7 @@
 "use client";
 
 import { listPublishedPostsAction } from "@/actions/posts/posts";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { PostBase, PublicPost, Tag } from "@/types/cms";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";

@@ -18,7 +18,7 @@ import { Toaster } from "@niu/ui/sonner";
 import { siteConfig } from "@/config/site";
 import { DEFAULT_LOCALE, Locale, routing } from "@/i18n/routing";
 import { constructMetadata } from "@/lib/metadata";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import "@/styles/globals.css";
 import "@/styles/loading.css";
 import { Analytics } from "@vercel/analytics/react";

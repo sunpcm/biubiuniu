@@ -6,7 +6,7 @@ import { Label } from "@niu/ui/label";
 import { Slider } from "@niu/ui/slider";
 import { Textarea } from "@niu/ui/textarea";
 import { type VideoModelCapabilities } from "@/config/ai-models";
-import { cn } from "@/lib/utils";
+import { cn } from "@niu/utils";
 import { Camera, Dices, Monitor, Proportions, Type, Volume2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 

@@ -13,7 +13,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@niu/ui/tooltip";
 import { downloadFileAsAdmin } from "@/lib/cloudflare/r2-download";
 import { getFileType } from "@/lib/cloudflare/r2-utils";
-import { formatBytes } from "@/lib/utils";
+import { formatBytes } from "@niu/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { Check, Copy, Download, Loader2, MoreHorizontal, Trash2, Video } from "lucide-react";

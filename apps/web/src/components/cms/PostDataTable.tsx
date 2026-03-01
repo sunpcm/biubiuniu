@@ -5,7 +5,7 @@ import { Button } from "@niu/ui/button";
 import { Input } from "@niu/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@niu/ui/table";
 import { Link as I18nLink } from "@/i18n/routing";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import {
   ColumnDef,
   flexRender,

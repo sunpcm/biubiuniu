@@ -1,6 +1,6 @@
 import { Badge } from "@niu/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@niu/ui/card";
-import { previewConfig } from "@/lib/db/config";
+import { previewConfig } from "@niu/db/config";
 import { Database, Globe, Link as LinkIcon, Server, ShieldCheck, Zap } from "lucide-react";
 
 export const DatabaseConfigPreview = () => {

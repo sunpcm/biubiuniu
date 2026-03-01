@@ -1,4 +1,4 @@
-import type { orders as ordersSchema } from "@/lib/db/schema";
+import type { orders as ordersSchema } from "@niu/db/schema";
 import type { InferInsertModel } from "drizzle-orm";
 
 /**

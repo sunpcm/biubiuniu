@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import type { SiteInfo } from "./types";
 
 interface FraudWarningAdminEmailProps {
   warningId: string;
@@ -10,6 +10,7 @@ interface FraudWarningAdminEmailProps {
   chargeDescription?: string;
   actionsTaken: string[];
   dashboardUrl: string;
+  site: SiteInfo;
 }
 
 const FraudWarningAdminEmail = ({
@@ -22,16 +23,12 @@ const FraudWarningAdminEmail = ({
   chargeDescription,
   actionsTaken,
   dashboardUrl,
+  site,
 }: FraudWarningAdminEmailProps) => (
   <div style={main}>
     <div style={card}>
       <div style={logo}>
-        <img
-          src={`${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`}
-          alt={siteConfig.name}
-          width={80}
-          height={80}
-        />
+        <img src={`${site.url}/logo.png`} alt={site.name} width={80} height={80} />
       </div>
 
       <h1 style={heading}>🚨 Fraud Warning Alert</h1>
@@ -111,7 +108,7 @@ const FraudWarningAdminEmail = ({
 
     <div style={footer}>
       <p style={footerText}>
-        © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+        © {new Date().getFullYear()} {site.name}. All rights reserved.
       </p>
     </div>
   </div>

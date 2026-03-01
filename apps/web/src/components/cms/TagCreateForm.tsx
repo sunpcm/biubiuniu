@@ -3,7 +3,7 @@
 import { createTagAction } from "@/actions/posts/tags";
 import { Button } from "@niu/ui/button";
 import { Input } from "@niu/ui/input";
-import { PostType } from "@/lib/db/schema";
+import { PostType } from "@niu/db/schema";
 import { Tag } from "@/types/cms";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";

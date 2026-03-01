@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@niu/ui/button";
-import { PaymentProvider } from "@/lib/db/schema";
+import { PaymentProvider } from "@niu/db/schema";
 import { Loader2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
 
