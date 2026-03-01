@@ -4,7 +4,7 @@
  * Design goals:
  * - Keep new packages consistent (eslint/prettier/tsconfig wiring)
  * - Allow choosing destination: packages/ or packages/configs/ (or custom subdirs under packages/)
- * - Set @biu scope for all packages
+ * - Set @niu scope for all packages
  */
 
 const path = require("node:path");
@@ -12,7 +12,7 @@ const { execSync } = require("node:child_process");
 
 /**
  * Convert a user-provided name into a safe folder name.
- * - "@biu/foo-bar" -> "foo-bar"
+ * - "@niu/foo-bar" -> "foo-bar"
  * - "foo-bar" -> "foo-bar"
  */
 function toFolderName(raw) {
@@ -27,8 +27,8 @@ function toFolderName(raw) {
 
 /**
  * Ensure we always generate a scoped package name.
- * - "foo" -> "@biu/foo"
- * - "@biu/foo" -> "@biu/foo"
+ * - "foo" -> "@niu/foo"
+ * - "@niu/foo" -> "@niu/foo"
  */
 function toScopedName(raw, scope) {
   const name = String(raw || "").trim();
@@ -86,12 +86,12 @@ module.exports = function (plop) {
   };
 
   plop.setGenerator("package", {
-    description: "Create a new workspace package (default @biu/*)",
+    description: "Create a new workspace package (default @niu/*)",
     prompts: [
       {
         type: "input",
         name: "name",
-        message: "Package name (without @biu/, e.g. my-utils):",
+        message: "Package name (without @niu/, e.g. my-utils):",
         default: cliDefaults.name,
         validate: (v) => (String(v || "").trim() ? true : "Package name is required"),
       },
@@ -123,7 +123,7 @@ module.exports = function (plop) {
       },
     ],
     actions: function (answers) {
-      const scope = "biu"; // 固定为 @biu
+      const scope = "niu"; // 固定为 @niu
       const react = answers.react === true || answers.react === "true";
       const nameWithScope = toScopedName(answers.name, scope);
       const folderName = toFolderName(nameWithScope);

@@ -1,0 +1,68 @@
+{
+  "title": "AI Image Transformer",
+  "metaDescription": "Transform and enhance images using Gemini AI with intelligent image processing",
+  "description": "Upload an image and describe how you want to transform it with the power of Gemini AI",
+  "subTitle": "Nano Banana",
+  "subDescription": "Login required! New users get 10 free credits ♥️ Need more? Contact Xiaoxun for top-up~",
+  "ui": {
+    "exampleSelector": {
+      "title": "✨ Select Case Template",
+      "loading": "Loading cases...",
+      "loginRequired": "Login required to select case templates",
+      "placeholder": "Choose a Nano-banana case...",
+      "inputExample": "Input Example",
+      "outputExample": "Output Example",
+      "prompt": "Prompt",
+      "searchPlaceholder": "Search cases, authors or keywords... (arrow keys for navigation)",
+      "noResults": "No matching cases found",
+      "selectedHint": "💡 Case selected, prompt and example images loaded into editor",
+      "loginHint": "🔒 Login required to select and use case templates",
+      "caseLoaded": "Case loaded! Please adjust the prompt and image as needed.",
+      "imageLoadFailed": "Example image failed to load, but prompt was set successfully.",
+      "caseLoadedNoImage": "Case loaded! Please upload a source image."
+    },
+    "imageLoading": {
+      "loading": "Loading image...",
+      "failed": "Image loading failed"
+    },
+    "uploadSection": {
+      "title": "Upload Source Image",
+      "placeholder": "Upload an image to transform",
+      "supportedFormats": "Supported formats: JPG, PNG, WEBP (max 5MB)",
+      "chooseImage": "Choose Image",
+      "removeImage": "Remove Image"
+    },
+    "promptSection": {
+      "title": "Transformation Description",
+      "placeholder": "Describe how you want to transform the image... (e.g., Make it look like a painting, change the style to anime, add snow and winter atmosphere)"
+    },
+    "buttons": {
+      "transform": "Transform Image",
+      "transforming": "Transforming with Gemini AI...",
+      "download": "Download Image"
+    },
+    "results": {
+      "title": "Transformed Images",
+      "success": "Successfully generated {count} transformed images",
+      "placeholder": "Your transformed images will appear here",
+      "creating": "Creating your transformation...",
+      "creatingSubtext": "Gemini AI is carefully transforming your image",
+      "failed": "Transformation Failed",
+      "ready": "Ready to Create",
+      "readySubtext": "Upload an image and describe your transformation to create amazing visuals with Gemini AI",
+      "imageNumber": "Image {number}"
+    },
+    "errors": {
+      "noPrompt": "Please enter a description for your transformation",
+      "noImage": "Please upload an image to start with",
+      "invalidFile": "Please select a valid image file",
+      "fileTooLarge": "Image size must be less than 5MB",
+      "insufficientCredits": "Insufficient credits. Please purchase more credits or wait for your subscription to renew.",
+      "loginRequired": "Login required to use this feature. Please sign in first"
+    },
+    "loginPrompt": {
+      "title": "Login to unlock full features",
+      "message": "Login to edit prompts, select examples and generate images"
+    }
+  }
+}

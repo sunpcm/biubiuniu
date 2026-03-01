@@ -1,0 +1,68 @@
+{
+  "title": "AI图像变换器",
+  "metaDescription": "使用Gemini AI智能图像处理技术转换和增强图像",
+  "description": "上传一张图片，描述您希望如何通过Gemini AI的强大功能来转换它",
+  "subTitle": "Nano Banana",
+  "subDescription": "登录后即可使用！新用户注册送 10 次免费额度 ♥️ 不够用？联系小熏同学充值更多积分～",
+  "ui": {
+    "exampleSelector": {
+      "title": "✨ 选择案例模板",
+      "loading": "正在加载案例...",
+      "loginRequired": "登录后可选择案例模板",
+      "placeholder": "选择一个Nano-banana案例...",
+      "inputExample": "输入示例",
+      "outputExample": "输出示例",
+      "prompt": "提示词",
+      "searchPlaceholder": "搜索案例、作者或关键词... (支持方向键导航)",
+      "noResults": "没有找到匹配的案例",
+      "selectedHint": "💡 已选择案例，提示词和示例图片已加载到编辑器中",
+      "loginHint": "🔒 登录后可选择和使用案例模板",
+      "caseLoaded": "案例已加载！请根据需要调整提示词和图片。",
+      "imageLoadFailed": "示例图片加载失败，但提示词已设置成功。",
+      "caseLoadedNoImage": "案例已加载！请上传一张源图像。"
+    },
+    "imageLoading": {
+      "loading": "正在加载图片...",
+      "failed": "图片加载失败"
+    },
+    "uploadSection": {
+      "title": "上传源图像",
+      "placeholder": "上传要转换的图像",
+      "supportedFormats": "支持的格式：JPG、PNG、WEBP（最大5MB）",
+      "chooseImage": "选择图像",
+      "removeImage": "移除图像"
+    },
+    "promptSection": {
+      "title": "转换描述",
+      "placeholder": "描述您希望如何转换图像...（例如：让它看起来像一幅画，将风格改为动漫，添加雪和冬季氛围）"
+    },
+    "buttons": {
+      "transform": "转换图像",
+      "transforming": "正在用Gemini AI转换...",
+      "download": "下载图像"
+    },
+    "results": {
+      "title": "转换后的图像",
+      "success": "成功生成了 {count} 张转换后的图像",
+      "placeholder": "您转换后的图像将显示在这里",
+      "creating": "正在创建您的转换...",
+      "creatingSubtext": "Gemini AI正在仔细转换您的图像",
+      "failed": "转换失败",
+      "ready": "准备创建",
+      "readySubtext": "上传图像并描述您的转换要求，用Gemini AI创建令人惊叹的视觉效果",
+      "imageNumber": "图像 {number}"
+    },
+    "errors": {
+      "noPrompt": "请输入转换描述",
+      "noImage": "请先上传一张图像",
+      "invalidFile": "请选择有效的图像文件",
+      "fileTooLarge": "图像大小必须小于5MB",
+      "insufficientCredits": "积分不足。请购买更多积分或等待订阅续费。",
+      "loginRequired": "此功能需要登录才能使用，请先登录后再试"
+    },
+    "loginPrompt": {
+      "title": "登录解锁完整功能",
+      "message": "登录后可编辑提示词、选择案例并生成图像"
+    }
+  }
+}

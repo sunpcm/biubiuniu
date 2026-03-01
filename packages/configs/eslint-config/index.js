@@ -36,6 +36,18 @@ module.exports = [
 
       // React 17+ doesn't need React in scope
       "react/react-in-jsx-scope": "off",
+
+      // TypeScript handles prop validation; PropTypes are redundant
+      "react/prop-types": "off",
+
+      // displayName is unnecessary in modern React with named functions/arrow fns
+      "react/display-name": "off",
+
+      // Allow apostrophes and quotes in JSX text (common in legal pages, emails)
+      "react/no-unescaped-entities": "off",
+
+      // styled-jsx uses jsx attribute on <style> tags
+      "react/no-unknown-property": ["error", { ignore: ["jsx"] }],
     },
   },
 
@@ -43,6 +55,16 @@ module.exports = [
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "warn",
+      // Allow unused vars prefixed with _ (standard convention for intentionally unused)
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
     },
   },
 

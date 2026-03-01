@@ -1,7 +1,7 @@
 /**
  * ESLint v9 Flat Config
  *
- * - We keep the repo-wide rules in `@biu/eslint-config`.
+ * - We keep the repo-wide rules in `@niu/eslint-config`.
  * - This root config mainly wires it up and adds Node-specific overrides for build/config files.
  */
 
@@ -18,5 +18,5 @@ module.exports = [
   },
 
   // Base rules shared across apps/packages
-  ...require("@biu/eslint-config"),
+  ...require("@niu/eslint-config"),
 ];

@@ -1,13 +1,18 @@
 {
-  "name": "@biu/tsconfig",
+  "name": "@niu/tsconfig",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.json",
+  "description": "Shared TypeScript configs for the monorepo",
+  "main": "base.json",
+  "files": [
+    "base.json",
+    "react.json",
+    "nextjs.json"
+  ],
   "scripts": {
-    "test": "echo \"(@biu/tsconfig) no tests\""
+    "test": "echo \"(@niu/tsconfig) no tests\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "prettier": "@biu/prettier-config"
+  "prettier": "@niu/prettier-config"
 }

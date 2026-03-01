@@ -15,6 +15,8 @@
         "config/**",
         "webpack*.js",
         "vite.config.*",
+        "next.config.*",
+        "drizzle.config.*",
         ".env",
         ".env.*",
         "$ANALYZE",
@@ -23,7 +25,7 @@
         ".browserslistrc",
         "browserslist"
       ],
-      "outputs": ["dist/**", "stats.html"]
+      "outputs": ["dist/**", ".next/**", "stats.html"]
     },
     "lint": {
       "inputs": ["src/**", "package.json", "eslint.config.*", ".eslintignore", "tsconfig*.json"],

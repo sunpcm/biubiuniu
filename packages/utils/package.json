@@ -1,0 +1,34 @@
+{
+  "name": "@niu/utils",
+  "version": "0.1.0",
+  "description": "Shared utility functions for the @niu monorepo",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint src --report-unused-disable-directives",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"(@niu/utils) no tests\""
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "clsx": "catalog:",
+    "tailwind-merge": "catalog:"
+  },
+  "devDependencies": {
+    "@niu/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "prettier": "@niu/prettier-config"
+}
