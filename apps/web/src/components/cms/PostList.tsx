@@ -1,7 +1,7 @@
 "use client";
 
 import { listPublishedPostsAction } from "@/actions/posts/posts";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { PostBase, PublicPost, Tag } from "@/types/cms";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
@@ -19,7 +19,8 @@ function mapServerPostToCard(post: PublicPost, locale: string): PostBase {
     featuredImageUrl: post.featuredImageUrl ?? "/placeholder.svg",
     slug: post.slug,
     tags: post.tags ?? "",
-    publishedAt: (post.publishedAt && dayjs(post.publishedAt).toDate()) || new Date(),
+    publishedAt:
+      (post.publishedAt && dayjs(post.publishedAt).toDate()) || new Date(),
     status: post.status ?? "published",
     visibility: post.visibility ?? "public",
     isPinned: post.isPinned ?? false,
@@ -58,7 +59,9 @@ export function PostList({
 }: PostListProps) {
   const [posts, setPosts] = useState<PublicPost[]>(initialPosts);
   const [pageIndex, setPageIndex] = useState<number>(1);
-  const [hasMore, setHasMore] = useState<boolean>(initialPosts.length < initialTotal);
+  const [hasMore, setHasMore] = useState<boolean>(
+    initialPosts.length < initialTotal
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const { ref, inView } = useInView({
@@ -161,8 +164,8 @@ export function PostList({
       )}
 
       {isLoading && pageIndex === 1 ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="text-primary h-10 w-10 animate-spin" />
+        <div className="flex justify-center items-center py-16">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
       ) : (
         <>
@@ -188,9 +191,9 @@ export function PostList({
           </div>
 
           {hasMore && (
-            <div ref={ref} className="flex items-center justify-center py-8">
+            <div ref={ref} className="flex justify-center items-center py-8">
               {isLoading ? (
-                <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               ) : (
                 <span className="text-gray-500">Loading more posts...</span>
               )}
@@ -198,7 +201,7 @@ export function PostList({
           )}
 
           {!hasMore && posts.length >= 0 && (
-            <p className="py-8 text-center text-sm text-gray-500">
+            <p className="text-center text-gray-500 py-8 text-sm">
               {posts.length === 0 ? emptyMessage : "You've reached the end."}
             </p>
           )}

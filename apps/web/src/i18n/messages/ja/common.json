@@ -1,8 +1,8 @@
 {
   "Home": {
     "title": "BiuBiuNiu",
-    "tagLine": "最新の Next.js フルスタック SaaS テンプレート",
-    "description": "Next.js と Supabase を活用した本格的な SaaS 開発キット。コンテンツ配信、AI ツール、サブスクリプションサービスを迅速に構築できます。"
+    "tagLine": "クールなツールコレクション 🧱",
+    "description": "小熏同学と仲間による、AI 創作やコンテンツツールの実験的なコレクション。"
   },
   "Login": {
     "title": "おかえりなさい",
@@ -63,57 +63,77 @@
         "icon": "ShoppingCart"
       },
       {
-        "name": "サブスクリプション",
-        "href": "/dashboard/subscription",
-        "icon": "WalletCards"
+        "name": "請求とクレジット",
+        "href": "/dashboard/billing",
+        "icon": "CreditCard"
+      },
+      {
+        "name": "チーム",
+        "href": "/dashboard/team",
+        "icon": "Users"
       },
       {
         "name": "クレジット履歴",
         "href": "/dashboard/credit-history",
         "icon": "Coins"
+      },
+      {
+        "name": "マイフィードバック",
+        "href": "/dashboard/my-feedbacks",
+        "icon": "MessageSquare"
       }
     ],
     "AdminMenus": [
       {
         "name": "概要",
-        "href": "/dashboard/overview",
+        "href": "/dashboard/admin/overview",
         "icon": "LayoutDashboard"
       },
       {
         "name": "ユーザー管理",
-        "href": "/dashboard/users",
+        "href": "/dashboard/admin/users",
         "icon": "Users"
       },
       {
         "name": "注文管理",
-        "href": "/dashboard/orders",
+        "href": "/dashboard/admin/orders",
         "icon": "ShoppingCart"
       },
       {
-        "name": "料金プラン管理",
-        "href": "/dashboard/prices",
-        "icon": "DollarSign"
+        "name": "クーポン",
+        "href": "/dashboard/admin/coupons",
+        "icon": "TicketPercent"
+      },
+      {
+        "name": "クレジット管理",
+        "href": "/dashboard/admin/credits",
+        "icon": "Coins"
       },
       {
         "name": "ブログ管理",
-        "href": "/dashboard/blogs",
+        "href": "/dashboard/admin/blogs",
         "icon": "Rss"
       },
       {
         "name": "用語集管理",
-        "href": "/dashboard/glossary",
+        "href": "/dashboard/admin/glossary",
         "icon": "BookOpen"
       },
       {
         "name": "R2リソース",
-        "href": "/dashboard/r2-resources",
+        "href": "/dashboard/admin/r2-resources",
         "icon": "FileBox"
+      },
+      {
+        "name": "フィードバック",
+        "href": "/dashboard/admin/feedbacks",
+        "icon": "MessageSquareText"
       }
     ]
   },
   "Blogs": {
     "title": "ブログ記事",
-    "description": "Next.jsエコシステムとBiuBiuNiuテンプレートの最新情報をお届けします。",
+    "description": "Next.jsエコシステムとNexty.devテンプレートの最新情報をお届けします。",
     "emptyState": {
       "title": "記事がありません",
       "description": "現在コンテンツを作成中です。もうしばらくお待ちください！"
@@ -144,6 +164,7 @@
     "title": "AI機能",
     "description": "チャット、画像生成、動画生成のためのプロダクションレディなAIコンポーネント。",
     "metaDescription": "複数のプロバイダーによるチャット、画像生成、動画生成などのAI機能を探索。",
+    "disabled": "現在、AI生成機能はご利用いただけません。",
     "hub": {
       "chatTitle": "AIチャット",
       "chatDescription": "OpenAI、Anthropic、Google、DeepSeek、xAI、OpenRouterの18以上の言語モデルによるシングルターンとマルチターンの会話。",
@@ -327,6 +348,10 @@
   "Header": {
     "links": [
       {
+        "name": "Nano Banana",
+        "href": "/nano"
+      },
+      {
         "name": "機能特性",
         "href": "/#features"
       },
@@ -342,36 +367,9 @@
       {
         "name": "ブログ",
         "href": "/blog"
-      },
-      {
-        "id": "demo",
-        "name": "Demo",
-        "href": "#",
-        "items": [
-          {
-            "name": "Niu Demo",
-            "href": "https://demo.biubiuniu.com/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "Next.js SaaS Boilerplate"
-          },
-          {
-            "name": "AI Image Generator Demo",
-            "href": "https://flux-kontext.biubiuniu.com/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "AI Image Generator Demo Based on BiuBiuNiu"
-          },
-          {
-            "name": "Directory Boilerplate Demo",
-            "href": "https://dofollow.tools/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "Directory Boilerplate Demo Based on BiuBiuNiu"
-          }
-        ]
       }
-    ]
+    ],
+    "nanoClosed": "（新規生成停止中）"
   },
   "Footer": {
     "Copyright": "著作権所有 © {year} {name} 全著作権保有。",
@@ -390,9 +388,9 @@
       },
       "unsubscribe": {
         "title": "ニュースレター配信停止",
-        "success": "Niuニュースレターの配信停止が完了しました。",
+        "success": "Nextyニュースレターの配信停止が完了しました。",
         "emailPrefix": "メールアドレス：",
-        "regretMessage": "いつでも再登録して、Niuの最新アップデートやチュートリアルを受け取ることができます。",
+        "regretMessage": "いつでも再登録して、Nextyの最新アップデートやチュートリアルを受け取ることができます。",
         "errorGeneric": "配信停止の処理中にエラーが発生しました",
         "errorNoToken": "配信停止トークンが提供されていません",
         "errorMessage": "正しい配信停止リンクを使用していることをご確認ください。問題が解決しない場合は、サポートチームまでお問い合わせください。",
@@ -439,12 +437,12 @@
           "links": [
             {
               "name": "Docs",
-              "href": "https://docs.biubiuniu.com/ja/docs",
+              "href": "https://docs.nexty.dev/ja/docs",
               "target": "_blank"
             },
             {
               "name": "Roadmap",
-              "href": "https://biubiuniu.com/ja/roadmap"
+              "href": "https://nexty.dev/ja/roadmap"
             }
           ]
         },
@@ -459,11 +457,6 @@
             {
               "href": "/zh",
               "name": "中文",
-              "useA": true
-            },
-            {
-              "href": "/ja",
-              "name": "日本語",
               "useA": true
             }
           ]

@@ -3,8 +3,8 @@
 import { ImageUpload } from "@/components/cms/ImageUpload";
 import { TagInput } from "@/components/cms/TagInput";
 import { TiptapEditor } from "@/components/tiptap/TiptapEditor";
-import { Button } from "@niu/ui/button";
-import { Checkbox } from "@niu/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -13,12 +13,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@niu/ui/form";
-import { Input } from "@niu/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@niu/ui/select";
-import { Textarea } from "@niu/ui/textarea";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { DEFAULT_LOCALE, Locale, LOCALE_NAMES, LOCALES } from "@/i18n/routing";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import type { PostWithTags } from "@/types/cms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -140,10 +146,15 @@ export function PostForm({
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter title" {...field} disabled={isSubmitting} />
+                  <Input
+                    placeholder="Enter title"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormDescription>
-                  The title of your {postType} post. ({`${field.value?.length || 0} / 70`})
+                  The title of your {postType} post. (
+                  {`${field.value?.length || 0} / 70`})
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -159,7 +170,11 @@ export function PostForm({
                 <FormLabel>Slug</FormLabel>
                 <div className="flex gap-2">
                   <FormControl>
-                    <Input placeholder="Enter slug" {...field} disabled={isSubmitting} />
+                    <Input
+                      placeholder="Enter slug"
+                      {...field}
+                      disabled={isSubmitting}
+                    />
                   </FormControl>
                   <Button
                     type="button"
@@ -171,7 +186,9 @@ export function PostForm({
                     Generate
                   </Button>
                 </div>
-                <FormDescription>The URL-friendly version of the title.</FormDescription>
+                <FormDescription>
+                  The URL-friendly version of the title.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -193,7 +210,8 @@ export function PostForm({
                   />
                 </FormControl>
                 <FormDescription>
-                  A short summary of the {postType} post. ({`${field.value?.length || 0} / 160`})
+                  A short summary of the {postType} post. (
+                  {`${field.value?.length || 0} / 160`})
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -216,7 +234,9 @@ export function PostForm({
                       postType={postType}
                     />
                   </FormControl>
-                  <FormDescription>Add up to 5 tags to your {postType} post.</FormDescription>
+                  <FormDescription>
+                    Add up to 5 tags to your {postType} post.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -241,8 +261,8 @@ export function PostForm({
                   />
                 </FormControl>
                 <FormDescription>
-                  Optional. If not uploaded, a dynamic OG image will be automatically generated
-                  based on the title.
+                  Optional. If not uploaded, a dynamic OG image will be
+                  automatically generated based on the title.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -273,13 +293,15 @@ export function PostForm({
                     }}
                   />
                 </FormControl>
-                <FormDescription>The main content of your post.</FormDescription>
+                <FormDescription>
+                  The main content of your post.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Status Selector */}
             <FormField
               control={form.control}
@@ -328,7 +350,9 @@ export function PostForm({
                     <SelectContent>
                       <SelectItem value="public">Public</SelectItem>
                       <SelectItem value="logged_in">Logged In Users</SelectItem>
-                      <SelectItem value="subscribers">Subscribers Only</SelectItem>
+                      <SelectItem value="subscribers">
+                        Subscribers Only
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -363,7 +387,7 @@ export function PostForm({
             />
           </div>
 
-          <div className="flex justify-end gap-3 border-t py-6">
+          <div className="flex justify-end gap-3 py-6 border-t">
             <Button
               type="button"
               variant="outline"
@@ -374,7 +398,11 @@ export function PostForm({
             </Button>
 
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : initialData && !isDuplicate ? "Update" : "Create"}
+              {isSubmitting
+                ? "Submitting..."
+                : initialData && !isDuplicate
+                  ? "Update"
+                  : "Create"}
             </Button>
           </div>
         </div>

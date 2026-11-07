@@ -18,14 +18,22 @@ export const isValidFullName = (name: string) => {
   return regex.test(trimmedName);
 };
 
+export const isValidEmail = (email: string) => {
+  if (!email || typeof email !== "string") return false;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email.trim());
+};
+
 export const AVATAR_MAX_FILE_SIZE = 1024 * 1024; // 1MB
 export const AVATAR_FILE_CONFIG = {
-  png: "image/png",
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  svg: "image/svg+xml",
-  webp: "image/webp",
+  'png': 'image/png',
+  'jpg': 'image/jpeg',
+  'jpeg': 'image/jpeg',
+  'svg': 'image/svg+xml',
+  'webp': 'image/webp',
 };
 export const AVATAR_ALLOWED_FILE_TYPES = Object.values(AVATAR_FILE_CONFIG);
 export const AVATAR_ALLOWED_EXTENSIONS = Object.keys(AVATAR_FILE_CONFIG);
-export const AVATAR_ACCEPT_ATTRIBUTE = AVATAR_ALLOWED_EXTENSIONS.map((ext) => `.${ext}`).join(", ");
+export const AVATAR_ACCEPT_ATTRIBUTE = AVATAR_ALLOWED_EXTENSIONS
+  .map(ext => `.${ext}`)
+  .join(', ');

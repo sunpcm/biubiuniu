@@ -1,0 +1,13 @@
+/*
+ * The design tokens below are synchronized from
+ * packages/configs/tailwind-config/theme.css.
+ *
+ * Keep the token blocks aligned until applications consume this package as
+ * the shared theme source. The build compiles component utilities into the
+ * published styles.css, so consumers do not scan repository source at runtime.
+ */
+@import "tailwindcss";
+@import "./theme.css";
+
+@source "./**/*.{ts,tsx}";
+@custom-variant dark (&:is(.dark *));

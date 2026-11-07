@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cn } from "@niu/utils";
+import { cn } from "./cn.js";
 type RainbowButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function RainbowButton({ children, className, ...props }: RainbowButtonProps) {

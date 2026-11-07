@@ -9,7 +9,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@niu/ui/select";
+} from "@/components/ui/select";
 import { AI_PROVIDERS } from "@/config/ai-providers";
 
 interface ModelOption {
@@ -26,7 +26,8 @@ interface ModelSelectorProps {
   className?: string;
 }
 
-const constructValue = (provider: string, modelId: string) => `${provider}/${modelId}`;
+const constructValue = (provider: string, modelId: string) =>
+  `${provider}/${modelId}`;
 
 const parseValue = (value: string) => {
   const parts = value.split("/");
@@ -42,7 +43,7 @@ function groupByProvider(models: ModelOption[]): Record<string, ModelOption[]> {
       acc[model.provider].push(model);
       return acc;
     },
-    {} as Record<string, ModelOption[]>,
+    {} as Record<string, ModelOption[]>
   );
 }
 
@@ -55,7 +56,9 @@ export default function ModelSelector({
 }: ModelSelectorProps) {
   const grouped = groupByProvider(models);
   const providers = Object.keys(grouped);
-  const selectedValue = value ? constructValue(value.provider, value.modelId) : undefined;
+  const selectedValue = value
+    ? constructValue(value.provider, value.modelId)
+    : undefined;
 
   const currentModel = value
     ? models.find((m) => m.provider === value.provider && m.id === value.modelId)
@@ -75,7 +78,7 @@ export default function ModelSelector({
       <SelectContent>
         {providers.map((providerId, index) => (
           <SelectGroup key={providerId}>
-            <SelectLabel className="text-muted-foreground px-2 py-1.5 text-sm font-semibold">
+            <SelectLabel className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
               {AI_PROVIDERS[providerId]?.name || providerId}
             </SelectLabel>
             {grouped[providerId].map((model) => (

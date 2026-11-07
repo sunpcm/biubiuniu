@@ -1,0 +1,60 @@
+{
+  "title": "积分管理",
+  "description": "全站积分流水 —— 发放、消耗、退款回收与人工调整一览。",
+  "searchPlaceholder": "按邮箱或备注搜索...",
+  "columns": {
+    "createdAt": "时间",
+    "user": "用户",
+    "type": "类型",
+    "amount": "变动",
+    "balanceAfter": "变动后余额",
+    "note": "备注"
+  },
+  "filters": {
+    "allTypes": "全部类型",
+    "typePlaceholder": "类型"
+  },
+  "type": {
+    "purchase": "积分包购买",
+    "subscription_grant": "订阅发放",
+    "subscription_cycle_expire": "周期未用过期",
+    "usage": "消耗",
+    "usage_refund": "任务失败退回",
+    "refund_revoke": "退款回收",
+    "subscription_end_revoke": "订阅结束清零",
+    "admin_adjustment": "管理员调整",
+    "signup_bonus": "注册赠送"
+  },
+  "balanceBreakdown": "订阅 {subscription} · 购买 {purchased}",
+  "actions": {
+    "menuLabel": "操作",
+    "copyUserId": "复制用户 ID",
+    "viewUser": "查看用户"
+  },
+  "batchGrant": {
+    "button": "赠送积分",
+    "title": "批量赠送积分",
+    "description": "为多个用户一次性赠送相同数量的积分。所有发放在同一事务内完成，要么全部成功，要么全部失败。",
+    "emailsLabel": "收件用户邮箱",
+    "emailsPlaceholder": "one@example.com, two@example.com，或每行一个邮箱",
+    "emailsHint": "用逗号或换行分隔，单次最多 {max} 人。",
+    "amountLabel": "每人赠送积分",
+    "amountPlaceholder": "例如 100",
+    "reasonLabel": "原因（必填）",
+    "reasonPlaceholder": "例如：上线活动赠礼",
+    "invalidEmails": "请至少输入一个邮箱。",
+    "tooManyEmails": "单次最多 {max} 个收件人。",
+    "invalidAmount": "积分必须为正整数。",
+    "reasonRequired": "原因为必填项。",
+    "cancel": "取消",
+    "confirm": "确认赠送",
+    "processing": "发放中...",
+    "success": "已为 {count} 位用户各赠送 {amount} 积分。",
+    "notFound": "未找到：{emails}",
+    "failed": "赠送积分失败"
+  },
+  "toast": {
+    "fetchFailed": "获取积分流水失败",
+    "copied": "已复制到剪贴板"
+  }
+}

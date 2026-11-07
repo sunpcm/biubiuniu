@@ -29,7 +29,10 @@ async function downloadUrl(url: string, fileName: string) {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
-    console.error("Download failed, falling back to opening in a new tab:", error);
+    console.error(
+      "Download failed, falling back to opening in a new tab:",
+      error
+    );
     window.open(url, "_blank");
   }
 }
@@ -105,7 +108,7 @@ export const downloadFileAsPublic = async (key: string) => {
  */
 export const downloadFileFromUrl = async (
   fullPath: string,
-  mode: "admin" | "user" | "public" = "user",
+  mode: "admin" | "user" | "public" = "user"
 ) => {
   try {
     const { pathname } = new URL(fullPath);

@@ -27,13 +27,18 @@ async function getJWKS(): Promise<any[]> {
   if (jwksCache && Date.now() - jwksCache.fetchedAt < JWKS_CACHE_TTL) {
     return jwksCache.keys;
   }
-  const response = await fetch("https://rest.alpha.fal.ai/.well-known/jwks.json");
+  const response = await fetch(
+    "https://rest.alpha.fal.ai/.well-known/jwks.json"
+  );
   const data = await response.json();
   jwksCache = { keys: data.keys, fetchedAt: Date.now() };
   return data.keys;
 }
 
-async function verifyFalSignature(request: Request, body: string): Promise<boolean> {
+async function verifyFalSignature(
+  request: Request,
+  body: string
+): Promise<boolean> {
   const requestId = request.headers.get("x-fal-request-id");
   const userId = request.headers.get("x-fal-user-id");
   const timestamp = request.headers.get("x-fal-timestamp");
@@ -53,12 +58,7 @@ async function verifyFalSignature(request: Request, body: string): Promise<boole
       const publicKey = Buffer.from(key.x, "base64url");
       const verify = crypto.createVerify("ed25519");
       verify.update(message);
-      if (
-        verify.verify(
-          { key: publicKey, format: "der", type: "raw" } as any,
-          Buffer.from(signature, "base64"),
-        )
-      ) {
+      if (verify.verify({ key: publicKey, format: "der", type: "raw" } as any, Buffer.from(signature, "base64"))) {
         return true;
       }
     } catch {
@@ -75,7 +75,10 @@ export async function POST(request: Request) {
     if (process.env.FAL_VERIFY_WEBHOOKS === "true") {
       const isValid = await verifyFalSignature(request, body);
       if (!isValid) {
-        return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 });
+        return NextResponse.json(
+          { error: "Invalid webhook signature" },
+          { status: 401 }
+        );
       }
     }
 
@@ -107,6 +110,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error("[fal.ai Webhook] Error:", error);
-    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Webhook processing failed" },
+      { status: 500 }
+    );
   }
 }

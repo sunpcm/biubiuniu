@@ -1,4 +1,4 @@
-import { cn } from "@niu/utils";
+import { cn } from "@/lib/utils";
 
 interface AsideProps {
   icon?: string;
@@ -6,16 +6,21 @@ interface AsideProps {
   type?: "default" | "warning" | "danger";
 }
 
-export function Aside({ children, icon, type: _type = "default", ...props }: AsideProps) {
+export function Aside({
+  children,
+  icon,
+  type: _type = "default",
+  ...props
+}: AsideProps) {
   return (
     <div
       className={cn(
-        "ms-md-0 rounded-1 my-10 ms-2 flex rounded border-5 px-4 py-3 shadow-sm",
-        "border-[#6edff633] border-l-[#f6ef6e] bg-[#6edff633]",
+        "flex border-5 py-3 px-4 ms-2 ms-md-0 my-10 rounded rounded-1 shadow-sm",
+        "bg-[#6edff633] border-[#6edff633] border-l-[#f6ef6e]"
       )}
       {...props}
     >
-      <div className="rounded-1 relative top-[-30px] left-[-30px] h-8 w-8 rounded bg-[#6edff6] text-center text-2xl">
+      <div className="rounded rounded-1 text-center h-8 w-8 bg-[#6edff6] text-2xl relative top-[-30px] left-[-30px]">
         {icon || "💡"}
       </div>
       <div>{children}</div>

@@ -1,7 +1,13 @@
 import { Link as I18nLink } from "@/i18n/routing";
 import { PostBase } from "@/types/cms";
 import dayjs from "dayjs";
-import { ArrowRightIcon, EyeIcon, LockIcon, PinIcon, UserIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  EyeIcon,
+  LockIcon,
+  PinIcon,
+  UserIcon,
+} from "lucide-react";
 import Image from "next/image";
 
 interface PostCardProps {
@@ -37,7 +43,11 @@ function getVisibilityInfo(visibility: string) {
   }
 }
 
-function PostCardCover({ post, baseUrl, showDescription }: Omit<PostCardProps, "showCover">) {
+function PostCardCover({
+  post,
+  baseUrl,
+  showDescription,
+}: Omit<PostCardProps, "showCover">) {
   const visibilityInfo = getVisibilityInfo(post.visibility || "public");
 
   return (
@@ -47,8 +57,8 @@ function PostCardCover({ post, baseUrl, showDescription }: Omit<PostCardProps, "
       prefetch={false}
       className="group block h-full focus:outline-none"
     >
-      <div className="bg-card flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-gray-800">
-        <div className="relative aspect-video w-full shrink-0 overflow-hidden">
+      <div className="bg-card border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 h-full flex flex-col">
+        <div className="relative w-full overflow-hidden aspect-video shrink-0">
           <Image
             src={post.featuredImageUrl || "/placeholder.svg"}
             alt={post.title}
@@ -58,12 +68,15 @@ function PostCardCover({ post, baseUrl, showDescription }: Omit<PostCardProps, "
 
           <div className="absolute top-3 right-3 flex gap-2">
             {post.isPinned && (
-              <div className="rounded-full bg-amber-500/90 p-1.5 text-white" title="Pinned Post">
+              <div
+                className="bg-amber-500/90 text-white rounded-full p-1.5"
+                title="Pinned Post"
+              >
                 <PinIcon className="h-3.5 w-3.5" />
               </div>
             )}
             <div
-              className={`${visibilityInfo.bgColor} flex items-center gap-1 rounded-full px-2 py-1 text-xs text-white`}
+              className={`${visibilityInfo.bgColor} text-white text-xs px-2 py-1 rounded-full flex items-center gap-1`}
               title={visibilityInfo.label}
             >
               {visibilityInfo.icon}
@@ -71,18 +84,20 @@ function PostCardCover({ post, baseUrl, showDescription }: Omit<PostCardProps, "
             </div>
           </div>
 
-          <div className="absolute bottom-3 left-3 rounded-full bg-slate-900/80 px-2.5 py-1 text-xs text-white">
+          <div className="absolute bottom-3 left-3 bg-slate-900/80 text-white text-xs px-2.5 py-1 rounded-full">
             {dayjs(post.publishedAt).format("MMM D, YYYY")}
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col p-4">
-          <h2 className="group-hover:text-primary mb-2 line-clamp-2 text-lg font-medium transition-colors">
+        <div className="p-4 flex flex-col flex-1">
+          <h2 className="text-lg font-medium line-clamp-2 group-hover:text-primary transition-colors mb-2">
             {post.title}
           </h2>
 
           {showDescription && post.description && (
-            <p className="text-muted-foreground mt-auto line-clamp-2 text-sm">{post.description}</p>
+            <p className="text-muted-foreground text-sm line-clamp-2 mt-auto">
+              {post.description}
+            </p>
           )}
         </div>
       </div>
@@ -90,7 +105,11 @@ function PostCardCover({ post, baseUrl, showDescription }: Omit<PostCardProps, "
   );
 }
 
-function PostCardCompact({ post, baseUrl, showDescription }: Omit<PostCardProps, "showCover">) {
+function PostCardCompact({
+  post,
+  baseUrl,
+  showDescription,
+}: Omit<PostCardProps, "showCover">) {
   const visibilityInfo = getVisibilityInfo(post.visibility || "public");
 
   return (
@@ -100,34 +119,41 @@ function PostCardCompact({ post, baseUrl, showDescription }: Omit<PostCardProps,
       prefetch={false}
       className="group block w-full focus:outline-none"
     >
-      <article className="hover:bg-muted/40 hover:border-border/40 flex flex-col gap-2 rounded-lg border border-transparent p-4 transition-all duration-200 group-hover:scale-[1.005] sm:flex-row sm:items-center sm:gap-6">
+      <article className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 p-4 rounded-lg hover:bg-muted/40 border border-transparent hover:border-border/40 transition-all duration-200 group-hover:scale-[1.005]">
         {/* Date & Meta - Fixed width on desktop */}
-        <div className="text-muted-foreground/70 flex items-center gap-3 text-xs sm:w-32 sm:shrink-0">
+        <div className="flex items-center gap-3 sm:w-32 sm:shrink-0 text-xs text-muted-foreground/70">
           <time dateTime={post.publishedAt.toISOString()} className="font-mono">
             {dayjs(post.publishedAt).format("MMM D, YYYY")}
           </time>
         </div>
 
         {/* Content - Flexible */}
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <h2 className="text-foreground group-hover:text-primary line-clamp-1 flex items-center gap-2 text-base font-medium transition-colors sm:text-lg">
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          <h2 className="flex items-center gap-2 text-base sm:text-lg font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
             {post.title}
-            {post.isPinned && <PinIcon className="h-3.5 w-3.5 text-amber-500/80" />}
+            {post.isPinned && (
+              <PinIcon className="h-3.5 w-3.5 text-amber-500/80" />
+            )}
             {post.visibility !== "public" && (
-              <div title={visibilityInfo.label} className="text-muted-foreground">
+              <div
+                title={visibilityInfo.label}
+                className="text-muted-foreground"
+              >
                 {visibilityInfo.icon}
               </div>
             )}
           </h2>
 
           {showDescription && post.description && (
-            <p className="text-muted-foreground mt-auto line-clamp-2 text-sm">{post.description}</p>
+            <p className="text-muted-foreground text-sm line-clamp-2 mt-auto">
+              {post.description}
+            </p>
           )}
         </div>
 
         {/* Status Icons - Right side */}
-        <div className="flex shrink-0 items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <ArrowRightIcon className="text-muted-foreground/50 h-4 w-4 -translate-x-1 transition-transform group-hover:translate-x-0" />
+        <div className="flex items-center gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <ArrowRightIcon className="h-4 w-4 text-muted-foreground/50 -translate-x-1 group-hover:translate-x-0 transition-transform" />
         </div>
       </article>
     </I18nLink>
@@ -141,8 +167,20 @@ export function PostCard({
   showCover = true,
 }: PostCardProps) {
   if (showCover) {
-    return <PostCardCover post={post} baseUrl={baseUrl} showDescription={showDescription} />;
+    return (
+      <PostCardCover
+        post={post}
+        baseUrl={baseUrl}
+        showDescription={showDescription}
+      />
+    );
   }
 
-  return <PostCardCompact post={post} baseUrl={baseUrl} showDescription={showDescription} />;
+  return (
+    <PostCardCompact
+      post={post}
+      baseUrl={baseUrl}
+      showDescription={showDescription}
+    />
+  );
 }

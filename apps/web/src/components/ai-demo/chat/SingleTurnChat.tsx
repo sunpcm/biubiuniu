@@ -18,10 +18,10 @@ import GenerateButton from "@/components/ai-demo/shared/GenerateButton";
 import ModelSelector from "@/components/ai-demo/shared/ModelSelector";
 import PromptInput from "@/components/ai-demo/shared/PromptInput";
 import CopyButton from "@/components/shared/CopyButton";
-import { Badge } from "@niu/ui/badge";
-import { Button } from "@niu/ui/button";
-import { Card, CardContent } from "@niu/ui/card";
-import { Label } from "@niu/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { LANGUAGE_MODELS } from "@/config/ai-models";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
@@ -39,27 +39,33 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-function ReasoningBlock({ text, isStreaming }: { text: string; isStreaming?: boolean }) {
+function ReasoningBlock({
+  text,
+  isStreaming,
+}: {
+  text: string;
+  isStreaming?: boolean;
+}) {
   const [expanded, setExpanded] = useState(true); // default open for single-turn
   return (
-    <div className="border-primary/20 bg-primary/5 mb-3 overflow-hidden rounded-lg border">
+    <div className="mb-3 rounded-lg border border-primary/20 bg-primary/5 overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-primary hover:bg-primary/10 flex w-full items-center gap-2 px-3 py-2 text-xs font-medium transition-colors"
+        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
       >
         <Zap className="h-3 w-3" />
         <span>Reasoning</span>
         {isStreaming && (
-          <span className="bg-primary ml-1 inline-block h-3 w-1 animate-pulse rounded-sm" />
+          <span className="ml-1 inline-block w-1 h-3 bg-primary animate-pulse rounded-sm" />
         )}
         {expanded ? (
-          <ChevronDown className="ml-auto h-3 w-3" />
+          <ChevronDown className="h-3 w-3 ml-auto" />
         ) : (
-          <ChevronRight className="ml-auto h-3 w-3" />
+          <ChevronRight className="h-3 w-3 ml-auto" />
         )}
       </button>
       {expanded && (
-        <div className="text-muted-foreground border-primary/20 max-h-48 overflow-y-auto border-t px-3 pt-2 pb-3 text-xs leading-relaxed whitespace-pre-wrap">
+        <div className="px-3 pb-3 text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed border-t border-primary/20 pt-2 max-h-48 overflow-y-auto">
           {text}
         </div>
       )}
@@ -92,7 +98,7 @@ export default function SingleTurnChat() {
           modelId: selectedRef.current.modelId,
           provider: selectedRef.current.provider,
         }),
-      }),
+      })
   );
 
   const { messages, sendMessage, status, setMessages } = useChat({
@@ -112,11 +118,15 @@ export default function SingleTurnChat() {
   const isLoading = status === "streaming" || status === "submitted";
 
   // Get the latest assistant message
-  const lastAssistantMessage = [...messages].reverse().find((m) => m.role === "assistant");
+  const lastAssistantMessage = [...messages]
+    .reverse()
+    .find((m) => m.role === "assistant");
 
-  const textParts = lastAssistantMessage?.parts?.filter((p: any) => p.type === "text") ?? [];
+  const textParts =
+    lastAssistantMessage?.parts?.filter((p: any) => p.type === "text") ?? [];
   const reasoningParts =
-    lastAssistantMessage?.parts?.filter((p: any) => p.type === "reasoning") ?? [];
+    lastAssistantMessage?.parts?.filter((p: any) => p.type === "reasoning") ??
+    [];
   const completion = textParts.map((p: any) => p.text).join("");
 
   // Timer for elapsed time during generation
@@ -148,7 +158,7 @@ export default function SingleTurnChat() {
   };
 
   const selectedModelConfig = LANGUAGE_MODELS.find(
-    (m) => m.provider === selected.provider && m.id === selected.modelId,
+    (m) => m.provider === selected.provider && m.id === selected.modelId
   );
 
   const formatElapsed = (ms: number) => {
@@ -160,12 +170,12 @@ export default function SingleTurnChat() {
     isLoading && reasoningParts.some((p: any) => p.state === "streaming");
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Left: Input Panel */}
       <Card>
-        <CardContent className="space-y-5 p-5">
+        <CardContent className="p-5 space-y-5">
           <div>
-            <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
               <Layers className="h-3.5 w-3.5" />
               {t("model")}
             </Label>
@@ -181,15 +191,18 @@ export default function SingleTurnChat() {
               className="w-full"
             />
             {selectedModelConfig && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5 mt-2">
                 {selectedModelConfig.outputSupport.includes("reasoning") && (
-                  <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="text-xs gap-1 bg-primary/10 text-primary"
+                  >
                     <Zap className="h-3 w-3" />
                     {t("reasoning")}
                   </Badge>
                 )}
                 {selectedModelConfig.inputSupport.includes("image") && (
-                  <Badge variant="secondary" className="gap-1 text-xs">
+                  <Badge variant="secondary" className="text-xs gap-1">
                     Vision
                   </Badge>
                 )}
@@ -198,7 +211,7 @@ export default function SingleTurnChat() {
           </div>
 
           <div>
-            <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
               <FileText className="h-3.5 w-3.5" />
               {t("yourQuestion")}
             </Label>
@@ -221,11 +234,16 @@ export default function SingleTurnChat() {
               onCancel={() => {}}
               className="flex-1"
             >
-              <Sparkles className="mr-2 h-4 w-4" />
+              <Sparkles className="h-4 w-4 mr-2" />
               {t("generateResponse")}
             </GenerateButton>
             {(prompt || completion) && !isLoading && (
-              <Button variant="outline" size="icon" onClick={handleClear} title={t("clear")}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleClear}
+                title={t("clear")}
+              >
                 <RefreshCw className="h-4 w-4" />
               </Button>
             )}
@@ -235,16 +253,18 @@ export default function SingleTurnChat() {
 
       {/* Right: Response Panel */}
       <div className="flex flex-col">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="text-foreground/80 text-sm font-medium">{t("response")}</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-medium text-foreground/80">
+            {t("response")}
+          </div>
           <div className="flex items-center gap-2">
             {isLoading && (
-              <span className="text-muted-foreground animate-pulse text-xs">
+              <span className="text-xs text-muted-foreground animate-pulse">
                 {formatElapsed(elapsedMs)}
               </span>
             )}
             {completion && !isLoading && (
-              <span className="text-muted-foreground text-xs">
+              <span className="text-xs text-muted-foreground">
                 {t("chars", { count: completion.length })}
               </span>
             )}
@@ -252,24 +272,24 @@ export default function SingleTurnChat() {
           </div>
         </div>
 
-        <Card className="min-h-[320px] flex-1 p-0">
-          <CardContent className="h-full overflow-y-auto p-4">
+        <Card className="flex-1 min-h-[320px] p-0">
+          <CardContent className="p-4 h-full overflow-y-auto">
             {isLoading && !completion && reasoningParts.length === 0 ? (
-              <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-3">
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
                 <div className="relative">
-                  <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                    <Bot className="text-primary h-5 w-5" />
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bot className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="absolute -right-1 -bottom-1 flex h-4 w-4">
-                    <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
-                    <span className="bg-primary relative inline-flex h-4 w-4 rounded-full"></span>
+                  <span className="absolute -bottom-1 -right-1 flex h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-primary"></span>
                   </span>
                 </div>
                 <div className="text-sm">{t("thinking")}</div>
                 <div className="flex gap-1">
-                  <span className="bg-primary/40 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
-                  <span className="bg-primary/40 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
-                  <span className="bg-primary/40 h-2 w-2 animate-bounce rounded-full" />
+                  <span className="h-2 w-2 rounded-full bg-primary/40 animate-bounce [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 rounded-full bg-primary/40 animate-bounce [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 rounded-full bg-primary/40 animate-bounce" />
                 </div>
               </div>
             ) : completion || reasoningParts.length > 0 ? (
@@ -279,27 +299,31 @@ export default function SingleTurnChat() {
                   <ReasoningBlock
                     key={i}
                     text={part.text ?? ""}
-                    isStreaming={isStreamingReasoning && part.state === "streaming"}
+                    isStreaming={
+                      isStreamingReasoning && part.state === "streaming"
+                    }
                   />
                 ))}
                 {/* Main response */}
                 {(completion || isLoading) && (
-                  <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed whitespace-pre-wrap">
+                  <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap leading-relaxed">
                     {completion}
                     {isLoading && completion && (
-                      <span className="bg-primary ml-0.5 inline-block h-4 w-0.5 animate-pulse align-middle" />
+                      <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse align-middle" />
                     )}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-3">
-                <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
                   <Bot className="h-6 w-6" />
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-medium">{t("readyToRespond")}</p>
-                  <p className="mt-1 text-xs opacity-70">{t("responseAppearHere")}</p>
+                  <p className="text-xs mt-1 opacity-70">
+                    {t("responseAppearHere")}
+                  </p>
                 </div>
               </div>
             )}

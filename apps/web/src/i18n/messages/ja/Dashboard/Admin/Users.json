@@ -1,4 +1,105 @@
 {
   "title": "ユーザー管理",
-  "description": "ユーザー管理（管理者専用）"
+  "description": "ユーザー管理（管理者専用）",
+  "adjustCredits": {
+    "action": "クレジットを調整",
+    "title": "クレジットを調整",
+    "description": "{email} のクレジットを追加・設定・削減します。",
+    "currentBalance": "現在の残高",
+    "subscription": "サブスクリプションクレジット",
+    "purchased": "購入クレジット",
+    "total": "合計",
+    "bucketLabel": "クレジット種別",
+    "operationLabel": "操作",
+    "operation": {
+      "add": "クレジットを追加",
+      "set": "クレジットを設定",
+      "deduct": "クレジットを削減"
+    },
+    "amountLabel": "数量",
+    "amountPlaceholder": "例: 100",
+    "amountHint": "0 以上の整数。設定で 0 を指定すると選択した種別をクリアします。追加・削減は選択した種別のみに影響します。",
+    "reasonLabel": "理由（必須）",
+    "reasonPlaceholder": "このユーザーのクレジットを調整する理由は？",
+    "invalidAmount": "数量は 0 以上の整数で入力してください。",
+    "reasonRequired": "理由の入力が必要です。",
+    "cancel": "キャンセル",
+    "confirm": "適用",
+    "processing": "処理中...",
+    "loadFailed": "残高の読み込みに失敗しました",
+    "success": "クレジットを更新しました。新しい合計: {total}",
+    "failed": "クレジットの更新に失敗しました"
+  },
+  "blocklist": {
+    "action": "登録ブロックリスト",
+    "title": "登録ブロックリスト",
+    "description": "以下のいずれかのルールに一致するメールアドレスまたは IP は登録できません。既存アカウントには影響しません。",
+    "prefixesLabel": "ブロックする接頭辞",
+    "prefixesHint": "1行に1件。指定した文字列で始まるメールをブロックします（例: \"spam\" は spam123@gmail.com をブロック）。",
+    "suffixesLabel": "ブロックする接尾辞",
+    "suffixesHint": "1行に1件。指定した文字列で終わるメールをブロックします（例: \"@tempmail.com\" や \".ru\"）。",
+    "exactLabel": "指定メールアドレス",
+    "exactHint": "1行に1件。完全一致するメールアドレスをブロックします。",
+    "ipsLabel": "ブロックする IP",
+    "ipsHint": "1行に1件。指定した IP アドレスからの登録をブロックします（完全一致）。::ffff:1.2.3.4 形式の IPv4 射影 IPv6 は 1.2.3.4 のルールに一致します。",
+    "placeholder": "1行に1件のルール",
+    "loadFailed": "ブロックリストの読み込みに失敗しました",
+    "save": "保存",
+    "saving": "保存中...",
+    "success": "ブロックリストを保存しました",
+    "failed": "ブロックリストの保存に失敗しました"
+  },
+  "actions": {
+    "viewDetails": "詳細を表示"
+  },
+  "detail": {
+    "title": "ユーザー詳細",
+    "back": "ユーザー一覧に戻る",
+    "loadFailed": "ユーザー詳細の読み込みに失敗しました",
+    "notFound": "ユーザーが見つかりません。",
+    "copied": "クリップボードにコピーしました",
+    "profile": {
+      "role": "ロール",
+      "joined": "登録日",
+      "stripeCustomer": "Stripe 顧客",
+      "verified": "認証済み",
+      "unverified": "未認証",
+      "banned": "BAN 済み"
+    },
+    "balance": {
+      "title": "クレジット残高",
+      "subscription": "サブスクリプションクレジット",
+      "purchased": "購入クレジット",
+      "total": "合計",
+      "adjust": "クレジットを調整"
+    },
+    "subscription": {
+      "title": "サブスクリプション",
+      "none": "有効なサブスクリプションはありません",
+      "monthlyCredits": "{credits} クレジット / 月",
+      "renewsOn": "{date} に更新",
+      "endsOn": "{date} に終了",
+      "nextGrant": "次回付与：{date}",
+      "interval": {
+        "month": "月払い",
+        "year": "年払い"
+      },
+      "status": {
+        "active": "有効",
+        "trialing": "トライアル",
+        "past_due": "支払い遅延",
+        "unpaid": "未払い"
+      }
+    },
+    "lifetime": {
+      "title": "累計統計",
+      "orders": "注文数",
+      "netRevenue": "純収益",
+      "creditsConsumed": "累計消費クレジット"
+    },
+    "tabs": {
+      "credits": "クレジット履歴",
+      "orders": "注文"
+    }
+  }
 }

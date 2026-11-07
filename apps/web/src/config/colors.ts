@@ -1,7 +1,5 @@
 /**
- * 中文：next-intl 配置的颜色要在这里引入
- * English: The colors configured in next-intl must be imported here
- * 日本語：next-intl で設定された色はここにインポートする必要があります
+ * The colors configured in next-intl must be imported here.
  *
  * eg: UseCases.tsx
  */

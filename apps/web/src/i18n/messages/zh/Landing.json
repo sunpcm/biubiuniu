@@ -1,16 +1,20 @@
 {
   "Hero": {
     "badge": {
-      "label": "Tools",
+      "label": "NEW",
       "text": "Next.js SaaS 全栈模板",
-      "href": "https://biubiuniu.com/#pricing"
+      "href": "https://nexty.dev/#pricing"
     },
-    "title": "小熏同学和他朋友们的小工具合集",
-    "description": "Niu 是一个功能齐全的 Next.js SaaS 全栈模板，让你能够快速构建各种商业网站，无论是内容站、工具站还是集成 AI 能力的付费网站。",
-    "getStarted": "这就试试",
-    "getStartedLink": "https://biubiuniu.com/#pricing",
+    "title": "小熏同学和他朋友们的酷炫工具合集",
+    "description": "这里雀食有很多酷炫的工具，但是，为了追Nano Banana热点，其他的来不及设置权限暂时隐藏了。后面有时间了会再一个一个开放出来，纯粹为了炫耀",
+    "getStarted": "立即开始",
+    "getStartedLink": "https://nexty.dev/#pricing",
     "viewDocs": "查看文档",
-    "viewDocsLink": "https://biubiuniu.com/docs"
+    "viewDocsLink": "https://nexty.dev/docs",
+    "nanoBananaButton": "🦙.🍌 Nano Banana",
+    "discordButton": "Join Discord",
+    "nanoPaused": "Nano Banana 新生成入口暂时关闭",
+    "nanoHistoryButton": "查看任务历史"
   },
   "Features": {
     "badge": {
@@ -25,17 +29,17 @@
         "description": "一次购买，获得 3 套强大的模板。",
         "details": [
           {
-            "title": "模板 1：Niu",
+            "title": "模板 1：Nexty",
             "description": "包含您所需一切功能的通用 SaaS 模板。",
-            "href": "https://demo.biubiuniu.com"
+            "href": "https://demo.nexty.dev"
           },
           {
-            "title": "模板 2：niu-flux-kontext",
+            "title": "模板 2：nexty-flux-kontext",
             "description": "AI 图像生成 SaaS 模板。",
-            "href": "https://flux-kontext.biubiuniu.com"
+            "href": "https://flux-kontext.nexty.dev"
           },
           {
-            "title": "模板 3：niu-directory",
+            "title": "模板 3：nexty-directory",
             "description": "目录和列表网站模板。",
             "href": "https://dofollow.tools"
           }
@@ -63,7 +67,9 @@
             "description": "使用 Cloudflare Turnstile 保护应用免受机器人攻击。"
           }
         ],
-        "images": ["/images/features/login.png"]
+        "images": [
+          "/images/features/login.png"
+        ]
       },
       {
         "title": "数据库",
@@ -82,7 +88,10 @@
             "description": "支持 Supabase、Neon 和自托管 PostgreSQL。"
           }
         ],
-        "images": ["/images/features/database-config.webp", "/images/features/database-tables.webp"]
+        "images": [
+          "/images/features/database-config.webp",
+          "/images/features/database-tables.webp"
+        ]
       },
       {
         "title": "支付系统",
@@ -90,18 +99,21 @@
         "details": [
           {
             "title": "全支付方式",
-            "description": "Niu 支持月度和年度订阅以及一次性付款。"
+            "description": "Nexty 支持月度和年度订阅以及一次性付款。"
           },
           {
             "title": "基于使用量的计费",
-            "description": "Niu 支持基于使用量的计费，适合需要根据用户使用情况收费的应用。"
+            "description": "Nexty 支持基于使用量的计费，适合需要根据用户使用情况收费的应用。"
           },
           {
             "title": "智能管理后台",
-            "description": "Niu 的定价方案通过管理后台进行管理，与 Stripe Price ID 绑定，实现智能、安全且支持实时预览的功能。"
+            "description": "Nexty 的定价方案通过管理后台进行管理，与 Stripe Price ID 绑定，实现智能、安全且支持实时预览的功能。"
           }
         ],
-        "images": ["/images/features/payment-1.png", "/images/features/payment-2.png"]
+        "images": [
+          "/images/features/payment-1.png",
+          "/images/features/payment-2.png"
+        ]
       },
       {
         "title": "AI 功能",
@@ -109,18 +121,21 @@
         "details": [
           {
             "title": "AI 演示中心",
-            "description": "Niu 包含聊天、文本转图像、图像转图像和视频生成的内置演示，帮助开发者快速学习 AI 工作流程并测试模型。"
+            "description": "Nexty 包含聊天、文本转图像、图像转图像和视频生成的内置演示，帮助开发者快速学习 AI 工作流程并测试模型。"
           },
           {
             "title": "通用 AI 供应商支持",
-            "description": "Niu 提供支持 GPT、Claude、Gemini、DeepSeek、Grok、OpenRouter 和 Replicate 的 AI SDK 集成，实现最大灵活性。"
+            "description": "Nexty 提供支持 GPT、Claude、Gemini、DeepSeek、Grok、OpenRouter 和 Replicate 的 AI SDK 集成，实现最大灵活性。"
           },
           {
             "title": "赠品：AI 图像生成网站",
-            "description": "Niu 付费用户可获得完整的 Flux Kontext AI 图像生成网站模板，用于快速部署 AI 艺术平台。"
+            "description": "Nexty 付费用户可获得完整的 Flux Kontext AI 图像生成网站模板，用于快速部署 AI 艺术平台。"
           }
         ],
-        "images": ["/images/features/ai-1.png", "/images/features/ai-2.png"]
+        "images": [
+          "/images/features/ai-1.png",
+          "/images/features/ai-2.png"
+        ]
       },
       {
         "title": "CMS",
@@ -128,15 +143,15 @@
         "details": [
           {
             "title": "内容访问控制",
-            "description": "Niu 的 CMS 支持公开、登录用户和订阅者专享内容，并为付费内容网站提供付费墙保护。"
+            "description": "Nexty 的 CMS 支持公开、登录用户和订阅者专享内容，并为付费内容网站提供付费墙保护。"
           },
           {
             "title": "AI 驱动翻译",
-            "description": "Niu 的 CMS 包含内置的 AI 翻译功能用于多语言内容创建，以及用于高效内容制作工作流程的复制功能。"
+            "description": "Nexty 的 CMS 包含内置的 AI 翻译功能用于多语言内容创建，以及用于高效内容制作工作流程的复制功能。"
           },
           {
             "title": "多用途发布",
-            "description": "Niu 的 CMS 可实现免费博客网站和付费内容平台，具有高级状态管理（草稿、已发布、已归档）。"
+            "description": "Nexty 的 CMS 可实现免费博客网站和付费内容平台，具有高级状态管理（草稿、已发布、已归档）。"
           }
         ],
         "images": [
@@ -153,34 +168,36 @@
         "details": [
           {
             "title": "管理文件管理",
-            "description": "Niu 提供专用的管理后台，具备上传、删除和组织功能的全面文件管理能力。"
+            "description": "Nexty 提供专用的管理后台，具备上传、删除和组织功能的全面文件管理能力。"
           },
           {
             "title": "Cloudflare R2 集成",
-            "description": "Niu 利用 Cloudflare R2 实现成本效益和高性能的文件存储，并自动进行全球 CDN 分发。"
+            "description": "Nexty 利用 Cloudflare R2 实现成本效益和高性能的文件存储，并自动进行全球 CDN 分发。"
           },
           {
             "title": "优化的上传体验",
-            "description": "Niu 支持拖拽上传、预览功能和自动文件处理，提供无缝的用户体验。"
+            "description": "Nexty 支持拖拽上传、预览功能和自动文件处理，提供无缝的用户体验。"
           }
         ],
-        "images": ["/images/features/admin-4.png"]
+        "images": [
+          "/images/features/admin-4.png"
+        ]
       },
       {
         "title": "可视化定价管理",
-        "description": "Niu 引入了安全便捷的后台定价管理，无需修改代码即可更新定价。",
+        "description": "Nexty 引入了安全便捷的后台定价管理，无需修改代码即可更新定价。",
         "details": [
           {
             "title": "实时预览",
-            "description": "Niu 的定价卡片编辑器包含实时预览功能，让您在保存前就能看到定价卡片的显示效果。"
+            "description": "Nexty 的定价卡片编辑器包含实时预览功能，让您在保存前就能看到定价卡片的显示效果。"
           },
           {
             "title": "Stripe 集成",
-            "description": "Niu 一键验证从 Stripe 获取定价数据，确保准确的计费设置。"
+            "description": "Nexty 一键验证从 Stripe 获取定价数据，确保准确的计费设置。"
           },
           {
             "title": "多语言支持",
-            "description": "Niu 支持定价卡片的 AI 驱动翻译，轻松管理多语言定价内容。"
+            "description": "Nexty 支持定价卡片的 AI 驱动翻译，轻松管理多语言定价内容。"
           }
         ],
         "images": [
@@ -198,18 +215,21 @@
         "details": [
           {
             "title": "专业域名邮箱",
-            "description": "Niu 通过 Cloudflare 实现域名邮箱，让您的品牌显得更专业，帮助与用户建立信任。"
+            "description": "Nexty 通过 Cloudflare 实现域名邮箱，让您的品牌显得更专业，帮助与用户建立信任。"
           },
           {
             "title": "高级邮件营销",
-            "description": "Niu 包含用于订阅者管理和邮件活动的 Resend 集成，页脚内置订阅模块。"
+            "description": "Nexty 包含用于订阅者管理和邮件活动的 Resend 集成，页脚内置订阅模块。"
           },
           {
             "title": "内置邮件自动化",
-            "description": "Niu 包含订阅欢迎邮件和付款失败通知邮件，以及用于核心用户沟通的预构建模板。"
+            "description": "Nexty 包含订阅欢迎邮件和付款失败通知邮件，以及用于核心用户沟通的预构建模板。"
           }
         ],
-        "images": ["/images/features/email-2.png", "/images/features/email-1.png"]
+        "images": [
+          "/images/features/email-2.png",
+          "/images/features/email-1.png"
+        ]
       },
       {
         "title": "用户管理中心",
@@ -217,15 +237,15 @@
         "details": [
           {
             "title": "个人资料管理",
-            "description": "Niu 包含全面的个人资料设置。"
+            "description": "Nexty 包含全面的个人资料设置。"
           },
           {
             "title": "订阅管理",
-            "description": "Niu 通过 Stripe 集成提供订阅管理，包含计费历史记录和方案升级。"
+            "description": "Nexty 通过 Stripe 集成提供订阅管理，包含计费历史记录和方案升级。"
           },
           {
             "title": "积分历史和使用情况",
-            "description": "Niu 跟踪积分发放和使用情况，提供详细历史记录，支持一次性和基于订阅的积分系统。"
+            "description": "Nexty 跟踪积分发放和使用情况，提供详细历史记录，支持一次性和基于订阅的积分系统。"
           }
         ],
         "images": [
@@ -240,15 +260,15 @@
         "details": [
           {
             "title": "用户管理",
-            "description": "Niu 提供完整的用户管理，包含角色控制、Stripe 客户集成和账户管理。"
+            "description": "Nexty 提供完整的用户管理，包含角色控制、Stripe 客户集成和账户管理。"
           },
           {
             "title": "定价管理",
-            "description": "Niu 提供可视化定价方案管理，支持环境隔离、Stripe 集成和实时预览。"
+            "description": "Nexty 提供可视化定价方案管理，支持环境隔离、Stripe 集成和实时预览。"
           },
           {
             "title": "CMS 和文件管理",
-            "description": "Niu 包含支持多语言和访问控制的博客管理，以及具备预览功能的 R2 文件管理。"
+            "description": "Nexty 包含支持多语言和访问控制的博客管理，以及具备预览功能的 R2 文件管理。"
           }
         ],
         "images": [
@@ -264,15 +284,15 @@
         "details": [
           {
             "title": "国际化",
-            "description": "Niu 开箱即用支持多语言，轻松扩展以覆盖全球市场。"
+            "description": "Nexty 开箱即用支持多语言，轻松扩展以覆盖全球市场。"
           },
           {
             "title": "分析和广告",
-            "description": "Niu 包含 Google Analytics、Plausible 跟踪和 AdSense 集成，提供洞察和收入生成。"
+            "description": "Nexty 包含 Google Analytics、Plausible 跟踪和 AdSense 集成，提供洞察和收入生成。"
           },
           {
             "title": "SEO 优化",
-            "description": "Niu 提供全面的 SEO 优化，包含自动元标签和站点地图，提升搜索排名。"
+            "description": "Nexty 提供全面的 SEO 优化，包含自动元标签和站点地图，提升搜索排名。"
           }
         ],
         "images": [
@@ -330,11 +350,11 @@
     "items": [
       {
         "question": "非技术人员可以使用这个模板吗？",
-        "answer": "当然可以！Niu 专门设计为与 AI 助手无缝协作，即使是零编程经验的人也能通过 AI 辅助开发来开发产品。我们的代码结构和文档对 AI 友好，使 AI 更容易理解和修改代码。技术团队将从更高的开发效率中受益更多。"
+        "answer": "当然可以！Nexty 专门设计为与 AI 助手无缝协作，即使是零编程经验的人也能通过 AI 辅助开发来开发产品。我们的代码结构和文档对 AI 友好，使 AI 更容易理解和修改代码。技术团队将从更高的开发效率中受益更多。"
       },
       {
         "question": "为什么这是最好的 Next.js SaaS 模板？",
-        "answer": "Niu 是最全面的 Next.js SaaS 启动套件。与其他只提供基本组件的模板不同，我们包含完整的业务工作流程：身份验证、支付、AI 集成、内容管理和变现功能。一切都是生产就绪的，并在实际应用中经过实战测试。"
+        "answer": "Nexty 是最全面的 Next.js SaaS 启动套件。与其他只提供基本组件的模板不同，我们包含完整的业务工作流程：身份验证、支付、AI 集成、内容管理和变现功能。一切都是生产就绪的，并在实际应用中经过实战测试。"
       },
       {
         "question": "使用这个模板能多快启动我的 SaaS？",
@@ -362,27 +382,13 @@
       },
       {
         "question": "如何管理定价卡片？",
-        "answer": "这是 Niu 的一个关键卖点。您可以在后台管理定价卡片，包括添加、编辑和删除定价卡片，支持 AI 多语言翻译，消除复杂的多语言文件配置。"
+        "answer": "这是 Nexty 的一个关键卖点。您可以在后台管理定价卡片，包括添加、编辑和删除定价卡片，支持 AI 多语言翻译，消除复杂的多语言文件配置。"
       }
     ]
   },
-  "TempHero": {
-    "title": "小熏同学和他朋友们的酷炫工具合集",
-    "description": "这里雀食有很多酷炫的工具，但是，为了追Nano Banana热点，其他的来不及设置权限暂时隐藏了。后面有时间了会再一个一个开放出来，纯粹为了炫耀",
-    "nanoBananaButton": "🦙.🍌 Nano Banana",
-    "discordButton": "Join Discord"
-  },
-  "TempDonation": {
-    "title": "微信打赏小熏同学",
-    "warning": "注意啊，打赏完就不能退款了，除非你请我吃烤全羊",
-    "button": "支持我们的项目"
-  },
-  "TempFooter": {
-    "description": "酷炫de工具合集 🧱"
-  },
   "CTA": {
     "title": "快速推出产品，快速赚钱",
-    "description": "不要从零开始！使用 Niu 模板专注于您的核心想法，快速构建、验证并开始赚钱。",
+    "description": "不要从零开始！使用 Nexty 模板专注于您的核心想法，快速构建、验证并开始赚钱。",
     "button": "立即获取模板",
     "trustText": "受到全球开发者信赖",
     "features": {
@@ -390,6 +396,133 @@
       "production": "🔧 生产就绪",
       "updates": "💎 终生更新",
       "i18n": "🌍 国际化"
+    }
+  },
+  "Donation": {
+    "title": "微信打赏小熏同学",
+    "description": "微信打赏是独立的可选支持入口，不属于正式支付，也不产生积分或订单。",
+    "warning": "注意啊，打赏完就不能退款了，除非你请我吃烤全羊",
+    "button": "支持我们的项目",
+    "imageAlt": "微信打赏二维码"
+  },
+  "LegacyPricing": {
+    "notice": "以下为历史测试套餐的展示映射，新购买仍关闭；这些 ID 不是正式支付价格。"
+  },
+  "Nano": {
+    "title": "Nano Banana",
+    "metaDescription": "使用参考图片和提示词创建持久 Nano 生图任务。",
+    "description": "上传一张参考图、描述变换，并跟踪任务直到结果返回。新生成暂停时，仍可查看已有任务与历史。",
+    "ui": {
+      "status": {
+        "closedTitle": "新生成已暂停",
+        "closedBody": "Nano 新任务入口暂时关闭；已有任务、结果、取消与历史仍可使用。",
+        "loginTitle": "需要登录",
+        "loginBody": "登录后才能创建任务或读取个人任务历史。",
+        "unknownBody": "此任务需要人工确认。请手动刷新服务端状态，系统不会自动重新提交。",
+        "queued": "排队中",
+        "leased": "已领取",
+        "dispatching": "派发中",
+        "running": "执行中",
+        "unknown": "需确认",
+        "succeeded": "已完成",
+        "failed": "已失败",
+        "canceled": "已取消"
+      },
+      "errors": {
+        "AUTH_REQUIRED": "请先登录。",
+        "FORBIDDEN": "没有访问该任务的权限。",
+        "NANO_DISABLED": "Nano 新生成入口当前已暂停。",
+        "INVALID_INPUT": "请检查提示词、图片类型和图片大小。",
+        "UNKNOWN_CASE": "该案例不在产品目录中。",
+        "INSUFFICIENT_CREDITS": "可用积分不足，无法创建本次任务。",
+        "IDEMPOTENCY_CONFLICT": "同一请求键对应了不同内容，请发起新请求。",
+        "NOT_FOUND": "没有找到该任务。",
+        "INVALID_STATE": "该任务当前状态无法取消。",
+        "INTERNAL": "服务暂时无法完成请求，请稍后刷新。",
+        "NETWORK_ERROR": "网络请求失败，请刷新后重试。",
+        "ABORTED": "请求已停止；如仍需结果请手动刷新。",
+        "UNKNOWN": "请求未能完成。"
+      },
+      "composer": {
+        "title": "生图工作台",
+        "description": "必须提供一张参考图和提示词；费用与限制由服务端决定。",
+        "image": "参考图片",
+        "limits": "最大 {size} MB · {types} · 每次 {cost} 积分",
+        "previewAlt": "已选择的参考图片",
+        "prompt": "提示词",
+        "promptPlaceholder": "描述你想对这张图片做的变化……",
+        "chars": "{count} / {max} 字",
+        "selectedCase": "已选案例：{id}",
+        "submit": "创建任务",
+        "replay": "重放同一请求",
+        "refresh": "刷新任务",
+        "manualConfirm": "再次确认",
+        "cancel": "取消排队任务",
+        "working": "处理中……",
+        "polling": "任务已受理，正在等待服务端状态……",
+        "admitted": "任务已受理，正在等待结果。",
+        "idempotentReplay": "幂等返回已有任务，未重复扣费。",
+        "canceled": "排队任务已取消。",
+        "caseLoaded": "案例及参考图片已载入。",
+        "caseNoImage": "案例提示词已载入；请上传参考图片后继续。",
+        "statsSkipped": "新生成暂停时，案例统计写入同步暂停。",
+        "errorTitle": "Nano 请求失败"
+      },
+      "cases": {
+        "title": "案例画廊",
+        "description": "按原始顺序保留 {count} 个案例；热门案例来自服务端 30 天聚合。",
+        "searchPlaceholder": "搜索案例",
+        "noAsset": "暂无预览素材",
+        "hot": "热门",
+        "inputs": "输入 {count} 张",
+        "outputs": "输出 {count} 张",
+        "select": "使用案例",
+        "selected": "已选择",
+        "noMatch": "没有匹配的案例。"
+      },
+      "result": {
+        "title": "任务结果",
+        "empty": "选择或创建一个任务后显示结果。",
+        "taskId": "任务 {id}",
+        "cost": "消耗 {cost}",
+        "updatedAt": "更新于 {time}",
+        "unknown": "远端结果未知。请手动刷新；系统不会自动重发此任务。",
+        "failed": "任务失败；原扣费由服务端退款流程处理。",
+        "canceled": "任务已取消。",
+        "noImages": "暂时没有结果图片。",
+        "text": "结果文本",
+        "unsafeResultUrl": "结果 URL 被客户端拒绝。",
+        "status": {
+          "queued": "排队中",
+          "leased": "已领取",
+          "dispatching": "派发中",
+          "running": "执行中",
+          "unknown": "需确认",
+          "succeeded": "已完成",
+          "failed": "已失败",
+          "canceled": "已取消"
+        }
+      },
+      "history": {
+        "title": "任务历史",
+        "refresh": "刷新",
+        "loading": "加载中……",
+        "empty": "暂无任务。",
+        "open": "查看",
+        "cancel": "取消",
+        "loadMore": "加载更多",
+        "status": {
+          "queued": "排队中",
+          "leased": "已领取",
+          "dispatching": "Dispatching",
+          "running": "执行中",
+          "unknown": "需确认",
+          "succeeded": "已完成",
+          "failed": "已失败",
+          "canceled": "已取消"
+        },
+        "createdAt": "创建于 {time}"
+      }
     }
   }
 }

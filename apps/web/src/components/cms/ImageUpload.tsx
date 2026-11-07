@@ -2,8 +2,8 @@
 
 import { generateAdminPresignedUploadUrl } from "@/actions/r2-resources";
 import { R2ResourceSelector } from "@/components/tiptap/R2ResourceSelector";
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { BLOGS_IMAGE_PATH } from "@/config/common";
 import { getErrorMessage } from "@/lib/error-utils";
 import { Cloud, Link, Loader2, Upload, UploadCloud, X } from "lucide-react";
@@ -72,10 +72,15 @@ export function ImageUpload({
         path: imagePath,
       });
 
-      if (!presignedUrlActionResponse.success || !presignedUrlActionResponse.data) {
+      if (
+        !presignedUrlActionResponse.success ||
+        !presignedUrlActionResponse.data
+      ) {
         setPreviewUrl(null);
         toast.error("Upload Error", {
-          description: presignedUrlActionResponse.error || "Failed to generate presigned URL.",
+          description:
+            presignedUrlActionResponse.error ||
+            "Failed to generate presigned URL.",
         });
         return "";
       }
@@ -95,7 +100,7 @@ export function ImageUpload({
         try {
           r2Error = await uploadResponse.text();
         } catch {
-          // intentionally empty
+          /* keep r2Error empty when reading the upload response body fails */
         }
         console.error("R2 Upload Error:", r2Error, uploadResponse);
         throw new Error(r2Error);
@@ -108,7 +113,9 @@ export function ImageUpload({
     } catch (error) {
       setPreviewUrl(null);
       console.error("MDX Image Upload failed:", error);
-      toast.error(getErrorMessage(error) || "An unexpected error occurred during upload.");
+      toast.error(
+        getErrorMessage(error) || "An unexpected error occurred during upload."
+      );
       throw error;
     } finally {
       setIsLoading(false);
@@ -125,7 +132,7 @@ export function ImageUpload({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [value, onChange],
+    [value, onChange]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -179,11 +186,13 @@ export function ImageUpload({
     <div className="w-full">
       <div
         {...getRootProps()}
-        className={`mt-2 flex flex-col items-center space-y-4 rounded-lg border border-dashed border-gray-300 p-6 transition-colors ${isDragActive ? "border-primary bg-primary/10" : ""} ${
-          disabled || isLoading
-            ? "cursor-not-allowed opacity-50"
-            : "cursor-pointer hover:border-gray-400"
-        }`}
+        className={`mt-2 flex flex-col items-center space-y-4 rounded-lg border border-dashed border-gray-300 p-6 transition-colors
+          ${isDragActive ? "border-primary bg-primary/10" : ""}
+          ${
+            disabled || isLoading
+              ? "cursor-not-allowed opacity-50"
+              : "cursor-pointer hover:border-gray-400"
+          }`}
       >
         <input
           {...getInputProps()}
@@ -192,23 +201,23 @@ export function ImageUpload({
           onChange={handleLegacyFileChange}
         />
         {isLoading ? (
-          <div className="flex h-32 flex-col items-center justify-center">
-            <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-            <p className="text-muted-foreground mt-2 text-sm">Uploading...</p>
+          <div className="flex flex-col items-center justify-center h-32">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="mt-2 text-sm text-muted-foreground">Uploading...</p>
           </div>
         ) : previewUrl ? (
-          <div className="group relative">
+          <div className="relative group">
             <Image
               src={previewUrl}
               alt="Featured image preview"
               width={1200}
               height={630}
-              className="max-h-48 w-auto rounded-md object-contain"
+              className="object-contain rounded-md max-h-48 w-auto"
             />
             <Button
               variant="destructive"
               size="icon"
-              className="absolute top-1 right-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
               onClick={(e) => {
                 e.stopPropagation();
                 handleRemoveImage();
@@ -223,13 +232,15 @@ export function ImageUpload({
           <div className="text-center">
             <UploadCloud className="mx-auto h-12 w-12 text-gray-400" />
             <p className="mt-2 text-sm text-gray-600">
-              {isDragActive ? "Drop the image here..." : "Drag & drop or click to upload"}
+              {isDragActive
+                ? "Drop the image here..."
+                : "Drag & drop or click to upload"}
             </p>
             <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 5MB</p>
           </div>
         )}
         {!isLoading && !previewUrl && !showUrlInput && (
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             <Button
               type="button"
               variant="outline"
@@ -282,7 +293,10 @@ export function ImageUpload({
           </div>
         )}
         {!isLoading && !previewUrl && showUrlInput && (
-          <div className="flex w-full max-w-md flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex flex-col gap-2 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Input
               type="url"
               placeholder="https://example.com/image.jpg"
@@ -296,7 +310,7 @@ export function ImageUpload({
                 }
               }}
             />
-            <div className="flex justify-center gap-2">
+            <div className="flex gap-2 justify-center">
               <Button
                 type="button"
                 variant="outline"
@@ -319,7 +333,7 @@ export function ImageUpload({
           </div>
         )}
         {!isLoading && previewUrl && !showUrlInput && (
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             <Button
               type="button"
               variant="outline"
@@ -350,7 +364,7 @@ export function ImageUpload({
                   className="mt-4"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <Cloud className="mr-2 h-4 w-4" />
+                  <Cloud className="h-4 w-4 mr-2" />
                   Select from R2
                 </Button>
               </R2ResourceSelector>
@@ -365,14 +379,14 @@ export function ImageUpload({
               disabled={disabled || isLoading}
               className="mt-4"
             >
-              <Link className="mr-2 h-4 w-4" />
+              <Link className="h-4 w-4 mr-2" />
               Enter URL
             </Button>
           </div>
         )}
         {!isLoading && previewUrl && showUrlInput && (
           <div
-            className="mt-4 flex w-full max-w-md flex-col gap-2"
+            className="flex flex-col gap-2 w-full max-w-md mt-4"
             onClick={(e) => e.stopPropagation()}
           >
             <Input
@@ -388,7 +402,7 @@ export function ImageUpload({
                 }
               }}
             />
-            <div className="flex justify-center gap-2">
+            <div className="flex gap-2 justify-center">
               <Button
                 type="button"
                 variant="outline"

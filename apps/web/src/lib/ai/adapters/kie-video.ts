@@ -67,7 +67,10 @@ async function ensureImageUrl(imageData: string): Promise<string> {
  * Submit video generation task to KIE.
  * If KIE_CALLBACK_URL is set, includes it as callBackUrl.
  */
-async function submitVideoTask(input: VideoGenerationInput, apiKey: string): Promise<string> {
+async function submitVideoTask(
+  input: VideoGenerationInput,
+  apiKey: string
+): Promise<string> {
   const url = `${KIE_BASE_URL}/api/v1/jobs/createTask`;
 
   const payload: Record<string, any> = {
@@ -121,12 +124,15 @@ async function submitVideoTask(input: VideoGenerationInput, apiKey: string): Pro
   return result.data.taskId;
 }
 
+
 /**
  * Generate video with KIE.
  * Requires input.webhookUrl (built from WEBHOOK_BASE_URL) — submits the task and returns immediately.
  * The callback handler at /api/webhooks/kie will update the task store when KIE finishes.
  */
-export async function generateVideoWithKIE(input: VideoGenerationInput): Promise<KIEVideoResult> {
+export async function generateVideoWithKIE(
+  input: VideoGenerationInput
+): Promise<KIEVideoResult> {
   const apiKey = process.env.KIE_API_KEY;
   if (!apiKey) {
     throw new Error("KIE_API_KEY is not configured");
@@ -149,7 +155,7 @@ export async function generateVideoWithKIE(input: VideoGenerationInput): Promise
  * Used by the callback handler to retrieve the actual result URLs.
  */
 export async function fetchKIETaskResult(
-  kieTaskId: string,
+  kieTaskId: string
 ): Promise<{ status: string; videoUrl?: string; error?: string }> {
   const apiKey = process.env.KIE_API_KEY;
   if (!apiKey) {
@@ -163,7 +169,7 @@ export async function fetchKIETaskResult(
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
-    },
+    }
   );
 
   if (!response.ok) {

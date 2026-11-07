@@ -1,5 +1,9 @@
-export { default as PricingAll } from "./PricingAll";
-export { default as PricingByGroup } from "./PricingByGroup";
-export { default as PricingByPaymentType } from "./PricingByPaymentType";
-export { PricingCardDisplay } from "./PricingCardDisplay";
-export { default as PricingCTA } from "./PricingCTA";
+/**
+ * [INPUT]: Depends on ./PricingSection
+ * [OUTPUT]: Exports PricingSection (barrel)
+ * [POS]: The public exit of components/pricing — outside callers (the home page,
+ *        etc.) import only from here
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
+export { PricingSection } from "./PricingSection";

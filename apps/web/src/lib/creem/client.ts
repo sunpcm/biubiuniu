@@ -1,214 +1,173 @@
-import { getErrorMessage } from "@/lib/error-utils";
-import {
-  CreemCheckout,
-  CreemCheckoutSessionCreateParams,
-  CreemCustomer,
-  CreemDiscount,
-  CreemFullSubscription,
-  CreemProduct,
-} from "./types";
+/**
+ * [INPUT]: Depends on the Creem client from creem (the official TypeScript
+ *          SDK 1.x), the entity type aliases from ./types, getErrorMessage
+ *          from @/lib/error-utils, and the env vars CREEM_API_KEY /
+ *          CREEM_WEBHOOK_SECRET / CREEM_API_BASE_URL (optional override)
+ * [OUTPUT]: Exports isCreemEnabled, creemMode, getCreem,
+ *           createCreemCheckoutSession, retrieveCreemCheckoutSession,
+ *           retrieveCreemSubscription, cancelCreemSubscription,
+ *           refundCreemTransaction, createCreemCustomerPortalLink
+ * [POS]: The SDK wrapper of lib/creem — the only file that instantiates the
+ *        Creem SDK; test/live is derived from the API key prefix
+ *        (creem_test_ → test) and selects the creemProductId column in
+ *        config/pricing; business translation lives in lib/billing/creem,
+ *        this layer only does transport
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
 
-const CREEM_API_BASE_URL = process.env.CREEM_API_BASE_URL ?? "https://api.creem.io/v1";
+import { getErrorMessage } from '@/lib/error-utils';
+import { Creem } from 'creem';
+import type {
+  CreemCheckout,
+  CreemCheckoutCreateParams,
+  CreemRefundResponse,
+  CreemSubscription,
+} from './types';
 
 const CREEM_API_KEY = process.env.CREEM_API_KEY;
 const CREEM_WEBHOOK_SECRET = process.env.CREEM_WEBHOOK_SECRET;
 
-export const isCreemEnabled = Boolean(CREEM_API_KEY) && Boolean(CREEM_WEBHOOK_SECRET);
+export const isCreemEnabled =
+  Boolean(CREEM_API_KEY) && Boolean(CREEM_WEBHOOK_SECRET);
 
-type CreemRequestInit = Omit<RequestInit, "headers" | "body"> & {
-  headers?: Record<string, string>;
-  body?: any;
-};
+/**
+ * test/live is derived from the API key prefix (creem_test_… is a test key) —
+ * same source as the key itself, so it cannot be misconfigured. It selects the
+ * environment column of creemProductId in config/pricing.ts.
+ */
+export const creemMode: 'test' | 'live' = CREEM_API_KEY?.startsWith(
+  'creem_test_'
+)
+  ? 'test'
+  : 'live';
 
-async function creemRequest<T>(path: string, init: CreemRequestInit = {}): Promise<T> {
+// ============================================================================
+// SDK singleton — lazily initialized: importing this file at build time or
+// while unconfigured must never throw
+// ============================================================================
+
+/**
+ * CREEM_API_BASE_URL is an optional override. Legacy configs carry a /v1
+ * suffix while the SDK's own paths already include /v1 ("/v1/checkouts"), so
+ * it is stripped here for compatibility; when unset, the SDK picks between
+ * api.creem.io and test-api.creem.io according to creemMode.
+ */
+function resolveServerURL(): string | undefined {
+  const raw = process.env.CREEM_API_BASE_URL?.trim();
+  if (!raw) return undefined;
+  return raw.replace(/\/+$/, '').replace(/\/v1$/, '');
+}
+
+let client: Creem | null = null;
+
+export function getCreem(): Creem {
   if (!CREEM_API_KEY) {
     throw new Error(
-      "Creem API key is not configured. Set CREEM_API_KEY to enable Creem integration.",
+      'Creem API key is not configured. Set CREEM_API_KEY to enable Creem integration.'
     );
   }
-
-  // const url = new URL(path, CREEM_API_BASE_URL);
-  const url = CREEM_API_BASE_URL + path;
-  console.log("creemRequest", url.toString());
-
-  const headers: Record<string, string> = {
-    "x-api-key": CREEM_API_KEY,
-    "Content-Type": "application/json",
-    // Accept: 'application/json',
-    ...init.headers,
-  };
-
-  const response = await fetch(url.toString(), {
-    ...init,
-    headers,
-    body:
-      init.body === undefined || init.body === null
-        ? undefined
-        : typeof init.body === "string"
-          ? init.body
-          : JSON.stringify(init.body),
-  });
-
-  if (!response.ok) {
-    let errorMessage = `Creem API responded with status ${response.status}`;
-    try {
-      const errorBody = await response.clone().json();
-      if (errorBody?.error?.message) {
-        errorMessage = errorBody.error.message;
-      } else if (errorBody?.message) {
-        // Handle both string and array messages
-        if (Array.isArray(errorBody.message)) {
-          errorMessage = errorBody.message.join(", ");
-        } else {
-          errorMessage = errorBody.message;
-        }
-      }
-    } catch {
-      const text = await response.text();
-      if (text) {
-        errorMessage = text;
-      }
-    }
-
-    throw new Error(errorMessage);
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return (await response.json()) as T;
-}
-
-export async function retrieveCreemCustomer({
-  email,
-  customerId,
-}: {
-  email?: string;
-  customerId?: string;
-}): Promise<CreemCustomer> {
-  const searchParams = new URLSearchParams();
-  if (email) {
-    searchParams.set("email", email);
-  }
-  if (customerId) {
-    searchParams.set("customer_id", customerId);
-  }
-  try {
-    return await creemRequest<CreemCustomer>(`/customers?${searchParams.toString()}`, {
-      method: "GET",
+  if (!client) {
+    client = new Creem({
+      apiKey: CREEM_API_KEY,
+      server: creemMode === 'test' ? 'test' : 'prod',
+      serverURL: resolveServerURL(),
     });
-  } catch (error) {
-    const message = getErrorMessage(error);
-    throw new Error(`Failed to retrieve Creem customer ${email} ${customerId}: ${message}`);
   }
+  return client;
 }
+
+// ============================================================================
+// Thin wrappers — they only prepend context; the SDK's original error text
+// (HTTP status and response body included) stays in the message so lib/billing
+// can classify "already canceled / does not exist / already refunded" from it
+// ============================================================================
 
 export async function createCreemCheckoutSession(
-  params: CreemCheckoutSessionCreateParams,
+  params: CreemCheckoutCreateParams
 ): Promise<CreemCheckout> {
   try {
-    return await creemRequest<CreemCheckout>("/checkouts", {
-      method: "POST",
-      body: params,
-    });
+    return await getCreem().checkouts.create(params);
   } catch (error) {
-    const message = getErrorMessage(error);
-    throw new Error(`Failed to create Creem checkout session: ${message}`);
+    throw new Error(
+      `Failed to create Creem checkout session: ${getErrorMessage(error)}`
+    );
   }
 }
 
-export async function retrieveCreemCheckoutSession(checkoutId: string): Promise<CreemCheckout> {
+export async function retrieveCreemCheckoutSession(
+  checkoutId: string
+): Promise<CreemCheckout> {
   try {
-    return await creemRequest<CreemCheckout>(`/checkouts?checkout_id=${checkoutId}`, {
-      method: "GET",
-    });
+    return await getCreem().checkouts.retrieve(checkoutId);
   } catch (error) {
-    const message = getErrorMessage(error);
-    throw new Error(`Failed to retrieve Creem checkout ${checkoutId}: ${message}`);
-  }
-}
-
-export async function retrieveCreemProduct(productId: string): Promise<CreemProduct> {
-  try {
-    const result = await creemRequest<any>(`/products?product_id=${productId}`, { method: "GET" });
-
-    const product: CreemProduct | undefined = Array.isArray(result)
-      ? result[0]
-      : Array.isArray(result?.data)
-        ? result.data[0]
-        : result;
-
-    if (!product || !product.id) {
-      throw new Error(`Creem product ${productId} not found.`);
-    }
-
-    return product;
-  } catch (error) {
-    const message = getErrorMessage(error);
-    throw new Error(`Failed to retrieve Creem product ${productId}: ${message}`);
+    throw new Error(
+      `Failed to retrieve Creem checkout ${checkoutId}: ${getErrorMessage(error)}`
+    );
   }
 }
 
 export async function retrieveCreemSubscription(
-  subscriptionId: string,
-): Promise<CreemFullSubscription> {
+  subscriptionId: string
+): Promise<CreemSubscription> {
   try {
-    return await creemRequest<CreemFullSubscription>(
-      `/subscriptions?subscription_id=${subscriptionId}`,
-      { method: "GET" },
+    return await getCreem().subscriptions.get(subscriptionId);
+  } catch (error) {
+    throw new Error(
+      `Failed to retrieve Creem subscription ${subscriptionId}: ${getErrorMessage(error)}`
     );
-  } catch (error) {
-    const message = getErrorMessage(error);
-    throw new Error(`Failed to retrieve Creem subscription ${subscriptionId}: ${message}`);
   }
 }
 
-export async function createCreemCustomerPortalLink(customerId: string): Promise<string> {
+/**
+ * Cancels a Creem subscription immediately (POST /v1/subscriptions/{id}/cancel,
+ * mode=immediate) — the stop-loss action for full refunds / subscriptions
+ * judged duplicate, always invoked through lib/billing/cancel.
+ */
+export async function cancelCreemSubscription(
+  subscriptionId: string
+): Promise<CreemSubscription> {
   try {
-    const response = await creemRequest<{ customer_portal_link: string }>("/customers/billing", {
-      method: "POST",
-      body: {
-        customer_id: customerId,
-      },
+    return await getCreem().subscriptions.cancel(subscriptionId, {
+      mode: 'immediate',
     });
+  } catch (error) {
+    throw new Error(
+      `Failed to cancel Creem subscription ${subscriptionId}: ${getErrorMessage(error)}`
+    );
+  }
+}
 
-    if (!response.customer_portal_link) {
-      throw new Error("Portal link not returned from Creem API");
+/**
+ * Full refund (POST /v1/refunds): Creem refunds the entire remaining
+ * refundable amount for a transaction id and accepts no amount parameter; the
+ * provider returns pending while it confirms asynchronously, and the local
+ * ledger always waits for the refund.created webhook to settle.
+ */
+export async function refundCreemTransaction(
+  transactionId: string
+): Promise<CreemRefundResponse> {
+  try {
+    return await getCreem().transactions.refund({ transactionId });
+  } catch (error) {
+    throw new Error(
+      `Failed to refund Creem transaction ${transactionId}: ${getErrorMessage(error)}`
+    );
+  }
+}
+
+export async function createCreemCustomerPortalLink(
+  customerId: string
+): Promise<string> {
+  try {
+    const { customerPortalLink } =
+      await getCreem().customers.generateBillingLinks({ customerId });
+    if (!customerPortalLink) {
+      throw new Error('Portal link not returned from Creem API');
     }
-
-    return response.customer_portal_link;
+    return customerPortalLink;
   } catch (error) {
-    const message = getErrorMessage(error);
-    throw new Error(`Failed to create Creem customer portal link for ${customerId}: ${message}`);
-  }
-}
-
-export async function retrieveCreemDiscount({
-  discountId,
-  discountCode,
-}: {
-  discountId?: string;
-  discountCode?: string;
-}): Promise<CreemDiscount> {
-  const searchParams = new URLSearchParams();
-  if (discountId) {
-    searchParams.set("discount_id", discountId);
-  }
-  if (discountCode) {
-    searchParams.set("discount_code", discountCode);
-  }
-
-  if (!discountId && !discountCode) {
-    throw new Error("Either discountId or discountCode must be provided");
-  }
-
-  try {
-    return await creemRequest<CreemDiscount>(`/discounts?${searchParams.toString()}`, {
-      method: "GET",
-    });
-  } catch (error) {
-    const message = getErrorMessage(error);
-    throw new Error(`Failed to retrieve Creem discount ${discountId || discountCode}: ${message}`);
+    throw new Error(
+      `Failed to create Creem customer portal link for ${customerId}: ${getErrorMessage(error)}`
+    );
   }
 }

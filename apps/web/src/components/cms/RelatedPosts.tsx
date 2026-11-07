@@ -1,5 +1,5 @@
 import { getRelatedPostsAction } from "@/actions/posts/posts";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { PostBase, PublicPost } from "@/types/cms";
 import dayjs from "dayjs";
 import { ReactElement } from "react";
@@ -20,7 +20,8 @@ function mapPublicPostToBlogPost(post: PublicPost): PostBase {
     description: post.description ?? "",
     featuredImageUrl: post.featuredImageUrl ?? "/placeholder.svg",
     slug: post.slug,
-    publishedAt: (post.publishedAt && dayjs(post.publishedAt).toDate()) || new Date(),
+    publishedAt:
+      (post.publishedAt && dayjs(post.publishedAt).toDate()) || new Date(),
     status: post.status ?? "published",
     visibility: post.visibility ?? "public",
     isPinned: post.isPinned ?? false,
@@ -56,9 +57,9 @@ export async function RelatedPosts({
   const posts = relatedPosts.map(mapPublicPostToBlogPost);
 
   return (
-    <div className="mt-16 border-t pt-8">
-      <h2 className="mb-6 text-2xl font-bold md:text-3xl">{title}</h2>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="mt-16 pt-8 border-t">
+      <h2 className="text-2xl md:text-3xl font-bold mb-6">{title}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((post) => (
           <CardComponent key={post.slug} post={post} />
         ))}

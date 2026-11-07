@@ -1,15 +1,21 @@
 "use client";
 
 import { listR2Files, R2File } from "@/actions/r2-resources";
-import { Button } from "@niu/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@niu/ui/dialog";
-import { Input } from "@niu/ui/input";
-import { ScrollArea } from "@niu/ui/scroll-area";
-import { Skeleton } from "@niu/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@niu/ui/tabs";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { R2_CATEGORIES } from "@/config/common";
 import { getFileType } from "@/lib/cloudflare/r2-utils";
-import { formatBytes } from "@niu/utils";
+import { formatBytes } from "@/lib/utils";
 import dayjs from "dayjs";
 import { Check, FileIcon, Search, Video, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -79,46 +85,50 @@ export function R2ResourceSelector({
       <DialogTrigger asChild>
         {children || <Button variant="outline">{buttonText}</Button>}
       </DialogTrigger>
-      <DialogContent className="flex h-[80vh] max-w-4xl flex-col p-0">
-        <DialogHeader className="shrink-0 px-6 pt-6 pb-2">
+      <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-2 shrink-0">
           <DialogTitle>
             {title}
             {multiple && selectedUrls.length > 0 && (
-              <span className="text-muted-foreground ml-2 text-sm font-normal">
+              <span className="ml-2 text-sm font-normal text-muted-foreground">
                 ({selectedUrls.length} selected)
               </span>
             )}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-1 flex-col overflow-hidden px-6">
+        <div className="flex-1 flex flex-col overflow-hidden px-6">
           <Tabs
             value={activeCategory}
             onValueChange={setActiveCategory}
-            className="flex flex-1 flex-col overflow-hidden"
+            className="flex-1 flex flex-col overflow-hidden"
           >
-            <div className="-mx-6 mb-2 shrink-0 overflow-x-auto px-6">
+            <div className="shrink-0 mb-2 -mx-6 px-6 overflow-x-auto">
               <TabsList className="inline-flex w-auto min-w-full">
                 {R2_CATEGORIES.map((cat) => (
-                  <TabsTrigger key={cat.prefix} value={cat.prefix} className="shrink-0">
+                  <TabsTrigger
+                    key={cat.prefix}
+                    value={cat.prefix}
+                    className="shrink-0"
+                  >
                     {cat.name}
                   </TabsTrigger>
                 ))}
               </TabsList>
             </div>
 
-            <div className="relative mb-4 shrink-0">
-              <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+            <div className="shrink-0 mb-4 relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Filter by filename..."
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="pr-8 pl-9"
+                className="pl-9 pr-8"
               />
               {filter && (
                 <button
                   onClick={() => setFilter("")}
-                  className="text-muted-foreground hover:text-foreground absolute top-2.5 right-2.5"
+                  className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -129,7 +139,7 @@ export function R2ResourceSelector({
               <TabsContent
                 key={cat.prefix}
                 value={cat.prefix}
-                className="mt-0 min-h-0 flex-1 overflow-hidden data-[state=active]:flex data-[state=active]:flex-col"
+                className="flex-1 overflow-hidden mt-0 data-[state=active]:flex data-[state=active]:flex-col min-h-0"
               >
                 <ResourceGrid
                   categoryPrefix={cat.prefix}
@@ -146,7 +156,7 @@ export function R2ResourceSelector({
         </div>
 
         {multiple && (
-          <div className="flex shrink-0 items-center justify-between border-t px-6 py-4">
+          <div className="flex justify-between items-center px-6 py-4 border-t shrink-0">
             <Button
               variant="outline"
               onClick={() => setSelectedUrls([])}
@@ -154,7 +164,10 @@ export function R2ResourceSelector({
             >
               Clear Selection
             </Button>
-            <Button onClick={handleConfirm} disabled={selectedUrls.length === 0}>
+            <Button
+              onClick={handleConfirm}
+              disabled={selectedUrls.length === 0}
+            >
               Insert {selectedUrls.length} Image
               {selectedUrls.length !== 1 ? "s" : ""}
             </Button>
@@ -172,7 +185,12 @@ interface ResourceCardProps {
   onSelect: (file: R2File) => void;
 }
 
-function ResourceCard({ file, r2PublicUrl, isSelected, onSelect }: ResourceCardProps) {
+function ResourceCard({
+  file,
+  r2PublicUrl,
+  isSelected,
+  onSelect,
+}: ResourceCardProps) {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const fileType = getFileType(file.key);
   const previewUrl = `${r2PublicUrl}/${file.key}`;
@@ -180,19 +198,21 @@ function ResourceCard({ file, r2PublicUrl, isSelected, onSelect }: ResourceCardP
 
   return (
     <div
-      className={`group hover:border-primary/50 relative cursor-pointer overflow-hidden rounded-lg border transition-all hover:shadow-sm ${
-        isSelected ? "border-primary ring-primary ring-1" : "border-border"
+      className={`relative group cursor-pointer rounded-lg border overflow-hidden transition-all hover:border-primary/50 hover:shadow-sm ${
+        isSelected ? "border-primary ring-1 ring-primary" : "border-border"
       }`}
       onClick={() => onSelect(file)}
     >
-      <div className="bg-muted relative flex aspect-square items-center justify-center overflow-hidden">
+      <div className="aspect-square bg-muted flex items-center justify-center relative overflow-hidden">
         {fileType === "image" ? (
           <>
-            {isImageLoading && <Skeleton className="absolute inset-0 h-full w-full" />}
+            {isImageLoading && (
+              <Skeleton className="absolute inset-0 w-full h-full" />
+            )}
             <img
               src={previewUrl}
               alt={file.key}
-              className={`h-full w-full object-cover transition-opacity duration-300 ${
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
                 isImageLoading ? "opacity-0" : "opacity-100"
               }`}
               loading="lazy"
@@ -200,37 +220,39 @@ function ResourceCard({ file, r2PublicUrl, isSelected, onSelect }: ResourceCardP
             />
           </>
         ) : fileType === "video" ? (
-          <div className="relative h-full w-full bg-black/5">
+          <div className="relative w-full h-full bg-black/5">
             <video
               src={previewUrl}
-              className="h-full w-full object-contain"
+              className="w-full h-full object-contain"
               muted
               preload="metadata"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
               <Video className="h-12 w-12 text-white/80 drop-shadow-md" />
             </div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-4 text-center">
-            <FileIcon className="text-muted-foreground/50 mb-2 h-10 w-10" />
+            <FileIcon className="h-10 w-10 text-muted-foreground/50 mb-2" />
           </div>
         )}
       </div>
 
       {isSelected && (
-        <div className="bg-primary text-primary-foreground absolute top-2 right-2 z-10 rounded-full p-1 shadow-sm">
+        <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1 shadow-sm z-10">
           <Check className="h-3 w-3" />
         </div>
       )}
 
-      <div className="bg-background border-t p-2 text-xs">
-        <p className="text-foreground/90 truncate font-medium" title={fileName}>
+      <div className="p-2 bg-background border-t text-xs">
+        <p className="font-medium truncate text-foreground/90" title={fileName}>
           {fileName}
         </p>
-        <div className="text-muted-foreground mt-1 flex items-center justify-between">
+        <div className="flex justify-between items-center text-muted-foreground mt-1">
           <span>{file.size ? formatBytes(file.size, 0) : ""}</span>
-          {file.lastModified && <span>{dayjs(file.lastModified).format("MMM D")}</span>}
+          {file.lastModified && (
+            <span>{dayjs(file.lastModified).format("MMM D")}</span>
+          )}
         </div>
       </div>
     </div>
@@ -259,7 +281,9 @@ function ResourceGrid({
   const [files, setFiles] = useState<R2File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [continuationToken, setContinuationToken] = useState<string | undefined>();
+  const [continuationToken, setContinuationToken] = useState<
+    string | undefined
+  >();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -311,7 +335,14 @@ function ResourceGrid({
         setIsLoading(false);
       }
     },
-    [categoryPrefix, filterPrefix, continuationToken, hasMore, isLoading, fileTypeFilter],
+    [
+      categoryPrefix,
+      filterPrefix,
+      continuationToken,
+      hasMore,
+      isLoading,
+      fileTypeFilter,
+    ]
   );
 
   // Reset when category or filter changes
@@ -330,7 +361,7 @@ function ResourceGrid({
           loadFiles(false);
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
 
     const currentTarget = observerTarget.current;
@@ -351,14 +382,16 @@ function ResourceGrid({
   };
 
   return (
-    <ScrollArea ref={scrollAreaRef} className="-mr-6 flex-1 pr-6">
+    <ScrollArea ref={scrollAreaRef} className="flex-1 -mr-6 pr-6">
       {files.length === 0 && !isLoading ? (
-        <div className="text-muted-foreground flex flex-col items-center justify-center py-16">
-          <div className="bg-muted/50 mb-4 rounded-full p-4">
-            <FileIcon className="text-muted-foreground h-8 w-8" />
+        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <div className="bg-muted/50 p-4 rounded-full mb-4">
+            <FileIcon className="h-8 w-8 text-muted-foreground" />
           </div>
-          <p className="text-foreground mb-1 text-lg font-medium">No files found</p>
-          <p className="mb-4 max-w-xs text-center text-sm">
+          <p className="text-lg font-medium text-foreground mb-1">
+            No files found
+          </p>
+          <p className="text-sm max-w-xs text-center mb-4">
             {filterPrefix
               ? `No files match "${filterPrefix}" in this category.`
               : "This category is empty."}
@@ -370,7 +403,7 @@ function ResourceGrid({
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 pb-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 pb-4">
           {files.map((file) => {
             const previewUrl = `${r2PublicUrl}/${file.key}`;
             const isSelected = selectedUrls.includes(previewUrl);
@@ -389,9 +422,12 @@ function ResourceGrid({
           {/* Loading Skeletons */}
           {isLoading &&
             Array.from({ length: files.length > 0 ? 4 : 12 }).map((_, i) => (
-              <div key={`skeleton-${i}`} className="overflow-hidden rounded-lg border">
+              <div
+                key={`skeleton-${i}`}
+                className="rounded-lg border overflow-hidden"
+              >
                 <Skeleton className="aspect-square w-full" />
-                <div className="space-y-2 border-t p-2">
+                <div className="p-2 border-t space-y-2">
                   <Skeleton className="h-3 w-3/4" />
                   <div className="flex justify-between">
                     <Skeleton className="h-2 w-1/4" />
@@ -407,7 +443,9 @@ function ResourceGrid({
       <div ref={observerTarget} className="h-4 w-full" />
 
       {!hasMore && files.length > 0 && (
-        <div className="text-muted-foreground py-4 text-center text-sm">No more files</div>
+        <div className="text-center py-4 text-sm text-muted-foreground">
+          No more files
+        </div>
       )}
     </ScrollArea>
   );

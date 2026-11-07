@@ -8,11 +8,9 @@
     "react.json",
     "nextjs.json"
   ],
-  "scripts": {
-    "test": "echo \"(@niu/tsconfig) no tests\""
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "prettier": "@niu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

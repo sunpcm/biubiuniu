@@ -1,4 +1,4 @@
-import { cn } from "@niu/utils";
+import { cn } from "./cn.js";
 
 function Kbd({ className, ...props }: React.ComponentProps<"kbd">) {
   return (

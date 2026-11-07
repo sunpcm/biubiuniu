@@ -1,0 +1,72 @@
+{
+  "name": "@sunpcm/niu-feature-nano",
+  "version": "0.1.0-next.0",
+  "description": "Nano persistent-task core, Google provider, and React client hook",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./provider/google": {
+      "types": "./dist/provider/google.d.ts",
+      "import": "./dist/provider/google.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "NOTICE"
+  ],
+  "scripts": {
+    "lint": "eslint src --report-unused-disable-directives",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@sunpcm/niu-commerce": "workspace:*"
+  },
+  "peerDependencies": {
+    "@google/genai": "^1.43.0",
+    "react": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "@google/genai": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@google/genai": "1.43.0",
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpcm/biubiuniu.git",
+    "directory": "packages/feature-nano"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [
+    "nano",
+    "ai",
+    "tasks",
+    "gemini"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}

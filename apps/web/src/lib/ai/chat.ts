@@ -16,7 +16,9 @@ interface ChatOptions {
 export function streamChat(options: ChatOptions) {
   const model = getLanguageModel(options.provider, options.modelId);
 
-  const messages = options.messages ?? [{ role: "user" as const, content: options.prompt ?? "" }];
+  const messages = options.messages ?? [
+    { role: "user" as const, content: options.prompt ?? "" },
+  ];
 
   return streamText({
     model,

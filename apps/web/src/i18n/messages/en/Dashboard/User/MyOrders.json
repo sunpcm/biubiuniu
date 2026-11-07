@@ -1,0 +1,23 @@
+{
+  "title": "My Orders",
+  "description": "View your order history.",
+  "load_error": "Failed to load orders. Please try again later.",
+  "no_records": "No orders found.",
+  "header_date": "Date",
+  "header_plan": "Plan",
+  "header_type": "Type",
+  "header_provider": "Provider",
+  "header_credits": "Credits",
+  "header_amount": "Amount",
+  "header_status": "Status",
+  "type_one_time": "Credit pack",
+  "type_subscription_initial": "Subscription",
+  "type_subscription_renewal": "Renewal",
+  "type_subscription_upgrade": "Upgrade",
+  "status_pending": "Pending settlement",
+  "status_completed": "Completed",
+  "status_partially_refunded": "Partially refunded",
+  "status_refunded": "Refunded",
+  "status_failed": "Failed",
+  "refunded_prefix": "Refunded:"
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@niu/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { AI_PROVIDERS } from "@/config/ai-providers";
 
 interface ProviderBadgeProps {
@@ -21,14 +21,10 @@ const PROVIDER_COLORS: Record<string, string> = {
 
 export default function ProviderBadge({ provider, className }: ProviderBadgeProps) {
   const name = AI_PROVIDERS[provider]?.name || provider;
-  const colorClass =
-    PROVIDER_COLORS[provider] || "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
+  const colorClass = PROVIDER_COLORS[provider] || "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
 
   return (
-    <Badge
-      variant="outline"
-      className={`border-0 text-xs font-medium ${colorClass} ${className || ""}`}
-    >
+    <Badge variant="outline" className={`text-xs font-medium border-0 ${colorClass} ${className || ""}`}>
       {name}
     </Badge>
   );

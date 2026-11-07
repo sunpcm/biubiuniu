@@ -1,5 +1,5 @@
 import { listTagsAction } from "@/actions/posts/tags";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { Tag } from "@/types/cms";
 import { create } from "zustand";
 

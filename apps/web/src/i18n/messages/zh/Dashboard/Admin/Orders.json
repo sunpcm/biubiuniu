@@ -1,12 +1,67 @@
 {
   "title": "订单",
   "description": "这是所有订单的列表。",
-  "user": "用户",
-  "orderId": "订单ID",
-  "amount": "金额",
-  "discount": "折扣",
-  "type": "类型",
-  "status": "状态",
-  "createdAt": "创建时间",
-  "filterByEmail": "通过电子邮件筛选..."
+  "searchPlaceholder": "按邮箱或套餐 ID 搜索...",
+  "columns": {
+    "createdAt": "创建时间",
+    "user": "用户",
+    "planId": "套餐",
+    "orderType": "类型",
+    "provider": "支付渠道",
+    "credits": "积分",
+    "amount": "金额",
+    "refunded": "已退款",
+    "status": "状态",
+    "actions": "操作"
+  },
+  "filters": {
+    "allProviders": "全部渠道",
+    "providerPlaceholder": "支付渠道",
+    "allTypes": "全部类型",
+    "typePlaceholder": "订单类型",
+    "allStatuses": "全部状态",
+    "statusPlaceholder": "状态"
+  },
+  "orderType": {
+    "one_time": "积分包",
+    "subscription_initial": "订阅（首次）",
+    "subscription_renewal": "订阅（续费）",
+    "subscription_upgrade": "订阅（升级）"
+  },
+  "status": {
+    "pending": "待结算",
+    "completed": "已完成",
+    "partially_refunded": "部分退款",
+    "refunded": "已退款",
+    "failed": "支付失败"
+  },
+  "actions": {
+    "menuLabel": "操作",
+    "copyOrderId": "复制订单 ID",
+    "copyPaymentId": "复制支付 ID",
+    "refund": "退款…"
+  },
+  "refundDialog": {
+    "title": "订单退款",
+    "description": "通过支付渠道发起退款。渠道 webhook 确认后将自动扣回相应积分。",
+    "orderAmount": "订单金额",
+    "alreadyRefunded": "已退款金额",
+    "refundable": "可退金额",
+    "creemHint": "Creem 退款 API 只支持退还该笔交易的剩余全额——部分退款请前往 Creem 后台操作。本地订单状态与积分将通过 refund.created webhook 自动同步。",
+    "fullRefund": "全额退还剩余金额",
+    "partialRefund": "部分退款",
+    "amountLabel": "退款金额（{currency}）",
+    "amountPlaceholder": "例如 5.00",
+    "invalidAmount": "请输入大于零的有效金额。",
+    "exceedsRefundable": "金额超出可退余额（{max}）。",
+    "cancel": "取消",
+    "confirm": "确认退款",
+    "processing": "处理中..."
+  },
+  "toast": {
+    "fetchFailed": "获取订单失败",
+    "refundInitiated": "退款已发起——待支付渠道确认后状态将自动更新",
+    "refundFailed": "退款失败",
+    "copied": "已复制到剪贴板"
+  }
 }

@@ -79,19 +79,19 @@ export default function TaskStatusBar({
   if (!taskId || !status) return null;
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
+    const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
     const secs = (seconds % 60).toString().padStart(2, "0");
     return `${mins}:${secs}`;
   };
 
   return (
-    <div className="bg-muted/50 flex items-center gap-3 rounded-lg p-3">
+    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
       {(status === "pending" || status === "processing") && (
         <>
-          <Loader2 className="text-primary h-5 w-5 animate-spin" />
-          <span className="text-sm">Generating video... {formatTime(elapsed)}</span>
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          <span className="text-sm">
+            Generating video... {formatTime(elapsed)}
+          </span>
         </>
       )}
       {status === "succeeded" && (
@@ -104,8 +104,10 @@ export default function TaskStatusBar({
       )}
       {status === "failed" && (
         <>
-          <XCircle className="text-destructive h-5 w-5" />
-          <span className="text-destructive text-sm">Video generation failed</span>
+          <XCircle className="h-5 w-5 text-destructive" />
+          <span className="text-sm text-destructive">
+            Video generation failed
+          </span>
         </>
       )}
     </div>

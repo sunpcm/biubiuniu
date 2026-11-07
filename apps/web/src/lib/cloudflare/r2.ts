@@ -1,12 +1,9 @@
 import { createR2Client } from "@/lib/cloudflare/r2-client";
-import {
-  _Object,
-  DeleteObjectCommand,
-  GetObjectCommand,
-  ListObjectsV2Command,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
+import { _Object, DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getLogger } from "@/lib/logger";
+
+const r2Logger = getLogger("cloudflare.r2");
 
 export interface UploadOptions {
   data: Buffer | string;
@@ -22,60 +19,64 @@ export interface UploadResult {
 export const serverUploadFile = async ({
   data,
   contentType,
-  path = "",
+  path = '',
   key,
 }: UploadOptions): Promise<UploadResult> => {
   if (!process.env.R2_BUCKET_NAME || !process.env.R2_PUBLIC_URL) {
-    throw new Error("R2 configuration is missing");
+    throw new Error('R2 configuration is missing');
   }
 
   const s3Client = createR2Client();
   const fileBuffer = Buffer.isBuffer(data)
     ? data
-    : Buffer.from(data.replace(/^data:.*?;base64,/, ""), "base64");
+    : Buffer.from(data.replace(/^data:.*?;base64,/, ''), 'base64');
 
-  const finalKey = path ? (path.endsWith("/") ? `${path}${key}` : `${path}/${key}`) : key;
+  const finalKey = path
+    ? path.endsWith('/') ? `${path}${key}` : `${path}/${key}`
+    : key;
 
   try {
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME,
-        Key: finalKey,
-        Body: fileBuffer,
-        ContentType: contentType,
-      }),
-    );
+    await s3Client.send(new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: finalKey,
+      Body: fileBuffer,
+      ContentType: contentType,
+    }));
 
     const url = `${process.env.R2_PUBLIC_URL}/${finalKey}`;
 
     return { url, key: finalKey };
   } catch (error) {
-    console.error("Failed to upload file to R2:", error);
-    throw new Error("Failed to upload file to R2");
+    r2Logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "Failed to upload file to R2",
+    );
+    throw new Error('Failed to upload file to R2');
   }
 };
 
 export const deleteFile = async (key: string): Promise<void> => {
   if (!process.env.R2_BUCKET_NAME) {
-    throw new Error("R2 configuration is missing");
+    throw new Error('R2 configuration is missing');
   }
 
   const s3Client = createR2Client();
 
   try {
-    if (key.startsWith("/")) {
+    if (key.startsWith('/')) {
       key = key.slice(1);
     }
 
-    await s3Client.send(
-      new DeleteObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME,
-        Key: key,
-      }),
-    );
+    await s3Client.send(new DeleteObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+    }));
   } catch (error) {
-    console.error("Failed to delete file from R2:", error);
-    throw new Error("Failed to delete file from R2");
+    r2Logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "Failed to delete file from R2",
+    );
+    throw new Error('Failed to delete file from R2');
   }
 };
 
@@ -95,7 +96,9 @@ export interface ListR2ObjectsResult {
   nextContinuationToken?: string;
   error?: string;
 }
-export const listR2Objects = async (params: ListR2ObjectsParams): Promise<ListR2ObjectsResult> => {
+export const listR2Objects = async (
+  params: ListR2ObjectsParams
+): Promise<ListR2ObjectsResult> => {
   const bucket = process.env.R2_BUCKET_NAME;
   const publicUrl = process.env.R2_PUBLIC_URL;
 
@@ -126,22 +129,27 @@ export const listR2Objects = async (params: ListR2ObjectsParams): Promise<ListR2
 
     const response = await s3Client.send(command);
 
-    const listedObjects: ListedObject[] = (response.Contents || []).map((obj: _Object) => ({
-      key: obj.Key ?? "unknown-key",
-      url: `${publicUrl}/${obj.Key}`,
-      size: obj.Size ?? 0,
-      lastModified: obj.LastModified ?? new Date(0),
-    }));
+    const listedObjects: ListedObject[] = (response.Contents || []).map(
+      (obj: _Object) => ({
+        key: obj.Key ?? "unknown-key",
+        url: `${publicUrl}/${obj.Key}`,
+        size: obj.Size ?? 0,
+        lastModified: obj.LastModified ?? new Date(0),
+      })
+    );
 
     return {
       objects: listedObjects,
       nextContinuationToken: response.NextContinuationToken,
     };
-  } catch (error: any) {
-    console.error("Failed to list objects from R2:", error);
+  } catch (error: unknown) {
+    r2Logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "Failed to list objects from R2",
+    );
     return {
       objects: [],
-      error: `Failed to list objects: ${error.message || "Unknown R2 error"}`,
+      error: "Failed to list objects from R2.",
     };
   }
 };
@@ -156,7 +164,7 @@ export async function createPresignedUploadUrl({
   expiresIn?: number;
 }): Promise<{ presignedUrl: string; publicObjectUrl: string }> {
   if (!process.env.R2_BUCKET_NAME || !process.env.R2_PUBLIC_URL) {
-    throw new Error("R2 configuration is missing (bucket name or public URL)");
+    throw new Error('R2 configuration is missing (bucket name or public URL)');
   }
 
   const s3Client = createR2Client();
@@ -168,7 +176,7 @@ export async function createPresignedUploadUrl({
   });
 
   const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn });
-  const publicObjectUrl = `${process.env.R2_PUBLIC_URL.replace(/\/$/, "")}/${key}`;
+  const publicObjectUrl = `${process.env.R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
 
   return { presignedUrl, publicObjectUrl };
 }
@@ -181,7 +189,7 @@ export async function createPresignedDownloadUrl({
   expiresIn?: number;
 }): Promise<string> {
   if (!process.env.R2_BUCKET_NAME) {
-    throw new Error("R2 bucket name is not configured");
+    throw new Error('R2 bucket name is not configured');
   }
 
   const s3Client = createR2Client();

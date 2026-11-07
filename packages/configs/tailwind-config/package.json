@@ -8,9 +8,7 @@
   "peerDependencies": {
     "tailwindcss": "catalog:"
   },
-  "scripts": {
-    "test": "echo \"(@niu/tailwind-config) no tests\""
-  },
+  "scripts": {},
   "license": "ISC",
-  "prettier": "@niu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

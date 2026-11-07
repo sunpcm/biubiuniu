@@ -1,110 +1,27 @@
-// [CUSTOM: START] - JWT token refresh for cross-domain SSO (LearnFeynmanHelper)
+/**
+ * Legacy cross-app SSO token refresh endpoint — retired.
+ *
+ * The previous implementation extended a long-lived JWT for a verified
+ * signature without re-checking the live session, ban state or role. It is
+ * intentionally closed: it never verifies or refreshes a token, never reads or
+ * reflects request data, and never sets cross-origin CORS headers.
+ */
+
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@niu/db";
-import { user as userSchema } from "@niu/db/schema";
-import { eq } from "drizzle-orm";
-import { generateToken, verifyToken } from "@/lib/jwt";
-import { headers } from "next/headers";
 
-export async function POST(request: NextRequest) {
-  try {
-    const authHeader = request.headers.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { error: "Missing or invalid authorization header" },
-        { status: 401 },
-      );
-    }
+const CLOSED = {
+  status: 410,
+  body: {
+    success: false,
+    error: "SSO_CLOSED",
+    message: "Legacy cross-app SSO has been retired and is not available.",
+  },
+} as const;
 
-    const token = authHeader.substring(7);
-
-    // 验证现有令牌
-    const decoded = verifyToken(token);
-    if (!decoded || !decoded.userId) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-
-    // Get current session via Better Auth
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session?.user) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
-    }
-
-    const currentUser = session.user;
-
-    // 检查用户身份是否一致 - 如果用户切换了账号，拒绝刷新
-    if (currentUser.id !== decoded.userId) {
-      return NextResponse.json(
-        {
-          error: "User identity changed",
-          message: "Please re-authenticate with the new account",
-          requireReauth: true,
-        },
-        { status: 401 },
-      );
-    }
-
-    // 获取用户档案 via Drizzle
-    const userDataResults = await db
-      .select({
-        role: userSchema.role,
-        name: userSchema.name,
-        image: userSchema.image,
-      })
-      .from(userSchema)
-      .where(eq(userSchema.id, currentUser.id))
-      .limit(1);
-
-    const profile = userDataResults[0];
-
-    // 生成新令牌
-    const newToken = generateToken({
-      userId: currentUser.id,
-      email: currentUser.email || "",
-      name: profile?.name || currentUser.name || "",
-      role: (profile?.role as "admin" | "user") || "user",
-    });
-
-    const response = NextResponse.json({
-      success: true,
-      token: newToken,
-      user: {
-        id: currentUser.id,
-        email: currentUser.email,
-        name: profile?.name || currentUser.name || "",
-        role: (profile?.role as "admin" | "user") || "user",
-      },
-    });
-
-    // 设置 CORS 头
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
-    const origin = request.headers.get("origin");
-    if (origin && allowedOrigins.includes(origin)) {
-      response.headers.set("Access-Control-Allow-Origin", origin);
-    }
-    response.headers.set("Access-Control-Allow-Methods", "POST");
-    response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-    return response;
-  } catch (error) {
-    console.error("Token refresh error:", error);
-    return NextResponse.json({ error: "Token refresh failed" }, { status: 500 });
-  }
+export function POST(_request: NextRequest) {
+  return NextResponse.json(CLOSED.body, { status: CLOSED.status });
 }
 
-export async function OPTIONS(request: NextRequest) {
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
-  const origin = request.headers.get("origin");
-
-  const response = new NextResponse(null, { status: 200 });
-
-  if (origin && allowedOrigins.includes(origin)) {
-    response.headers.set("Access-Control-Allow-Origin", origin);
-  }
-  response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  return response;
+export function OPTIONS(_request: NextRequest) {
+  return new NextResponse(null, { status: CLOSED.status });
 }
-// [CUSTOM: END]

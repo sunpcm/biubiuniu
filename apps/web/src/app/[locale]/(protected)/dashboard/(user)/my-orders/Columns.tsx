@@ -1,93 +1,127 @@
+/**
+ * [INPUT]: Depends on the MyOrderItem type from @/actions/orders/user,
+ *          formatCents/formatDate/formatNumber from @/lib/format,
+ *          @/components/ui/badge, @tanstack/react-table
+ * [OUTPUT]: Exports the getColumns column-definition factory
+ * [POS]: The column definitions of dashboard/(user)/my-orders — consumed by
+ *        DataTable; amounts are integer cents (formatCents), a refunded state
+ *        appends the refunded amount, provider is a brand name and is not
+ *        translated
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
 "use client";
 
-import { Badge } from "@niu/ui/badge";
-import { getOrderTypeLabel } from "@/lib/payments/provider-utils";
-import dayjs from "dayjs";
+import type { MyOrderItem } from "@/actions/orders/user";
+import { Badge } from "@/components/ui/badge";
+import { formatCents, formatDate, formatNumber } from "@/lib/format";
+import type { ColumnDef } from "@tanstack/react-table";
 
-export const columns = [
+/** Payment providers are brand names — rendered as-is, never translated. */
+const PROVIDER_LABELS: Record<string, string> = {
+  stripe: "Stripe",
+  creem: "Creem",
+  paypal: "PayPal",
+};
+
+export const getColumns = (
+  t: (key: string) => string,
+  locale: string
+): ColumnDef<MyOrderItem>[] => [
   {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }: any) => {
-      const id = row.getValue("id") as string;
-      return <div className="max-w-[200px] truncate">{id}</div>;
-    },
+    accessorKey: "createdAt",
+    header: t("header_date"),
+    size: 180,
+    minSize: 160,
+    cell: ({ row }) => (
+      <div className="whitespace-nowrap">
+        {formatDate(row.original.createdAt, locale, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })}
+      </div>
+    ),
   },
   {
-    accessorKey: "provider",
-    header: "Provider",
-    cell: ({ row }: any) => {
-      return <span className="font-mono">{row.original.provider}</span>;
-    },
-  },
-  {
-    accessorKey: "providerOrderId",
-    header: "Provider Order ID",
-    cell: ({ row }: any) => {
-      const providerOrderId = row.getValue("providerOrderId") as string;
-      return <div className="max-w-[200px] truncate">{providerOrderId}</div>;
-    },
-  },
-  {
-    accessorKey: "amountTotal",
-    header: "Amount",
-    cell: ({ row }: any) => (
-      <div className="flex w-[120px] flex-col">
-        <span>
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: row.original.currency,
-          }).format(Number(row.original.amountTotal))}
-        </span>
-        {row.original.amountDiscount ? (
-          <span className="text-muted-foreground text-xs">
-            Discount:{" "}
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: row.original.currency,
-            }).format(Number(row.original.amountDiscount))}
-          </span>
-        ) : null}
+    accessorKey: "planName",
+    header: t("header_plan"),
+    size: 200,
+    minSize: 160,
+    cell: ({ row }) => (
+      <div className="max-w-[200px] truncate font-medium">
+        {row.original.planName}
       </div>
     ),
   },
   {
     accessorKey: "orderType",
-    header: "Type",
-    cell: ({ row }: any) => (
-      <Badge variant="outline">{getOrderTypeLabel(row.original.orderType)}</Badge>
+    header: t("header_type"),
+    size: 140,
+    minSize: 120,
+    cell: ({ row }) => (
+      <Badge variant="outline">{t(`type_${row.original.orderType}`)}</Badge>
     ),
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }: any) => {
-      const status = row.original.status as string;
-      let variant: "secondary" | "destructive" | "outline" = "outline";
-      if (status === "succeeded") {
-        variant = "secondary";
-      } else if (status === "refunded" || status === "partially_refunded") {
-        variant = "destructive";
-      } else {
-        variant = "outline";
-      }
-      return <Badge variant={variant}>{status}</Badge>;
+    accessorKey: "provider",
+    header: t("header_provider"),
+    size: 120,
+    minSize: 100,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">
+        {PROVIDER_LABELS[row.original.provider] ?? row.original.provider}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "creditsGranted",
+    header: t("header_credits"),
+    size: 120,
+    minSize: 100,
+    cell: ({ row }) => (
+      <div className="tabular-nums">
+        {formatNumber(row.original.creditsGranted, locale)}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "amountTotal",
+    header: t("header_amount"),
+    size: 160,
+    minSize: 130,
+    cell: ({ row }) => {
+      const { amountTotal, amountRefunded, currency } = row.original;
+      return (
+        <div className="flex flex-col">
+          <span className="tabular-nums">
+            {formatCents(amountTotal, currency, locale)}
+          </span>
+          {amountRefunded > 0 && (
+            <span className="text-xs text-destructive">
+              {t("refunded_prefix")}{" "}
+              {formatCents(amountRefunded, currency, locale)}
+            </span>
+          )}
+        </div>
+      );
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }: any) => {
-      const date = row.getValue("createdAt") as string | Date;
-      try {
-        return date ? (
-          <div className="w-[180px]">{dayjs(date).format("YYYY-MM-DD HH:mm:ss")}</div>
-        ) : (
-          "-"
-        );
-      } catch {
-        return "-";
-      }
+    accessorKey: "status",
+    header: t("header_status"),
+    size: 150,
+    minSize: 120,
+    cell: ({ row }) => {
+      const status = row.original.status;
+      // pending is a neutral in-flight state (eCheck clearing) — it must not
+      // render as alarm red.
+      const variant =
+        status === "completed"
+          ? "secondary"
+          : status === "pending"
+            ? "outline"
+            : "destructive";
+      return <Badge variant={variant}>{t(`status_${status}`)}</Badge>;
     },
   },
-] satisfies any;
+];

@@ -6,8 +6,9 @@ import { PostCard } from "@/components/cms/PostCard";
 import { RelatedPosts } from "@/components/cms/RelatedPosts";
 import { ViewCounter } from "@/components/cms/ViewCounter";
 import { TableOfContents } from "@/components/tiptap/TableOfContents";
-import { TiptapRenderer } from "@/components/tiptap/TiptapRenderer";
-import { Button } from "@niu/ui/button";
+import { renderPostMarkdown } from "@/lib/cms/render-markdown";
+import { Button } from "@/components/ui/button";
+import { PRICING_PATH } from "@/config/public-paths";
 import { Link as I18nLink, Locale, LOCALES } from "@/i18n/routing";
 import { glossaryCms } from "@/lib/cms";
 import { constructMetadata } from "@/lib/metadata";
@@ -112,7 +113,7 @@ export default async function GlossaryPage({ params }: { params: Params }) {
       messageTitle = t("GlossaryDetail.premium");
       messageContent = t("GlossaryDetail.premiumContent");
       actionText = t("GlossaryDetail.upgrade");
-      actionLink = process.env.NEXT_PUBLIC_PRICING_PATH!;
+      actionLink = PRICING_PATH;
     }
   }
 
@@ -144,6 +145,11 @@ export default async function GlossaryPage({ params }: { params: Params }) {
   };
 
   const visibilityInfo = getVisibilityInfo();
+
+  const contentHtml =
+    !showRestrictionMessageInsteadOfContent && post.content
+      ? await renderPostMarkdown(post.content)
+      : "";
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -247,9 +253,12 @@ export default async function GlossaryPage({ params }: { params: Params }) {
               backText={t("GlossaryDetail.backToGlossary")}
               backLink={`/glossary`}
             />
-          ) : (
-            <article>{post.content ? <TiptapRenderer content={post.content} /> : null}</article>
-          )}
+          ) : contentHtml ? (
+            <article
+              className="prose prose-sm dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-img:rounded-xl prose-img:shadow-md prose-p:my-2 prose-p:leading-relaxed max-w-none"
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
+          ) : null}
 
           {/* Related Posts */}
           {post.id && (

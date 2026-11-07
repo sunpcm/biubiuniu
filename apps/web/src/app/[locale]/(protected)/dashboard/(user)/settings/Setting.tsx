@@ -1,12 +1,12 @@
 "use client";
 
 import { updateUserSettingsAction } from "@/actions/users/settings";
-import { Avatar, AvatarFallback, AvatarImage } from "@niu/ui/avatar";
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
-import { Label } from "@niu/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/auth-client";
-import { user as userSchema } from "@niu/db/schema";
+import { user as userSchema } from "@/lib/db/schema";
 import {
   AVATAR_ACCEPT_ATTRIBUTE,
   AVATAR_ALLOWED_EXTENSIONS,
@@ -47,7 +47,7 @@ export default function Settings({ user }: { user: User }) {
       setFullNameError(
         t("toast.fullNameLengthError", {
           maxLength: FULL_NAME_MAX_LENGTH,
-        }),
+        })
       );
     } else if (value && !isValidFullName(value)) {
       setFullNameError(t("toast.fullNameInvalidCharactersError"));
@@ -129,13 +129,18 @@ export default function Settings({ user }: { user: User }) {
         URL.revokeObjectURL(previewUrl);
         setPreviewUrl(null);
       }
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      const fileInput = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
       if (fileInput) {
         fileInput.value = "";
       }
     } catch (error) {
       toast.error(t("toast.updateErrorTitle"), {
-        description: error instanceof Error ? error.message : t("toast.updateErrorDescription"),
+        description:
+          error instanceof Error
+            ? error.message
+            : t("toast.updateErrorDescription"),
       });
     } finally {
       setIsLoading(false);
@@ -152,8 +157,8 @@ export default function Settings({ user }: { user: User }) {
   }, [previewUrl]);
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-semibold">{t("title")}</h1>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl font-semibold mb-6">{t("title")}</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <Label>{t("form.emailLabel")}</Label>
@@ -168,13 +173,15 @@ export default function Settings({ user }: { user: User }) {
             placeholder={t("form.fullNamePlaceholder")}
             maxLength={FULL_NAME_MAX_LENGTH}
           />
-          {fullNameError && <p className="mt-1 text-sm text-red-500">{fullNameError}</p>}
+          {fullNameError && (
+            <p className="text-sm text-red-500 mt-1">{fullNameError}</p>
+          )}
         </div>
 
         <div className="space-y-2">
           <Label>{t("form.avatarLabel")}</Label>
           <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20">
+            <Avatar className="w-20 h-20">
               <AvatarImage
                 src={previewUrl || user.image || undefined}
                 alt={user.name || "User avatar"}
@@ -188,10 +195,11 @@ export default function Settings({ user }: { user: User }) {
                 onChange={handleAvatarChange}
                 className="max-w-[300px] hover:cursor-pointer"
               />
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 {t("form.avatarHint", {
                   maxSizeInMB: AVATAR_MAX_FILE_SIZE / 1024 / 1024,
-                  allowedTypes: AVATAR_ALLOWED_EXTENSIONS.join(", ").toUpperCase(),
+                  allowedTypes:
+                    AVATAR_ALLOWED_EXTENSIONS.join(", ").toUpperCase(),
                 })}
               </p>
             </div>
@@ -201,7 +209,8 @@ export default function Settings({ user }: { user: User }) {
         <Button type="submit" disabled={isLoading || !!fullNameError}>
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("form.updatingButton")}
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />{" "}
+              {t("form.updatingButton")}
             </>
           ) : (
             t("form.updateButton")

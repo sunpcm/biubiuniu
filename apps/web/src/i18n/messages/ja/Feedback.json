@@ -1,0 +1,84 @@
+{
+  "title": "マイフィードバック",
+  "description": "フィードバックと提案を追跡する",
+  "admin": {
+    "title": "フィードバック",
+    "description": "ユーザーのフィードバックを管理"
+  },
+  "emptyState": {
+    "title": "フィードバックはまだありません",
+    "description": "アイデアや問題を共有して、改善にご協力ください"
+  },
+  "button": {
+    "newFeedback": "フィードバックを送る",
+    "submit": "送信",
+    "submitting": "送信中...",
+    "cancel": "キャンセル",
+    "viewDetails": "詳細を見る",
+    "reply": "返信",
+    "replying": "返信中..."
+  },
+  "form": {
+    "title": "フィードバックを送る",
+    "description": "フィードバックでより良い製品を作ります",
+    "type": {
+      "label": "フィードバックの種類",
+      "placeholder": "種類を選択",
+      "feature_request": "機能リクエスト",
+      "bug_report": "バグ報告",
+      "improvement": "改善提案",
+      "other": "その他"
+    },
+    "subject": {
+      "label": "タイトル",
+      "placeholder": "フィードバックの概要",
+      "error": "タイトルは{min}〜{max}文字にしてください"
+    },
+    "descriptionField": {
+      "label": "説明",
+      "placeholder": "フィードバックの詳細を記入してください...",
+      "error": "説明は{min}〜{max}文字にしてください"
+    }
+  },
+  "filter": {
+    "type": "種類",
+    "status": "ステータス",
+    "all": "すべて"
+  },
+  "type": {
+    "feature_request": "機能リクエスト",
+    "bug_report": "バグ報告",
+    "improvement": "改善提案",
+    "other": "その他"
+  },
+  "status": {
+    "submitted": "送信済み",
+    "under_review": "レビュー中",
+    "planned": "計画中",
+    "in_progress": "対応中",
+    "completed": "完了",
+    "declined": "却下"
+  },
+  "priority": {
+    "low": "低",
+    "medium": "中",
+    "high": "高"
+  },
+  "detail": {
+    "title": "フィードバック詳細",
+    "replies": "返信",
+    "noReplies": "返信はまだありません",
+    "latestReplyAdmin": "管理者",
+    "replyPlaceholder": "返信を入力...",
+    "submitted": "{time}に送信",
+    "updated": "{time}に更新",
+    "adminReply": "管理者 · {time}",
+    "userReply": "{name} · {time}"
+  },
+  "toast": {
+    "submitSuccess": "フィードバックを送信しました！",
+    "submitError": "送信に失敗しました。もう一度お試しください。",
+    "replyError": "返信に失敗しました。",
+    "loginRequired": "フィードバックを送信するにはログインしてください"
+  }
+}

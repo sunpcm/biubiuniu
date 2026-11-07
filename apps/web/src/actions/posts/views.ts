@@ -1,11 +1,20 @@
 "use server";
 
+import { POST_CONFIGS } from "@/components/cms/post-config";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { actionResponse } from "@/lib/action-response";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
-import { getClientIPFromHeaders, redis } from "@/lib/upstash";
-import { REDIS_KEYS_CONFIGS } from "@/lib/upstash/redis-keys";
+import { getClientIPFromHeaders, redis } from "@/lib/redis";
+import { REDIS_KEYS_CONFIGS } from "@/lib/redis/redis-keys";
+
+/**
+ * View counting is controlled by the CMS post config (components/cms/post-config.ts).
+ * Each post type can opt-in by setting viewCount.enabled to true.
+ */
+function isPostViewCountEnabled(postType: PostType): boolean {
+  return POST_CONFIGS[postType]?.viewCount?.enabled === true;
+}
 
 interface IncrementViewCountParams {
   slug: string;
@@ -34,8 +43,8 @@ export async function incrementViewCountAction({
   }
 
   try {
-    // If Redis is not configured, return success with count 0
-    if (!redis) {
+    // View counting is disabled by default; skip Redis access entirely
+    if (!isPostViewCountEnabled(postType) || !redis) {
       return actionResponse.success({ count: 0 });
     }
 
@@ -63,8 +72,8 @@ export async function incrementUniqueViewCountAction({
   }
 
   try {
-    // If Redis is not configured, return success with count 0
-    if (!redis) {
+    // View counting is disabled by default; skip Redis access and IP tracking
+    if (!isPostViewCountEnabled(postType) || !redis) {
       return actionResponse.success({ count: 0 });
     }
 
@@ -118,8 +127,8 @@ export async function getViewCountAction({
   }
 
   try {
-    // If Redis is not configured, return success with count 0
-    if (!redis) {
+    // View counting is disabled by default; skip Redis access entirely
+    if (!isPostViewCountEnabled(postType) || !redis) {
       return actionResponse.success({ count: 0 });
     }
 

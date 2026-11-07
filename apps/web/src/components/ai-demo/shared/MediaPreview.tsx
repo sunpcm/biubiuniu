@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
-import { Card, CardContent } from "@niu/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { downloadBase64File } from "@/lib/downloadFile";
 import { Download, ImageIcon, VideoIcon } from "lucide-react";
 import Image from "next/image";
@@ -38,8 +38,8 @@ export default function MediaPreview({
   if (!src) {
     return (
       <Card className={`h-full ${className || ""}`}>
-        <CardContent className="flex h-full min-h-[200px] flex-col items-center justify-center p-4">
-          <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-2 text-center">
+        <CardContent className="p-4 h-full flex flex-col items-center justify-center min-h-[200px]">
+          <div className="text-muted-foreground flex flex-col items-center justify-center h-full text-center gap-2">
             {type === "image" ? (
               <ImageIcon className="h-10 w-10 opacity-30" />
             ) : (
@@ -62,15 +62,20 @@ export default function MediaPreview({
 
   return (
     <Card className={`h-full ${className || ""}`}>
-      <CardContent className="flex h-full flex-col p-4">
-        <div className="relative min-h-[200px] flex-1">
+      <CardContent className="p-4 h-full flex flex-col">
+        <div className="relative flex-1 min-h-[200px]">
           {type === "image" ? (
-            <Image src={src} alt={alt} className="rounded-md object-contain" fill />
+            <Image
+              src={src}
+              alt={alt}
+              className="rounded-md object-contain"
+              fill
+            />
           ) : (
             <video
               src={src}
               controls
-              className="h-full w-full rounded-md object-contain"
+              className="w-full h-full object-contain rounded-md"
               autoPlay
               muted
               loop
@@ -80,9 +85,9 @@ export default function MediaPreview({
           )}
         </div>
         {showDownload && (
-          <div className="mt-3 flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mt-3">
             <Button size="sm" variant="outline" onClick={handleDownload}>
-              <Download className="mr-1 h-4 w-4" />
+              <Download className="h-4 w-4 mr-1" />
               Download
             </Button>
           </div>

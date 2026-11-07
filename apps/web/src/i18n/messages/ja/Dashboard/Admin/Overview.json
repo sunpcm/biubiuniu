@@ -1,21 +1,65 @@
 {
   "title": "概要",
-  "users": "ユーザー",
-  "oneTimePayments": "一括払い",
-  "monthlySubscriptions": "月間サブスクリプション",
-  "yearlySubscriptions": "年間サブスクリプション",
-  "today": "今日",
-  "yesterday": "昨日",
-  "growthRate": "成長率",
-  "newUsers": "新規ユーザー",
-  "totalUsers": "総ユーザー数",
-  "orders": "注文",
-  "revenue": "収益",
-  "count": "件数",
-  "growthTrend": "成長トレンド",
-  "totalOrders": "総注文数",
-  "newOrders": "新規注文",
-  "last7Days": "過去7日間",
-  "last30Days": "過去30日間",
-  "last90Days": "過去90日間"
+  "description": "売上・成長・利用状況をひと目で。",
+  "subtitle": "過去 {days} 日間 vs. その前の {days} 日間 · UTC",
+  "range": {
+    "label": "期間",
+    "7d": "7 日",
+    "30d": "30 日",
+    "90d": "90 日"
+  },
+  "kpi": {
+    "revenue": "純売上",
+    "revenueFootnote": "注文 {orders} 件 · 返金 {refunds}",
+    "mrr": "MRR",
+    "mrrMovement": "期間内の新規 / 解約サブスクリプション",
+    "mrrFootnote": "有効 {subscribers} 件 · トライアル {trialing} 件",
+    "signups": "新規登録",
+    "signupsFootnote": "累計 {total} ユーザー",
+    "credits": "クレジット消費",
+    "creditsFootnote": "アクティブユーザー {users} 人"
+  },
+  "delta": {
+    "vsPrevious": "前期間比",
+    "noBaseline": "比較データなし"
+  },
+  "trend": {
+    "title": "トレンド",
+    "total": "{metric}：期間合計 {value}",
+    "empty": "この期間の{metric}データはありません"
+  },
+  "metric": {
+    "revenue": "売上",
+    "signups": "登録",
+    "orders": "注文",
+    "creditsConsumed": "クレジット"
+  },
+  "breakdown": {
+    "revenueByPlan": "プラン別売上",
+    "revenueByProvider": "決済プロバイダー別売上",
+    "signupsBySource": "流入元別登録",
+    "other": "その他",
+    "direct": "直接 / 不明",
+    "empty": "この期間のデータはありません"
+  },
+  "attention": {
+    "title": "要対応",
+    "allClear": "問題なし",
+    "pastDueSubscriptions": "支払い遅延のサブスクリプション",
+    "pendingOrders": "処理中の注文（未確定）",
+    "cancelScheduled": "期間終了時に解約予定",
+    "openFeedback": "未対応のフィードバック",
+    "failedOrders": "失敗した注文",
+    "foreignCurrencyOrders": "他通貨の注文"
+  },
+  "recent": {
+    "title": "最近の注文",
+    "viewAll": "すべて見る",
+    "empty": "注文はまだありません",
+    "deletedUser": "削除済みユーザー"
+  },
+  "error": {
+    "load": "このセクションの読み込みに失敗しました。",
+    "empty": "データがありません。"
+  }
 }

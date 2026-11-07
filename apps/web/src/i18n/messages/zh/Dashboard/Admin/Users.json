@@ -1,4 +1,105 @@
 {
   "title": "用户管理",
-  "description": "管理用户（仅限管理员）"
+  "description": "管理用户（仅限管理员）",
+  "adjustCredits": {
+    "action": "调整积分",
+    "title": "调整积分",
+    "description": "为 {email} 增加、设置或扣减积分。",
+    "currentBalance": "当前余额",
+    "subscription": "订阅积分",
+    "purchased": "购买积分",
+    "total": "合计",
+    "bucketLabel": "积分桶",
+    "operationLabel": "操作",
+    "operation": {
+      "add": "增加积分",
+      "set": "设置积分",
+      "deduct": "扣减积分"
+    },
+    "amountLabel": "数量",
+    "amountPlaceholder": "例如 100",
+    "amountHint": "非负整数。设置为 0 会清空所选积分桶；增加/扣减仅影响所选积分桶。",
+    "reasonLabel": "原因（必填）",
+    "reasonPlaceholder": "为什么要调整该用户的积分？",
+    "invalidAmount": "数量必须是非负整数。",
+    "reasonRequired": "必须填写原因。",
+    "cancel": "取消",
+    "confirm": "应用",
+    "processing": "处理中...",
+    "loadFailed": "余额加载失败",
+    "success": "积分已更新，最新合计：{total}",
+    "failed": "积分更新失败"
+  },
+  "blocklist": {
+    "action": "注册黑名单",
+    "title": "注册黑名单",
+    "description": "命中以下任一规则的邮箱或 IP 将无法注册，已注册账号不受影响。",
+    "prefixesLabel": "禁用前缀",
+    "prefixesHint": "一行一条。拦截以该文本开头的邮箱，如 \"spam\" 拦截 spam123@gmail.com。",
+    "suffixesLabel": "禁用后缀",
+    "suffixesHint": "一行一条。拦截以该文本结尾的邮箱，如 \"@tempmail.com\" 或 \".ru\"。",
+    "exactLabel": "指定邮箱",
+    "exactHint": "一行一条。拦截完全一致的邮箱地址。",
+    "ipsLabel": "禁用 IP",
+    "ipsHint": "一行一条。拦截来自这些 IP 地址的注册（精确匹配）。::ffff:1.2.3.4 形式的 IPv4 映射 IPv6 会按 1.2.3.4 规则命中。",
+    "placeholder": "一行一条规则",
+    "loadFailed": "加载黑名单失败",
+    "save": "保存",
+    "saving": "保存中...",
+    "success": "黑名单已保存",
+    "failed": "保存黑名单失败"
+  },
+  "actions": {
+    "viewDetails": "查看详情"
+  },
+  "detail": {
+    "title": "用户详情",
+    "back": "返回用户列表",
+    "loadFailed": "加载用户详情失败",
+    "notFound": "用户不存在。",
+    "copied": "已复制到剪贴板",
+    "profile": {
+      "role": "角色",
+      "joined": "注册时间",
+      "stripeCustomer": "Stripe 客户",
+      "verified": "已验证",
+      "unverified": "未验证",
+      "banned": "已封禁"
+    },
+    "balance": {
+      "title": "积分余额",
+      "subscription": "订阅积分",
+      "purchased": "购买积分",
+      "total": "合计",
+      "adjust": "调整积分"
+    },
+    "subscription": {
+      "title": "订阅",
+      "none": "无有效订阅",
+      "monthlyCredits": "{credits} 积分 / 月",
+      "renewsOn": "{date} 续费",
+      "endsOn": "{date} 到期",
+      "nextGrant": "下次发放：{date}",
+      "interval": {
+        "month": "月付",
+        "year": "年付"
+      },
+      "status": {
+        "active": "生效中",
+        "trialing": "试用中",
+        "past_due": "逾期",
+        "unpaid": "未支付"
+      }
+    },
+    "lifetime": {
+      "title": "生涯统计",
+      "orders": "订单数",
+      "netRevenue": "净收入",
+      "creditsConsumed": "累计消耗积分"
+    },
+    "tabs": {
+      "credits": "积分流水",
+      "orders": "订单"
+    }
+  }
 }

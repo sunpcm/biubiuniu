@@ -1,330 +1,414 @@
-"use client";
+/**
+ * [INPUT]: Depends on @/lib/billing/stripe's fulfillCheckoutSessionById,
+ *          @/lib/billing/creem's fulfillCreemCheckoutById and
+ *          @/lib/billing/paypal's fulfillPayPalCaptureById (idempotent
+ *          fulfillment, tri-state paid/failed/pending), @/lib/auth/server's
+ *          getSession, @/config/pricing's getPlanById/getPlanCopy/
+ *          getPlanCredits/isSubscriptionPlan/isTeamPlan, @/i18n/routing's
+ *          redirect/DEFAULT_LOCALE (locale-preserving login redirect),
+ *          @/lib/metadata's constructMetadata
+ * [OUTPUT]: Exports the PaymentSuccessPage server component and generateMetadata
+ * [POS]: Landing page for every provider's checkout success_url — Stripe
+ *        (session_id), Creem (checkout_id, sent back by Creem) and PayPal
+ *        (order_id = capture id); loading the page triggers fulfillment
+ *        (belt-and-braces with the webhook); signed-out visitors take the i18n
+ *        redirect to /login with next carrying the locale prefix (LoginForm's
+ *        absolute redirect must not lose the language); a PayPal pending
+ *        capture (eCheck) renders the processing state and re-verifies on
+ *        refresh — the user-side self-healing channel when the COMPLETED
+ *        webhook is lost; terminal failures (DECLINED/FAILED) render the
+ *        failed card, never a misleading "processing"; for Creem only one-time
+ *        purchases show instant details, subscriptions keep the async
+ *        fulfillment copy; a failed ownership check shows only the generic
+ *        success state; on a team plan the success state's second button is
+ *        "invite members", going straight to /dashboard/team
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
 
-import { Button } from "@niu/ui/button";
-import { Card } from "@niu/ui/card";
-import { useUserBenefits } from "@/hooks/useUserBenefits";
-import { DEFAULT_LOCALE, Link as I18nLink, useRouter } from "@/i18n/routing";
-import confetti from "canvas-confetti";
-import { motion, Variants } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  getPlanById,
+  getPlanCopy,
+  getPlanCredits,
+  isSubscriptionPlan,
+  isTeamPlan,
+} from "@/config/pricing";
+import {
+  DEFAULT_LOCALE,
+  Link as I18nLink,
+  Locale,
+  redirect,
+} from "@/i18n/routing";
+import { getSession } from "@/lib/auth/server";
+import { fulfillCreemCheckoutById } from "@/lib/billing/creem";
+import { fulfillPayPalCaptureById } from "@/lib/billing/paypal";
+import { fulfillCheckoutSessionById } from "@/lib/billing/stripe";
+import { constructMetadata } from "@/lib/metadata";
 import {
   ArrowRight,
   CheckCircle,
-  CreditCard,
-  Home,
-  Loader2,
-  Receipt,
+  Clock,
   RefreshCw,
-  ShieldCheck,
+  UserPlus,
   XCircle,
 } from "lucide-react";
-import { useLocale } from "next-intl";
-import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
+import { CreditCard } from "lucide-react";
 
-const buildVerifySuccessUrl = ({
-  sessionId,
-  checkoutId,
-  provider,
+type Params = Promise<{ locale: string }>;
+type SearchParams = Promise<{
+  session_id?: string;
+  provider?: string;
+  checkout_id?: string;
+  subscription_id?: string;
+  order_id?: string;
+}>;
+
+export async function generateMetadata({
+  params,
 }: {
-  sessionId: string;
-  checkoutId: string;
-  provider: string;
-}) => {
-  const baseUrl = "/api/payment/verify-success";
+  params: Params;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PaymentSuccess" });
 
-  const params = new URLSearchParams();
-
-  if (provider === "stripe") {
-    params.append("session_id", sessionId);
-  } else if (provider === "creem") {
-    params.append("checkout_id", checkoutId);
-  }
-  params.append("provider", provider);
-
-  return `${baseUrl}?${params.toString()}`;
-};
-
-function SuccessContent() {
-  const locale = useLocale();
-  const router = useRouter();
-  const { mutate: revalidateBenefits } = useUserBenefits();
-  const searchParams = useSearchParams();
-
-  const sessionId = searchParams.get("session_id");
-  const checkoutId = searchParams.get("checkout_id");
-  const provider = searchParams.get("provider");
-
-  const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
-  const [paymentData, setPaymentData] = useState<{
-    message: string;
-    orderId?: string;
-    subscriptionId?: string;
-    planName?: string;
-  }>({
-    message: "Verifying your payment details...",
+  return constructMetadata({
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    locale: locale as Locale,
+    path: "/payment/success",
+    noIndex: true,
   });
+}
 
-  useEffect(() => {
-    if (provider === "stripe" && !sessionId) {
-      setStatus("error");
-      setPaymentData({
-        message: "Checkout session ID missing. Payment cannot be verified.",
-      });
-      return;
-    }
-    if (provider === "creem" && !checkoutId) {
-      setStatus("error");
-      setPaymentData({
-        message: "Checkout ID missing. Payment cannot be verified.",
-      });
-      return;
-    }
+// ----------------------------------------------------------------------------
+// Presentation shell — one layout, four states (success/processing/invalid/error)
+// ----------------------------------------------------------------------------
 
-    const verifySession = async () => {
-      try {
-        const url = buildVerifySuccessUrl({
-          sessionId: sessionId ?? "",
-          checkoutId: checkoutId ?? "",
-          provider: provider ?? "",
-        });
-        const response = await fetch(url, {
-          headers: {
-            "Accept-Language": (locale || DEFAULT_LOCALE) as string,
-          },
-        });
-        const result = await response.json();
-        if (!response.ok) {
-          throw new Error(result.error || "Verification failed.");
-        }
-
-        if (!result.success) {
-          throw new Error(result.error || "Verification failed.");
-        }
-
-        confetti({
-          particleCount: 120,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444"],
-        });
-
-        setStatus("success");
-        setPaymentData({
-          message:
-            result.data.message || "Your payment has been confirmed. Your plan has been updated.",
-          orderId: result.data.orderId,
-          subscriptionId: result.data.subscriptionId,
-          planName: result.data.planName,
-        });
-        revalidateBenefits();
-      } catch (error) {
-        setStatus("error");
-        setPaymentData({
-          message:
-            error instanceof Error ? error.message : "An error occurred during verification.",
-        });
-      }
-    };
-
-    verifySession();
-  }, [sessionId, checkoutId, provider, locale, revalidateBenefits]);
-
-  const fadeIn: Variants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.98 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-        duration: 0.4,
-      },
-    },
-  };
-
-  const renderVerifying = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-md"
-    >
-      <Card className="border-border/50 bg-background/60 flex flex-col items-center justify-center space-y-6 p-10 text-center shadow-xl backdrop-blur-xl">
-        <div className="relative">
-          <Loader2 className="text-primary relative z-10 h-16 w-16 animate-spin" />
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Verifying Payment</h1>
-          <p className="text-muted-foreground mx-auto max-w-xs text-balance">
-            {paymentData.message}
-          </p>
-        </div>
-      </Card>
-    </motion.div>
-  );
-
-  const renderSuccess = () => (
-    <motion.div
-      className="relative w-full max-w-md"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Background decoration */}
-      <Card className="border-border/50 bg-background/80 relative flex flex-col items-center overflow-hidden p-8 text-center shadow-xl backdrop-blur-xl">
-        <div className="absolute top-0 left-0 h-1 w-full bg-linear-to-r from-green-400 to-emerald-600" />
-
-        <motion.div variants={fadeIn} className="mt-2 mb-6">
-          <div className="group relative cursor-default">
-            <div className="absolute inset-0 scale-150 rounded-full bg-green-500/20 blur-2xl transition-transform duration-700 ease-out group-hover:scale-175"></div>
-            <div className="dark:to-background relative rounded-full bg-linear-to-b from-green-50 to-white p-4 shadow-sm ring-1 ring-green-100 dark:from-green-950/30 dark:ring-green-900">
-              <CheckCircle className="h-16 w-16 text-green-500" strokeWidth={1.5} />
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.h1 variants={fadeIn} className="mb-3 text-3xl font-bold tracking-tight">
-          Payment Successful!
-        </motion.h1>
-
-        <motion.p
-          variants={fadeIn}
-          className="text-muted-foreground mb-8 text-center leading-relaxed text-balance"
-        >
-          {paymentData.message}
-        </motion.p>
-
-        <motion.div variants={fadeIn} className="mb-8 w-full">
-          <div className="bg-muted/40 border-border/50 overflow-hidden rounded-xl border">
-            <div className="bg-muted/60 border-border/50 text-foreground/80 flex items-center gap-2 border-b px-4 py-3 text-sm font-medium">
-              <Receipt className="text-muted-foreground h-4 w-4" />
-              <span>Transaction Details</span>
-            </div>
-            <div className="space-y-3.5 p-4 text-sm">
-              {paymentData.orderId && (
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-muted-foreground">Order ID</span>
-                  <span className="text-foreground bg-background border-border/50 rounded border px-2 py-0.5 font-mono text-xs font-medium">
-                    {paymentData.orderId}
-                  </span>
-                </div>
-              )}
-              {paymentData.subscriptionId && (
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-muted-foreground">Subscription</span>
-                  <span
-                    className="text-foreground bg-background border-border/50 max-w-[150px] truncate rounded border px-2 py-0.5 font-mono text-xs font-medium"
-                    title={paymentData.subscriptionId}
-                  >
-                    {paymentData.subscriptionId}
-                  </span>
-                </div>
-              )}
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-muted-foreground">Plan Purchased</span>
-                <span className="text-primary flex items-center gap-1.5 font-bold">
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                  {paymentData.planName || "Premium Plan"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div variants={fadeIn} className="flex w-full flex-col gap-3 sm:flex-row">
-          <Button className="flex-1 shadow-md transition-all hover:shadow-lg" asChild size="lg">
-            <I18nLink href="/" title="Back to Home" prefetch={true}>
-              <Home className="h-4 w-4" />
-              <span>Back to Home</span>
-            </I18nLink>
-          </Button>
-          <Button className="flex-1" asChild variant="outline" size="lg">
-            <I18nLink href="/dashboard" title="Go to Dashboard" prefetch={true}>
-              <span>Dashboard</span>
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </I18nLink>
-          </Button>
-        </motion.div>
-      </Card>
-    </motion.div>
-  );
-
-  const renderError = () => (
-    <motion.div
-      className="w-full max-w-md"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <Card className="bg-background/80 relative flex flex-col items-center overflow-hidden border-red-100 p-8 text-center shadow-xl backdrop-blur-xl dark:border-red-900/30">
-        <div className="absolute top-0 left-0 h-1 w-full bg-linear-to-r from-red-400 to-rose-600" />
-
-        <motion.div variants={fadeIn} className="mt-2 mb-6">
-          <div className="relative">
-            <div className="absolute inset-0 scale-150 rounded-full bg-red-100 opacity-50 dark:bg-red-900/20"></div>
-            <div className="relative rounded-full bg-red-50 p-4 ring-1 ring-red-100 dark:bg-red-950/30 dark:ring-red-900">
-              <XCircle className="h-16 w-16 text-red-500" strokeWidth={1.5} />
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.h1 variants={fadeIn} className="mb-3 text-2xl font-bold tracking-tight">
-          Verification Failed
-        </motion.h1>
-        <motion.p
-          variants={fadeIn}
-          className="text-muted-foreground mx-auto mb-8 max-w-xs text-center text-balance"
-        >
-          {paymentData.message}
-        </motion.p>
-
-        <motion.div variants={fadeIn} className="flex w-full flex-col gap-3 sm:flex-row">
-          <Button variant="outline" className="flex-1" asChild>
-            <I18nLink href="/" title="Back to Home" prefetch={true}>
-              <CreditCard className="h-4 w-4" /> Back to Home
-            </I18nLink>
-          </Button>
-          <Button
-            className="flex-1 bg-red-600 text-white hover:bg-red-700"
-            onClick={() => router.refresh()}
-          >
-            <RefreshCw className="h-4 w-4" /> Try Again
-          </Button>
-        </motion.div>
-      </Card>
-    </motion.div>
-  );
-
+function StateCard({
+  icon,
+  accent,
+  title,
+  description,
+  children,
+}: {
+  icon: React.ReactNode;
+  accent: string;
+  title: string;
+  description: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="flex min-h-[80vh] w-full flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      {status === "verifying" && renderVerifying()}
-      {status === "success" && renderSuccess()}
-      {status === "error" && renderError()}
+    <Card className="relative w-full max-w-md overflow-hidden border-border/50 bg-card p-8 text-center shadow-xl">
+      <div className={`absolute top-0 left-0 h-1 w-full ${accent}`} />
+      <div className="mb-6 flex justify-center">{icon}</div>
+      <h1 className="mb-3 text-2xl font-bold tracking-tight">{title}</h1>
+      <p className="text-balance leading-relaxed text-muted-foreground">
+        {description}
+      </p>
+      {children}
+    </Card>
+  );
+}
+
+function ActionButtons({
+  billingLabel,
+  secondary,
+}: {
+  billingLabel: string;
+  /** Second button is caller-defined: dashboard by default; a fresh team
+   *  subscription swaps it for "invite your team" (next natural step). */
+  secondary: { href: string; children: React.ReactNode };
+}) {
+  return (
+    <div className="mt-8 flex w-full flex-col gap-3 sm:flex-row">
+      <Button className="flex-1" size="lg" asChild>
+        <I18nLink href="/dashboard/billing" prefetch={true}>
+          <CreditCard className="size-4" />
+          {billingLabel}
+        </I18nLink>
+      </Button>
+      <Button className="flex-1" variant="outline" size="lg" asChild>
+        <I18nLink href={secondary.href} prefetch={true}>
+          {secondary.children}
+        </I18nLink>
+      </Button>
     </div>
   );
 }
 
-export default function PaymentSuccessPage() {
+const successIcon = (
+  <div className="rounded-full bg-emerald-500/10 p-4 ring-1 ring-emerald-500/20">
+    <CheckCircle className="size-14 text-emerald-500" strokeWidth={1.5} />
+  </div>
+);
+
+// ----------------------------------------------------------------------------
+// Page
+// ----------------------------------------------------------------------------
+
+export default async function PaymentSuccessPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const query = await searchParams;
+  const sessionId = query.session_id;
+  const checkoutId = query.checkout_id;
+  // PayPal lands with order_id = capture id (see PayPalCheckoutButton).
+  const captureId = query.order_id;
+  const provider = query.provider ?? (sessionId ? "stripe" : undefined);
+  const locale = await getLocale();
+  const t = await getTranslations("PaymentSuccess");
+
+  // Fulfillment burns provider API calls — never expose it to anonymous
+  // visitors. The buyer is always signed in (checkout requires it).
+  const session = await getSession();
+  if (!session?.user) {
+    // Under the as-needed prefix strategy the URL prefix is the locale's only
+    // carrier: /login takes the i18n redirect to keep the language; next is the
+    // absolute path LoginForm hands to window.location.assign, so it must carry
+    // the prefix itself — otherwise a Japanese user is bounced into the English
+    // flow after signing in.
+    const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+    redirect({
+      href: {
+        pathname: "/login",
+        query: {
+          next: `${prefix}/payment/success?session_id=${sessionId ?? ""}&provider=${provider ?? ""}&checkout_id=${checkoutId ?? ""}&order_id=${captureId ?? ""}`,
+        },
+      },
+      locale,
+    });
+    return null; // redirect throws — this only satisfies TS narrowing
+  }
+
+  const buttons = (
+    <ActionButtons
+      billingLabel={t("buttons.billing")}
+      secondary={{
+        href: "/dashboard",
+        children: (
+          <>
+            {t("buttons.dashboard")}
+            <ArrowRight className="size-4" />
+          </>
+        ),
+      }}
+    />
+  );
+
+  // Webhook-fulfilled providers land here: payment confirmed, credits arrive
+  // asynchronously — the billing page reflects it moments later.
+  const asyncSuccessCard = (
+    <StateCard
+      icon={successIcon}
+      accent="bg-linear-to-r from-green-400 to-emerald-600"
+      title={t("success.title")}
+      description={t("asyncDescription")}
+    >
+      {buttons}
+    </StateCard>
+  );
+
+  let content: React.ReactNode;
+
+  if (
+    (provider === "paypal" && !captureId) ||
+    (provider === "creem" && !checkoutId)
+  ) {
+    // No verifiable handle: only the async-fulfillment copy can be shown
+    // (the webhook is the source of truth).
+    content = asyncSuccessCard;
+  } else if (provider !== "creem" && provider !== "paypal" && !sessionId) {
+    content = (
+      <StateCard
+        icon={<XCircle className="size-16 text-red-500" strokeWidth={1.5} />}
+        accent="bg-linear-to-r from-red-400 to-rose-600"
+        title={t("invalid.title")}
+        description={t("invalid.description")}
+      >
+        {buttons}
+      </StateCard>
+    );
+  } else {
+    const isCreem = provider === "creem";
+    const isPayPal = provider === "paypal";
+    let result: {
+      paid: boolean;
+      /** PayPal-only third state: the capture is dead (DECLINED/FAILED/…), refreshing is pointless */
+      failed?: boolean;
+      planId: string | null;
+      userId: string | null;
+    } | null = null;
+    try {
+      // Only fulfills when the checkout's metadata.userId matches the
+      // signed-in user; foreign ids get a read-only status check.
+      result = isCreem
+        ? await fulfillCreemCheckoutById(checkoutId!, session.user.id)
+        : isPayPal
+          ? await fulfillPayPalCaptureById(captureId!, session.user.id)
+          : await fulfillCheckoutSessionById(sessionId!, session.user.id);
+    } catch (error) {
+      console.error("Payment success fulfillment failed:", error);
+    }
+
+    // Details are only shown when the checkout verifiably belongs to the
+    // signed-in user; otherwise fall back to a generic success message.
+    const isOwner = Boolean(
+      result?.userId && result.userId === session.user.id
+    );
+    const plan =
+      isOwner && result?.paid && result.planId
+        ? getPlanById(result.planId)
+        : undefined;
+
+    if (
+      isCreem &&
+      (!result || (result.paid && !(plan && !isSubscriptionPlan(plan))))
+    ) {
+      // Creem: only a verified one-time purchase renders instant details.
+      // Subscriptions (credits arrive via subscription.paid) and checkouts we
+      // could not verify keep the async-fulfillment message — the webhook
+      // remains the source of truth.
+      content = asyncSuccessCard;
+    } else if (isPayPal && !result) {
+      // PayPal: a lookup failure is not a payment failure — the user only
+      // lands here after a successful capture call. Keep the async message;
+      // the webhook remains the source of truth.
+      content = asyncSuccessCard;
+    } else if (!result) {
+      content = (
+        <StateCard
+          icon={<XCircle className="size-16 text-red-500" strokeWidth={1.5} />}
+          accent="bg-linear-to-r from-red-400 to-rose-600"
+          title={t("error.title")}
+          description={t("error.description")}
+        >
+          {buttons}
+        </StateCard>
+      );
+    } else if (!result.paid && result.failed) {
+      // Terminal failure (eCheck bounce, risk decline): no credits, refreshing
+      // is pointless — say so plainly, never render a dead payment as
+      // "processing" forever.
+      content = (
+        <StateCard
+          icon={<XCircle className="size-16 text-red-500" strokeWidth={1.5} />}
+          accent="bg-linear-to-r from-red-400 to-rose-600"
+          title={t("failed.title")}
+          description={t("failed.description")}
+        >
+          {buttons}
+        </StateCard>
+      );
+    } else if (!result.paid) {
+      content = (
+        <StateCard
+          icon={<Clock className="size-16 text-amber-500" strokeWidth={1.5} />}
+          accent="bg-linear-to-r from-yellow-400 to-amber-600"
+          title={t("processing.title")}
+          description={t("processing.description")}
+        >
+          <p className="mt-4 text-sm text-muted-foreground">
+            {t("processing.refreshHint")}
+          </p>
+          <div className="mt-8 flex w-full flex-col gap-3 sm:flex-row">
+            <Button className="flex-1" size="lg" asChild>
+              {/* Plain anchor forces a full server re-render → re-checks the provider */}
+              <a
+                href={
+                  isCreem
+                    ? `?provider=creem&checkout_id=${encodeURIComponent(checkoutId!)}`
+                    : isPayPal
+                      ? `?provider=paypal&order_id=${encodeURIComponent(captureId!)}`
+                      : `?session_id=${encodeURIComponent(sessionId!)}`
+                }
+              >
+                <RefreshCw className="size-4" />
+                {t("buttons.refresh")}
+              </a>
+            </Button>
+            <Button className="flex-1" variant="outline" size="lg" asChild>
+              <I18nLink href="/dashboard/billing" prefetch={true}>
+                {t("buttons.billing")}
+              </I18nLink>
+            </Button>
+          </div>
+        </StateCard>
+      );
+    } else {
+      const planName = plan ? getPlanCopy(plan, locale).name : undefined;
+
+      // A team plan was just activated — the next natural step is bringing
+      // people in, so the second button becomes "invite your team".
+      const successButtons =
+        plan && isTeamPlan(plan) ? (
+          <ActionButtons
+            billingLabel={t("buttons.billing")}
+            secondary={{
+              href: "/dashboard/team",
+              children: (
+                <>
+                  <UserPlus className="size-4" />
+                  {t("buttons.inviteTeam")}
+                </>
+              ),
+            }}
+          />
+        ) : (
+          buttons
+        );
+
+      content = (
+        <StateCard
+          icon={successIcon}
+          accent="bg-linear-to-r from-green-400 to-emerald-600"
+          title={t("success.title")}
+          description={t("success.description")}
+        >
+          {plan && (
+            <div className="mt-6 overflow-hidden rounded-xl border border-border/50 bg-muted/40 text-left text-sm">
+              <div className="border-b border-border/50 bg-muted/60 px-4 py-2.5 font-medium">
+                {t("details.title")}
+              </div>
+              <div className="space-y-3 p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground">
+                    {t("details.plan")}
+                  </span>
+                  <span className="font-semibold">{planName}</span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted-foreground">
+                    {t("details.credits")}
+                  </span>
+                  <span className="font-semibold text-primary">
+                    {isSubscriptionPlan(plan)
+                      ? t("details.creditsPerMonth", {
+                          credits: getPlanCredits(plan),
+                        })
+                      : t("details.creditsValue", {
+                          credits: getPlanCredits(plan),
+                        })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          {successButtons}
+        </StateCard>
+      );
+    }
+  }
+
   return (
     <main className="container mx-auto max-w-4xl">
-      <Suspense
-        fallback={
-          <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
-            <Loader2 className="text-primary mb-4 h-12 w-12 animate-spin" />
-            <h1 className="text-muted-foreground text-xl font-medium">Loading Payment Status...</h1>
-          </div>
-        }
-      >
-        <SuccessContent />
-      </Suspense>
+      <div className="flex min-h-[80vh] w-full items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+        {content}
+      </div>
     </main>
   );
 }

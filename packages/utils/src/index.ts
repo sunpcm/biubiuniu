@@ -1,10 +1,3 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
 export function kebabToPascalCase(str: string): string {
   if (!str) return str;
   return str
@@ -18,39 +11,46 @@ export const formatCurrency = (
   currency: string | null | undefined,
   defaultCurrency = "usd",
 ): string => {
-  if (amount === null || amount === undefined || isNaN(amount)) {
+  if (amount === null || amount === undefined || Number.isNaN(amount)) {
     return "-";
   }
-  const effectiveCurrency = currency || defaultCurrency;
+  const effectiveCurrency = (currency || defaultCurrency).toUpperCase();
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: effectiveCurrency.toUpperCase(),
+      currency: effectiveCurrency,
     }).format(amount);
-  } catch (e) {
-    console.error("Error formatting currency:", e);
-    return `${amount.toFixed(2)} ${effectiveCurrency.toUpperCase()}`;
+  } catch {
+    return `${amount.toFixed(2)} ${effectiveCurrency}`;
   }
 };
 
 export function formatBytes(bytes: number, decimals = 2): string {
-  if (!+bytes) return "0 Bytes";
+  if (!Number.isFinite(bytes) || bytes === 0) return "0 Bytes";
 
   const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
+  const dm = Math.trunc(Number.isFinite(decimals) ? decimals : 2);
+  const clampedDecimals = Math.min(Math.max(dm, 0), 100);
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.min(
+    Math.max(Math.floor(Math.log(Math.abs(bytes)) / Math.log(k)), 0),
+    sizes.length - 1,
+  );
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(clampedDecimals))} ${sizes[i]}`;
 }
 
-export function formatValue(value: number | string, unit: "count" | "revenue") {
+export function formatValue(
+  value: number | string,
+  unit: "count" | "revenue",
+): string {
   if (unit === "revenue") {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(Number(value));
   }
-  return value.toLocaleString();
+  if (typeof value === "string") return value;
+  return value.toLocaleString("en-US");
 }

@@ -1,0 +1,98 @@
+{
+  "title": "账单与积分",
+  "description": "管理您的订阅、积分余额与购买记录。",
+  "balance": {
+    "title": "积分余额",
+    "subscription": "订阅积分",
+    "purchased": "购买积分",
+    "buyMore": "购买更多积分"
+  },
+  "sidebar": {
+    "subscriptionShort": "订阅",
+    "packShort": "积分包",
+    "upgrade": "升级",
+    "buyPack": "积分包",
+    "creditsTooltip": "积分余额：{credits}"
+  },
+  "plan": {
+    "title": "当前套餐",
+    "noPlan": "暂无有效订阅",
+    "noPlanDescription": "订阅套餐即可以最优价格每月获得积分。",
+    "viewPlans": "查看套餐",
+    "manage": "管理订阅",
+    "manageFailed": "无法打开账单管理页面，请稍后重试。",
+    "monthlyCredits": "每月 {credits} 积分",
+    "renewsOn": "将于 {date} 续订",
+    "endsOn": "将于 {date} 到期",
+    "cancelNotice": "您的订阅不会续订，将于 {date} 到期。",
+    "nextRefresh": "下次积分刷新：{date}",
+    "nextRefreshUtc": "UTC {date}",
+    "interval": {
+      "month": "月付",
+      "year": "年付"
+    },
+    "status": {
+      "active": "生效中",
+      "trialing": "试用中",
+      "past_due": "已逾期",
+      "unpaid": "未支付"
+    }
+  },
+  "tabs": {
+    "orders": "购买记录",
+    "credits": "积分记录"
+  },
+  "orders": {
+    "empty": "暂无购买记录。",
+    "columns": {
+      "date": "日期",
+      "plan": "套餐",
+      "type": "类型",
+      "provider": "支付渠道",
+      "credits": "积分",
+      "amount": "金额"
+    },
+    "type": {
+      "one_time": "积分包",
+      "subscription_initial": "订阅",
+      "subscription_renewal": "续订",
+      "subscription_upgrade": "升级"
+    },
+    "status": {
+      "pending": "待结算",
+      "failed": "支付失败",
+      "partially_refunded": "部分退款",
+      "refunded": "已退款"
+    },
+    "refundedAmount": "已退款 {amount}"
+  },
+  "credits": {
+    "empty": "暂无积分记录。",
+    "columns": {
+      "date": "日期",
+      "type": "类型",
+      "note": "详情",
+      "amount": "变动",
+      "balance": "变动后余额"
+    },
+    "type": {
+      "purchase": "购买积分",
+      "subscription_grant": "订阅发放",
+      "usage": "功能消耗",
+      "usage_refund": "任务失败退回",
+      "refund_revoke": "退款扣回",
+      "subscription_end_revoke": "订阅结束清零",
+      "admin_adjustment": "管理员调整",
+      "signup_bonus": "注册赠送"
+    },
+    "balanceBreakdown": "订阅 {subscription} · 购买 {purchased}"
+  },
+  "pagination": {
+    "previous": "上一页",
+    "next": "下一页",
+    "range": "第 {from}-{to} 条，共 {total} 条"
+  },
+  "loadError": "加载失败，请稍后重试。",
+  "teamWorkspaceNotice": "你正处于团队工作区——工作区内的用量将消耗团队积分池。本页展示的是你的个人账单。",
+  "teamWorkspaceCta": "前往团队页"
+}

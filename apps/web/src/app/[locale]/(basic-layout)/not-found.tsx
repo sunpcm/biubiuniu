@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { Link as I18nLink } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
@@ -8,18 +8,18 @@ export default function NotFound() {
   const t = useTranslations("NotFound");
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center">
-      <div className="px-4 text-center sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-md">
-          <div className="mb-4 text-6xl font-bold sm:text-8xl">404</div>
+    <div className="min-h-screen w-full flex items-center justify-center">
+      <div className="text-center px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md mx-auto">
+          <div className="text-6xl sm:text-8xl font-bold mb-4">404</div>
 
-          <h1 className="mb-4 text-2xl font-bold sm:text-3xl">{t("title")}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4">{t("title")}</h1>
 
-          <p className="mb-8 text-base text-gray-600 sm:text-lg dark:text-gray-400">
+          <p className="text-gray-600 dark:text-gray-400 mb-8 text-base sm:text-lg">
             {t("description")}
           </p>
 
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <I18nLink href="/">
               <Button className="w-full sm:w-auto">{t("backToHome")}</Button>
             </I18nLink>

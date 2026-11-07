@@ -1,34 +1,50 @@
 {
-  "name": "@niu/utils",
-  "version": "0.1.0",
-  "description": "Shared utility functions for the @niu monorepo",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "name": "@sunpcm/niu-utils",
+  "version": "0.1.0-next.0",
+  "description": "Framework-free formatting and data utilities for Nexty",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
-    }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "NOTICE"
+  ],
+  "sideEffects": false,
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "lint": "eslint src --report-unused-disable-directives",
+    "test": "node --test ../../test/packages/utils.test.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo \"(@niu/utils) no tests\""
-  },
-  "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0"
-  },
-  "dependencies": {
-    "clsx": "catalog:",
-    "tailwind-merge": "catalog:"
+    "prepack": "pnpm build"
   },
   "devDependencies": {
-    "@niu/tsconfig": "workspace:*",
-    "@types/react": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "^5.9.3"
   },
-  "keywords": [],
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpcm/biubiuniu.git",
+    "directory": "packages/utils"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [
+    "format",
+    "utilities"
+  ],
   "author": "",
   "license": "ISC",
-  "prettier": "@niu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

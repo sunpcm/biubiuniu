@@ -8,8 +8,10 @@
 import { getLanguageModel } from "@/config/ai-providers";
 import { apiResponse } from "@/lib/api-response";
 import { isAdmin } from "@/lib/auth/server";
-import { streamText } from "ai";
-import { z } from "zod";
+import {
+  streamText
+} from "ai";
+import { z } from 'zod';
 
 const inputSchema = z.object({
   prompt: z.string().min(1, "Prompt cannot be empty"),
@@ -20,16 +22,14 @@ const inputSchema = z.object({
 export async function POST(req: Request) {
   try {
     if (!(await isAdmin())) {
-      return apiResponse.forbidden("Admin privileges required.");
+      return apiResponse.forbidden('Admin privileges required.');
     }
 
     const rawBody = await req.json();
 
     const validationResult = inputSchema.safeParse(rawBody);
     if (!validationResult.success) {
-      return apiResponse.badRequest(
-        `Invalid input: ${validationResult.error.errors.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ")}`,
-      );
+      return apiResponse.badRequest(`Invalid input: ${validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`);
     }
 
     const { prompt, modelId, provider } = validationResult.data;
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
     });
 
     return result.toTextStreamResponse();
+
   } catch (error: any) {
     console.error("Chat generation failed:", error);
     const errorMessage = error?.message || "Failed to generate response";

@@ -1,8 +1,8 @@
 "use client";
 
-import { Badge } from "@niu/ui/badge";
-import { Button } from "@niu/ui/button";
-import { PostType } from "@niu/db/schema";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { PostType } from "@/lib/db/schema";
 import { useTagStore } from "@/stores/tagStore";
 import { Tag } from "@/types/cms";
 import { Tag as TagIcon, X } from "lucide-react";
@@ -21,7 +21,12 @@ interface TagInputProps {
   postType: PostType;
 }
 
-export function TagInput({ value, onChange, disabled, postType }: TagInputProps) {
+export function TagInput({
+  value,
+  onChange,
+  disabled,
+  postType,
+}: TagInputProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { tags, isLoading, fetchTags, addTag } = useTagStore();
@@ -43,13 +48,13 @@ export function TagInput({ value, onChange, disabled, postType }: TagInputProps)
 
   return (
     <div className="w-full">
-      <div className="mb-2 flex min-h-[40px] flex-wrap items-center gap-2 rounded-md border p-2">
+      <div className="flex flex-wrap gap-2 mb-2 min-h-[40px] items-center p-2 border rounded-md">
         {value?.map((tag) => (
           <Badge key={tag.id}>
             {tag.name}
             <button
               type="button"
-              className="ring-offset-background focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+              className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
               onClick={() => handleDeselectTag(tag.id)}
               aria-label={`Remove ${tag.name}`}
               disabled={disabled}

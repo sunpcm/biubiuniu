@@ -23,14 +23,17 @@ import { serverUploadFile, type UploadResult } from "@/lib/cloudflare/r2";
  */
 export async function fetchExternalUrlToR2(
   externalUrl: string,
-  key: string,
+  key: string
 ): Promise<UploadResult> {
   const response = await fetch(externalUrl);
   if (!response.ok) {
-    throw new Error(`Failed to fetch external URL (${response.status}): ${externalUrl}`);
+    throw new Error(
+      `Failed to fetch external URL (${response.status}): ${externalUrl}`
+    );
   }
 
-  const contentType = response.headers.get("content-type") || "application/octet-stream";
+  const contentType =
+    response.headers.get("content-type") || "application/octet-stream";
   const arrayBuffer = await response.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 

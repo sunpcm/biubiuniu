@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 interface GenerateButtonProps {
@@ -37,7 +37,11 @@ export default function GenerateButton({
   }
 
   return (
-    <Button onClick={onClick} disabled={disabled || loading} className={className}>
+    <Button
+      onClick={onClick}
+      disabled={disabled || loading}
+      className={className}
+    >
       {loading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

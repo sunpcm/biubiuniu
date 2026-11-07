@@ -1,11 +1,16 @@
 "use client";
 
 import { DynamicIcon } from "@/components/DynamicIcon";
-import { Avatar, AvatarFallback, AvatarImage } from "@niu/ui/avatar";
-import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@niu/ui/dropdown-menu";
-import { useRouter } from "@/i18n/routing";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Link as I18nLink, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/auth-client";
-import { user as userSchema } from "@niu/db/schema";
+import { isAdminUserRole } from "@/lib/auth/permissions";
+import { user as userSchema } from "@/lib/db/schema";
 import { ExternalLink, LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -56,8 +61,12 @@ export function UserInfo({ renderContainer, user }: UserInfoProps) {
             <AvatarFallback>{fallbackLetter}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col space-y-0.5">
-            <p className="text-sm leading-none font-medium">{user.name || "User"}</p>
-            <p className="text-muted-foreground text-xs leading-none">{user.email}</p>
+            <p className="text-sm font-medium leading-none">
+              {user.name || "User"}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
           </div>
         </div>
       </div>
@@ -65,44 +74,42 @@ export function UserInfo({ renderContainer, user }: UserInfoProps) {
       <DropdownMenuSeparator />
 
       {userMenus.map((menu) => (
-        <DropdownMenuItem
-          key={menu.name}
-          onClick={() => {
-            if (menu.target) {
-              window.open(menu.href, "_blank");
-            } else {
-              router.push(menu.href);
-            }
-          }}
-          className="flex cursor-pointer items-center gap-x-2"
-        >
-          {menu.icon ? (
-            <DynamicIcon name={menu.icon} className="h-4 w-4" />
-          ) : (
-            <span>{menu.name.slice(0, 1)}</span>
-          )}
-          <span>{menu.name}</span>
-          {menu.target && <ExternalLink className="h-4 w-4" />}
+        <DropdownMenuItem key={menu.name} asChild>
+          <I18nLink
+            href={menu.href}
+            target={menu.target || undefined}
+            rel={menu.target === "_blank" ? "noopener noreferrer" : undefined}
+            className="cursor-pointer flex items-center gap-x-2"
+          >
+            {menu.icon ? (
+              <DynamicIcon name={menu.icon} className="h-4 w-4" />
+            ) : (
+              <span>{menu.name.slice(0, 1)}</span>
+            )}
+            <span>{menu.name}</span>
+            {menu.target && <ExternalLink className="w-4 h-4" />}
+          </I18nLink>
         </DropdownMenuItem>
       ))}
 
-      {user.role === "admin" && (
+      {isAdminUserRole(user.role) && (
         <>
-          <DropdownMenuLabel className="text-muted-foreground text-xs font-semibold">
+          <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
             Admin Menu
           </DropdownMenuLabel>
           {adminMenus.map((menu) => (
-            <DropdownMenuItem
-              key={menu.name}
-              onClick={() => router.push(menu.href)}
-              className="flex cursor-pointer items-center gap-x-2"
-            >
-              {menu.icon ? (
-                <DynamicIcon name={menu.icon} className="h-4 w-4" />
-              ) : (
-                <span>{menu.name.slice(0, 1)}</span>
-              )}
-              <span>{menu.name}</span>
+            <DropdownMenuItem key={menu.name} asChild>
+              <I18nLink
+                href={menu.href}
+                className="cursor-pointer flex items-center gap-x-2"
+              >
+                {menu.icon ? (
+                  <DynamicIcon name={menu.icon} className="h-4 w-4" />
+                ) : (
+                  <span>{menu.name.slice(0, 1)}</span>
+                )}
+                <span>{menu.name}</span>
+              </I18nLink>
             </DropdownMenuItem>
           ))}
         </>

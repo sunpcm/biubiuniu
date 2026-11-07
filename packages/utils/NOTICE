@@ -1,0 +1,10 @@
+This package contains utility functions derived from the Nexty reference
+applications and the existing biubiuniu `packages/utils` implementation. The
+`cn` class-name helper and its clsx/tailwind-merge dependencies are maintained
+by the UI package rather than redistributed here.
+
+The package-level ISC metadata is retained from the existing package. It does
+not assert that every upstream or application-derived source incorporated in
+this repository has been re-licensed under ISC. Review the upstream source
+notices and contribution terms before publishing or redistributing this
+candidate.

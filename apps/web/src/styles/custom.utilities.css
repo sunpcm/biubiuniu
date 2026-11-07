@@ -1,8 +1,12 @@
-@import "tailwindcss";
-@import "@fontsource/science-gothic/latin.css";
+@import 'tailwindcss';
 
 @theme inline {
-  --font-science-gothic: "Science Gothic", sans-serif;
+  /* ---------------------------------------------------------------- */
+  /*  Brand face: --font-pacifico is injected by app/fonts.ts via      */
+  /*  next/font. Exposed as the font-brand utility, used by the four   */
+  /*  brand titles (echoing the handwritten logo).                     */
+  /* ---------------------------------------------------------------- */
+  --font-brand: var(--font-pacifico), 'Pacifico', cursive;
 
   @keyframes rainbow {
     0% {
@@ -46,12 +50,12 @@
   @apply text-foreground/90;
 
   .dark & {
-    @apply from-foreground to-muted-foreground bg-linear-to-b bg-clip-text text-transparent;
+    @apply bg-clip-text bg-linear-to-b from-foreground to-muted-foreground text-transparent;
   }
 }
 @utility dark {
   & .title-gradient {
-    @apply from-foreground to-muted-foreground bg-linear-to-b bg-clip-text text-transparent;
+    @apply bg-clip-text bg-linear-to-b from-foreground to-muted-foreground text-transparent;
   }
 }
 @utility theme {

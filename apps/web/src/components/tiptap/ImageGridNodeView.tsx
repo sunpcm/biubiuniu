@@ -1,9 +1,13 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
-import { Label } from "@niu/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@niu/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react";
 import { Edit2, Trash2, X } from "lucide-react";
 import { useState } from "react";
@@ -15,7 +19,12 @@ interface ImageGridItem {
   link?: string;
 }
 
-export function ImageGridNodeView({ node, updateAttributes, deleteNode, editor }: NodeViewProps) {
+export function ImageGridNodeView({
+  node,
+  updateAttributes,
+  deleteNode,
+  editor,
+}: NodeViewProps) {
   const { images, columns } = node.attrs;
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -67,9 +76,9 @@ export function ImageGridNodeView({ node, updateAttributes, deleteNode, editor }
   return (
     <NodeViewWrapper className="image-grid-wrapper my-6">
       {isEditable && (
-        <div className="bg-muted/50 flex items-center justify-between rounded-t-lg border border-b-0 p-2">
+        <div className="flex items-center justify-between p-2 bg-muted/50 rounded-t-lg border border-b-0">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-sm">
+            <span className="text-sm text-muted-foreground">
               Image Grid ({images.length} images)
             </span>
             <div className="flex gap-1">
@@ -92,14 +101,16 @@ export function ImageGridNodeView({ node, updateAttributes, deleteNode, editor }
             size="sm"
             variant="ghost"
             onClick={deleteNode}
-            className="text-destructive hover:text-destructive h-7 w-7 p-0"
+            className="h-7 w-7 p-0 text-destructive hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       )}
       <div
-        className={`grid gap-3 ${isEditable ? "rounded-b-lg border border-t-0 p-3" : ""}`}
+        className={`grid gap-3 ${
+          isEditable ? "border border-t-0 rounded-b-lg p-3" : ""
+        }`}
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
         }}
@@ -107,7 +118,7 @@ export function ImageGridNodeView({ node, updateAttributes, deleteNode, editor }
         {images.map((image: ImageGridItem, index: number) => (
           <div key={image.src} className="flex flex-col gap-1">
             <div
-              className="group bg-background relative flex items-center justify-center overflow-hidden rounded-lg border"
+              className="relative group overflow-hidden rounded-lg border bg-background flex items-center justify-center"
               style={{ aspectRatio: "1/1" }}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
@@ -115,10 +126,10 @@ export function ImageGridNodeView({ node, updateAttributes, deleteNode, editor }
               <img
                 src={image.src}
                 alt={image.alt || `Image ${index + 1}`}
-                className="h-full w-full object-contain"
+                className="w-full h-full object-contain"
               />
               {isEditable && hoveredIndex === index && (
-                <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50">
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2">
                   <Popover
                     open={editingIndex === index}
                     onOpenChange={(open) => {
@@ -152,7 +163,7 @@ export function ImageGridNodeView({ node, updateAttributes, deleteNode, editor }
                       }}
                     >
                       <div className="space-y-3">
-                        <h4 className="text-sm font-medium">Edit Image</h4>
+                        <h4 className="font-medium text-sm">Edit Image</h4>
                         <div className="space-y-2">
                           <Label htmlFor={`caption-${index}`}>Caption</Label>
                           <Input
@@ -209,7 +220,7 @@ export function ImageGridNodeView({ node, updateAttributes, deleteNode, editor }
               )}
             </div>
             {image.caption && (
-              <span className="text-muted-foreground px-1 text-center text-sm leading-tight">
+              <span className="text-sm text-muted-foreground text-center px-1 leading-tight">
                 {image.caption}
               </span>
             )}

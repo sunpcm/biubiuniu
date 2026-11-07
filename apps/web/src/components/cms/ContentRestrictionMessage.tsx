@@ -1,4 +1,4 @@
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { Link as I18nLink } from "@/i18n/routing";
 import { ArrowLeftIcon, ArrowRightIcon, LockIcon } from "lucide-react";
 

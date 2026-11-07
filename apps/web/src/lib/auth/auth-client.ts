@@ -1,33 +1,29 @@
-import {
-  emailOTPClient,
-  lastLoginMethodClient,
-  magicLinkClient,
-  oneTapClient,
-} from "better-auth/client/plugins";
-import { createAuthClient } from "better-auth/react";
+/**
+ * Client entry point of `lib/auth`. Each client capability matches its
+ * server-side counterpart; the access table is the same one `@sunpcm/niu-auth`
+ * ships, so `ImpersonationBanner` still reads `impersonatedBy` from the
+ * session type.
+ */
 
-export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.NEXT_PUBLIC_SITE_URL,
-  plugins: [
+import { createAuthClientInstance } from "@sunpcm/niu-auth/client";
+
+export const authClient = createAuthClientInstance({
+  baseURL:
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.NEXT_PUBLIC_SITE_URL,
+  capabilities: {
     ...(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-      ? [
-          oneTapClient({
+      ? {
+          oneTap: {
             clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-            // Optional client configuration:
             autoSelect: false,
             cancelOnTapOutside: true,
-            context: "signin",
-            additionalOptions: {
-              use_fedcm_for_prompt: process.env.NODE_ENV === "production",
-            },
-            promptOptions: {
-              fedCM: false, // Force better-auth to use the Google JS script (which respects additionalOptions)
-            },
-          }),
-        ]
-      : []),
-    magicLinkClient(),
-    emailOTPClient(),
-    lastLoginMethodClient(),
-  ],
+          },
+        }
+      : {}),
+    magicLink: true,
+    emailOTP: true,
+    lastLoginMethod: true,
+    organization: true,
+    admin: true,
+  },
 });

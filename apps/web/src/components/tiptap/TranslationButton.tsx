@@ -1,20 +1,25 @@
 "use client";
 
 import { Locale, LOCALE_NAMES, LOCALES } from "@/i18n/routing";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { useCompletion } from "@ai-sdk/react";
 import { Editor } from "@tiptap/react";
 import { Info, LanguagesIcon } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { Button } from "@niu/ui/button";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@niu/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@niu/ui/tooltip";
+} from "../ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface TranslationButtonProps {
   editor: Editor;
@@ -83,7 +88,9 @@ export function TranslationButton({
       const currentContent = editor.storage.markdown.getMarkdown();
 
       if (!currentContent || currentContent.trim() === "") {
-        toast.info("Content is empty. Please add some content before translating.");
+        toast.info(
+          "Content is empty. Please add some content before translating."
+        );
         return;
       }
 
@@ -98,7 +105,7 @@ export function TranslationButton({
 
       try {
         await complete(prompt);
-      } catch (_error) {
+      } catch {
         // if complete throws an error, restore the original content
         if (originalContentRef.current && editor) {
           editor.commands.setContent(originalContentRef.current);
@@ -106,10 +113,11 @@ export function TranslationButton({
         }
       }
     },
-    [editor, postType, complete],
+    [editor, postType, complete]
   );
 
-  const isAIConfigured = process.env.NEXT_PUBLIC_AI_MODEL_ID && process.env.NEXT_PUBLIC_AI_PROVIDER;
+  const isAIConfigured =
+    process.env.NEXT_PUBLIC_AI_MODEL_ID && process.env.NEXT_PUBLIC_AI_PROVIDER;
 
   if (!isAIConfigured) {
     return (
@@ -117,7 +125,7 @@ export function TranslationButton({
         <Tooltip>
           <TooltipTrigger asChild className="flex items-center justify-center">
             <div>
-              <Info className="text-muted-foreground h-4 w-4" />
+              <Info className="h-4 w-4 text-muted-foreground" />
             </div>
           </TooltipTrigger>
           <TooltipContent>
@@ -140,7 +148,9 @@ export function TranslationButton({
             title="Translate"
           >
             <LanguagesIcon className="h-4 w-4" />
-            {isTranslating && <span className="ml-1 text-xs">Translating...</span>}
+            {isTranslating && (
+              <span className="ml-1 text-xs">Translating...</span>
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

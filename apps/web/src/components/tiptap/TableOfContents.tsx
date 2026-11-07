@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, List } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -15,7 +15,10 @@ interface TableOfContentsProps {
   mobile?: boolean;
 }
 
-export function TableOfContents({ content, mobile = false }: TableOfContentsProps) {
+export function TableOfContents({
+  content,
+  mobile = false,
+}: TableOfContentsProps) {
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +76,9 @@ export function TableOfContents({ content, mobile = false }: TableOfContentsProp
 
   useEffect(() => {
     const handleScroll = () => {
-      const headingElements = tocItems.map((item) => document.getElementById(item.id));
+      const headingElements = tocItems.map((item) =>
+        document.getElementById(item.id)
+      );
 
       let currentActiveId = "";
 
@@ -122,7 +127,7 @@ export function TableOfContents({ content, mobile = false }: TableOfContentsProp
 
   if (mobile) {
     return (
-      <div className="bg-card mb-8 rounded-lg border">
+      <div className="mb-8 border rounded-lg bg-card">
         <Button
           variant="ghost"
           onClick={() => setIsOpen(!isOpen)}
@@ -132,18 +137,25 @@ export function TableOfContents({ content, mobile = false }: TableOfContentsProp
             <List className="h-5 w-5" />
             <span className="font-semibold">Table of Contents</span>
           </div>
-          {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+          {isOpen ? (
+            <ChevronUp className="h-5 w-5" />
+          ) : (
+            <ChevronDown className="h-5 w-5" />
+          )}
         </Button>
         {isOpen && (
           <div className="px-4 pb-4">
             <ul className="space-y-2 text-sm">
               {tocItems.map((item) => (
-                <li key={item.id} className={`${item.level === 3 ? "ml-4" : ""}`}>
+                <li
+                  key={item.id}
+                  className={`${item.level === 3 ? "ml-4" : ""}`}
+                >
                   <button
                     onClick={() => scrollToHeading(item.id)}
-                    className={`hover:bg-muted w-full rounded px-2 py-1 text-left transition-colors ${
+                    className={`text-left w-full py-1 px-2 rounded transition-colors hover:bg-muted ${
                       activeId === item.id
-                        ? "text-primary bg-muted font-medium"
+                        ? "text-primary font-medium bg-muted"
                         : "text-muted-foreground"
                     }`}
                   >
@@ -161,18 +173,18 @@ export function TableOfContents({ content, mobile = false }: TableOfContentsProp
   return (
     <nav className="toc-container">
       <div className="sticky top-24">
-        <div className="mb-4 flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-4">
           <List className="h-5 w-5" />
-          <h3 className="text-lg font-semibold">Table of Contents</h3>
+          <h3 className="font-semibold text-lg">Table of Contents</h3>
         </div>
         <ul className="space-y-2 text-sm">
           {tocItems.map((item) => (
             <li key={item.id} className={`${item.level === 3 ? "ml-4" : ""}`}>
               <button
                 onClick={() => scrollToHeading(item.id)}
-                className={`hover:bg-muted w-full rounded px-2 py-1 text-left transition-colors ${
+                className={`text-left w-full py-1 px-2 rounded transition-colors hover:bg-muted ${
                   activeId === item.id
-                    ? "text-primary bg-muted font-medium"
+                    ? "text-primary font-medium bg-muted"
                     : "text-muted-foreground"
                 }`}
               >

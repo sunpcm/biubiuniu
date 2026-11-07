@@ -1,41 +1,51 @@
-import { getCreditLogs } from "@/actions/usage/logs";
-import { Loader2 } from "lucide-react";
+/**
+ * [INPUT]: Depends on @/lib/metadata's constructMetadata, next-intl/server's
+ *          getTranslations, ./CreditHistoryDataTable
+ * [OUTPUT]: Exports the CreditHistoryPage page component and generateMetadata
+ * [POS]: The entry point of dashboard/(user)/credit-history — the standalone
+ *        page for personal credit transactions, sharing its source with the
+ *        billing page's credit records (getMyCreditHistory); this page carries
+ *        the large paginated detail view
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
+import { constructMetadata } from "@/lib/metadata";
+import { requireValidatedLocale } from "@/i18n/validated-locale";
+import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 import { CreditHistoryDataTable } from "./CreditHistoryDataTable";
 
-const PAGE_SIZE = 20;
+type Params = Promise<{ locale: string }>;
 
-export default async function CreditHistoryPage() {
-  const t = await getTranslations("CreditHistory");
-  const initialResult = await getCreditLogs({
-    pageIndex: 0,
-    pageSize: PAGE_SIZE,
+type MetadataProps = {
+  params: Params;
+};
+
+export async function generateMetadata({
+  params,
+}: MetadataProps): Promise<Metadata> {
+  const { locale } = await params;
+  const validatedLocale = requireValidatedLocale(locale);
+  const t = await getTranslations({
+    locale: validatedLocale,
+    namespace: "CreditHistory",
   });
 
+  return constructMetadata({
+    page: "CreditHistory",
+    title: t("title"),
+    description: t("description"),
+    locale: validatedLocale,
+    path: `/dashboard/credit-history`,
+  });
+}
+
+const PAGE_SIZE = 100;
+
+export default function CreditHistoryPage() {
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("description")}</p>
-      </div>
-      {initialResult.success && initialResult.data ? (
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center rounded-md border">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-          }
-        >
-          <CreditHistoryDataTable
-            initialData={initialResult.data.logs}
-            initialTotalCount={initialResult.data.count}
-            pageSize={PAGE_SIZE}
-          />
-        </Suspense>
-      ) : (
-        <p className="text-destructive">{initialResult.error || t("load_error")}</p>
-      )}
+    <div className="flex flex-col flex-1 min-h-0 gap-4">
+      <CreditHistoryDataTable pageSize={PAGE_SIZE} />
     </div>
   );
 }

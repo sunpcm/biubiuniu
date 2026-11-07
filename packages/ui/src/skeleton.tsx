@@ -1,4 +1,4 @@
-import { cn } from "@niu/utils";
+import { cn } from "./cn.js";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (

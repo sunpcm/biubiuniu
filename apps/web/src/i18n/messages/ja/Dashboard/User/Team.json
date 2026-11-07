@@ -1,0 +1,145 @@
+{
+  "switcher": {
+    "label": "ワークスペース",
+    "personal": "個人",
+    "createTeam": "チームを作成",
+    "manageTeam": "チーム設定",
+    "switchFailed": "ワークスペースの切り替えに失敗しました。"
+  },
+  "invite": {
+    "metaTitle": "チーム招待",
+    "metaDescription": "チームへの招待を承認します。",
+    "title": "{organizationName} に参加",
+    "invitedBy": "{inviter} があなたをチームに招待しました。共有クレジットプールを一緒に利用できます。",
+    "accept": "招待を承認",
+    "decline": "辞退する",
+    "accepting": "参加中…",
+    "accepted": "ようこそ！チームワークスペースに切り替えています…",
+    "declined": "招待を辞退しました。",
+    "invalid": "この招待は無効か、期限切れです。",
+    "invalidHint": "チームのオーナーに再送を依頼してください。",
+    "wrongAccount": "この招待は別のメールアドレス宛です。招待されたメールアドレスでログインしてから承認してください。",
+    "switchAccount": "別のアカウントでログイン",
+    "backHome": "ホームへ戻る",
+    "acceptFailed": "招待を承認できませんでした。期限切れか、シートが満席の可能性があります。"
+  },
+  "page": {
+    "metaTitle": "チーム",
+    "metaDescription": "チームワークスペースを管理：共有クレジット、メンバー、シート、サブスクリプション。",
+    "onboarding": {
+      "createTitle": "チームを作成",
+      "createDescription": "チームはひとつのクレジットプールを共有します。全員が同じ残高を利用できます。",
+      "namePlaceholder": "チーム名",
+      "createButton": "チームを作成",
+      "creating": "作成中…",
+      "createFailed": "チームを作成できませんでした。もう一度お試しください。",
+      "chooseTitle": "チームを選択",
+      "chooseDescription": "現在は個人ワークスペースです。管理するチームを選択してください。",
+      "createAnother": "新しいチームを作成",
+      "back": "戻る",
+      "switchFailed": "ワークスペースの切り替えに失敗しました。"
+    },
+    "subscription": {
+      "title": "チームプラン",
+      "noPlan": "チームサブスクリプションはありません",
+      "noPlanDescription": "チームプランに登録すると、シートと毎月の共有クレジットプールが利用できます。",
+      "viewPlans": "プランを見る",
+      "manage": "サブスクリプションを管理",
+      "manageFailed": "請求ポータルを開けませんでした。もう一度お試しください。",
+      "purchaserOnly": "サブスクリプションを管理できるのは購入したメンバーのみです。",
+      "monthlyCredits": "{credits} クレジット / 月",
+      "renewsOn": "{date} に更新",
+      "endsOn": "{date} に終了",
+      "interval": {
+        "month": "月払い",
+        "year": "年払い"
+      },
+      "status": {
+        "active": "有効",
+        "trialing": "トライアル",
+        "past_due": "支払い遅延",
+        "unpaid": "未払い"
+      }
+    },
+    "pool": {
+      "title": "共有クレジットプール",
+      "subscription": "サブスクリプションクレジット",
+      "purchased": "購入クレジット"
+    },
+    "members": {
+      "title": "メンバーとシート",
+      "seats": "{used}/{total} シート",
+      "you": "（自分）",
+      "role": {
+        "owner": "オーナー",
+        "admin": "管理者",
+        "member": "メンバー"
+      },
+      "removeTitle": "メンバーを削除",
+      "removeDescription": "{name} をチームから削除しますか？共有クレジットプールへのアクセスは直ちに失われます。",
+      "removeConfirm": "削除",
+      "removeCancel": "キャンセル",
+      "removeFailed": "メンバーを削除できませんでした。もう一度お試しください。",
+      "roleUpdateFailed": "ロールを更新できませんでした。もう一度お試しください。",
+      "invite": {
+        "emailPlaceholder": "teammate@example.com",
+        "button": "招待",
+        "sent": "招待を送信しました。",
+        "seatsFull": "シートに空きがありません。チームプランをアップグレードするか、メンバーを削除してください。",
+        "requiresPlan": "メンバーの招待にはチームプランが必要です。登録するとシートと毎月の共有クレジットプールが利用できます。",
+        "failed": "招待を送信できませんでした。もう一度お試しください。"
+      },
+      "pending": {
+        "title": "保留中の招待",
+        "expires": "{date} に期限切れ",
+        "canceled": "招待をキャンセルしました。",
+        "cancelFailed": "招待をキャンセルできませんでした。もう一度お試しください。",
+        "copyLink": "招待リンクをコピー",
+        "copyFailed": "リンクをコピーできませんでした。手動でコピーしてください。"
+      },
+      "leave": {
+        "title": "チームを退出",
+        "description": "このチームを退出しますか？共有クレジットプールへのアクセスは直ちに失われます。",
+        "confirm": "退出する",
+        "failed": "チームを退出できませんでした。もう一度お試しください。",
+        "left": "チームを退出しました。"
+      }
+    },
+    "activity": {
+      "title": "チームアクティビティ",
+      "empty": "チームアクティビティはまだありません。",
+      "deletedMember": "削除済みアカウント",
+      "columns": {
+        "date": "日時",
+        "actor": "メンバー",
+        "type": "種類",
+        "amount": "増減",
+        "balance": "変動後残高"
+      },
+      "type": {
+        "purchase": "購入",
+        "subscription_grant": "サブスクリプション付与",
+        "usage": "消費",
+        "usage_refund": "タスク返還",
+        "refund_revoke": "返金回収",
+        "subscription_end_revoke": "サブスクリプション終了",
+        "admin_adjustment": "手動調整",
+        "signup_bonus": "登録ボーナス"
+      },
+      "balanceBreakdown": "サブスク {subscription} · 購入 {purchased}"
+    },
+    "checkout": {
+      "ownerOnly": "チームプランを購入できるのはチームのオーナーのみです。",
+      "exists": "このチームには既に有効なサブスクリプションがあります。",
+      "failed": "チェックアウトを開始できませんでした。もう一度お試しください。"
+    },
+    "pagination": {
+      "previous": "前へ",
+      "next": "次へ",
+      "range": "{total} 件中 {from}-{to} 件"
+    },
+    "loadError": "データの読み込みに失敗しました。もう一度お試しください。",
+    "retry": "再試行",
+    "refresh": "再読み込み"
+  }
+}

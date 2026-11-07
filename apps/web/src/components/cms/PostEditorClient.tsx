@@ -1,10 +1,14 @@
 "use client";
 
-import { createPostAction, getPostByIdAction, updatePostAction } from "@/actions/posts/posts";
+import {
+  createPostAction,
+  getPostByIdAction,
+  updatePostAction,
+} from "@/actions/posts/posts";
 import { PostForm } from "@/components/cms/PostForm";
 import { getPostConfig } from "@/components/cms/post-config";
-import { Button } from "@niu/ui/button";
-import { PostType } from "@niu/db/schema";
+import { Button } from "@/components/ui/button";
+import { PostType } from "@/lib/db/schema";
 import { type PostWithTags } from "@/types/cms";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -18,7 +22,12 @@ interface PostEditorClientProps {
   postId?: string;
 }
 
-export function PostEditorClient({ postType, mode, r2PublicUrl, postId }: PostEditorClientProps) {
+export function PostEditorClient({
+  postType,
+  mode,
+  r2PublicUrl,
+  postId,
+}: PostEditorClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const config = getPostConfig(postType);
@@ -26,7 +35,9 @@ export function PostEditorClient({ postType, mode, r2PublicUrl, postId }: PostEd
   const [isPending, startTransition] = useTransition();
   const [initialData, setInitialData] = useState<PostWithTags | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [pageMode, setPageMode] = useState<"create" | "edit" | "duplicate">(mode);
+  const [pageMode, setPageMode] = useState<"create" | "edit" | "duplicate">(
+    mode
+  );
 
   useEffect(() => {
     if (mode === "create") {
@@ -54,14 +65,19 @@ export function PostEditorClient({ postType, mode, r2PublicUrl, postId }: PostEd
               setInitialData(duplicatedPost);
             } else {
               toast.error(`Error fetching ${config.postType} to duplicate`, {
-                description: result.error || `Failed to fetch the ${config.postType} to duplicate`,
+                description:
+                  result.error ||
+                  `Failed to fetch the ${config.postType} to duplicate`,
               });
               setInitialData(null);
               setPageMode("create");
             }
           } catch (error) {
             toast.error("Unexpected error occurred");
-            console.error(`Failed to fetch ${config.postType} for duplication:`, error);
+            console.error(
+              `Failed to fetch ${config.postType} for duplication:`,
+              error
+            );
             setInitialData(null);
             setPageMode("create");
           } finally {
@@ -123,7 +139,8 @@ export function PostEditorClient({ postType, mode, r2PublicUrl, postId }: PostEd
         router.refresh();
       } else {
         toast.error(`Error updating ${config.postType}`, {
-          description: result.error || `Failed to update the ${config.postType}`,
+          description:
+            result.error || `Failed to update the ${config.postType}`,
         });
       }
     } else {
@@ -137,7 +154,8 @@ export function PostEditorClient({ postType, mode, r2PublicUrl, postId }: PostEd
         router.push(config.routes.list);
       } else {
         toast.error(`Error creating ${config.postType} post`, {
-          description: result.error || `Failed to create the ${config.postType} post`,
+          description:
+            result.error || `Failed to create the ${config.postType} post`,
         });
       }
     }
@@ -145,10 +163,12 @@ export function PostEditorClient({ postType, mode, r2PublicUrl, postId }: PostEd
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         <p className="ml-2">
-          {pageMode === "duplicate" ? `Loading post to duplicate...` : `Loading post...`}
+          {pageMode === "duplicate"
+            ? `Loading post to duplicate...`
+            : `Loading post...`}
         </p>
       </div>
     );
@@ -156,21 +176,27 @@ export function PostEditorClient({ postType, mode, r2PublicUrl, postId }: PostEd
 
   if (mode === "edit" && !initialData) {
     return (
-      <div className="space-y-6 p-4 text-center md:p-8">
-        <h2 className="text-2xl font-bold tracking-tight">{config.postType} Not Found</h2>
+      <div className="space-y-6 p-4 md:p-8 text-center">
+        <h2 className="text-2xl font-bold tracking-tight">
+          {config.postType} Not Found
+        </h2>
         <p className="text-muted-foreground">
           The requested {config.postType} post could not be found
         </p>
-        <Button onClick={() => router.push(config.routes.list)}>Back to List</Button>
+        <Button onClick={() => router.push(config.routes.list)}>
+          Back to List
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">
-          {mode === "edit" ? `Edit ${config.postType} Post` : `Create ${config.postType} Post`}
+          {mode === "edit"
+            ? `Edit ${config.postType} Post`
+            : `Create ${config.postType} Post`}
         </h1>
       </div>
       <PostForm

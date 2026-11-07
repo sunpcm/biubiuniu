@@ -12,7 +12,7 @@ export async function scrapeWebsite(url: string): Promise<ScrapingResult> {
   const response = await fetch("https://api.firecrawl.dev/v2/scrape", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.FIRECRAWL_API_KEY}`,
+      "Authorization": `Bearer ${process.env.FIRECRAWL_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -21,8 +21,7 @@ export async function scrapeWebsite(url: string): Promise<ScrapingResult> {
         "markdown",
         {
           type: "json",
-          prompt:
-            "Extract comprehensive product information from this website including title, description, features, pricing details, company info, platforms, social links, and other relevant product data.",
+          prompt: "Extract comprehensive product information from this website including title, description, features, pricing details, company info, platforms, social links, and other relevant product data.",
           schema: {
             type: "object",
             properties: {
@@ -33,18 +32,11 @@ export async function scrapeWebsite(url: string): Promise<ScrapingResult> {
                 type: "object",
                 properties: {
                   model: { type: "string", description: "Free, Freemium, or Paid" },
-                  details: {
-                    type: "string",
-                    description:
-                      "Specific pricing information like '$9/month' or 'Free with premium options'",
-                  },
-                  freeTier: {
-                    type: "boolean",
-                    description: "Whether there's a free tier available",
-                  },
+                  details: { type: "string", description: "Specific pricing information like '$9/month' or 'Free with premium options'" },
+                  freeTier: { type: "boolean", description: "Whether there's a free tier available" },
                   trialAvailable: { type: "boolean", description: "Whether there's a free trial" },
-                  startingPrice: { type: "string", description: "Starting price if paid" },
-                },
+                  startingPrice: { type: "string", description: "Starting price if paid" }
+                }
               },
               screenshots: { type: "array", items: { type: "string" } },
               logo: { type: "string" },
@@ -55,10 +47,7 @@ export async function scrapeWebsite(url: string): Promise<ScrapingResult> {
               productName: { type: "string" },
               mainFunctionality: { type: "string" },
               targetAudience: { type: "string" },
-              businessType: {
-                type: "string",
-                description: "Type of business: SaaS, tool, app, service, etc.",
-              },
+              businessType: { type: "string", description: "Type of business: SaaS, tool, app, service, etc." },
               isOpenSource: { type: "boolean", description: "Whether the product is open source" },
               social: {
                 type: "object",
@@ -66,14 +55,14 @@ export async function scrapeWebsite(url: string): Promise<ScrapingResult> {
                   linkedin: { type: "string" },
                   facebook: { type: "string" },
                   github: { type: "string" },
-                  twitter: { type: "string" },
-                },
-              },
-            },
-          },
-        },
+                  twitter: { type: "string" }
+                }
+              }
+            }
+          }
+        }
       ],
-      includeTags: ["title", "meta", "img"],
+      includeTags: ["title", "meta", "img"]
     }),
   });
 

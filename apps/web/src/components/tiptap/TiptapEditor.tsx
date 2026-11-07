@@ -2,7 +2,7 @@
 
 import { generateAdminPresignedUploadUrl } from "@/actions/r2-resources";
 import { BLOGS_IMAGE_PATH } from "@/config/common";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import Blockquote from "@tiptap/extension-blockquote";
 import Bold from "@tiptap/extension-bold";
@@ -48,9 +48,9 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Markdown } from "tiptap-markdown";
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@niu/ui/popover";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ImageGrid, type ImageGridItem } from "./ImageGridExtension";
 import { R2ResourceSelector } from "./R2ResourceSelector";
 import { TableMenu } from "./TableMenu";
@@ -303,7 +303,7 @@ export function TiptapEditor({
           try {
             r2Error = await uploadResponse.text();
           } catch {
-            // intentionally empty
+            /* keep r2Error empty when reading the upload response body fails */
           }
           console.error("R2 Upload Error:", r2Error, uploadResponse);
           throw new Error(r2Error);
@@ -358,7 +358,7 @@ export function TiptapEditor({
   const handleImageGridFilesChange = useCallback(
     (files: File[], append: boolean = false) => {
       if (append) {
-        // 追加新图片
+        // Append new images
         const newFiles = [...imageGridFiles, ...files];
         const newPreviews = files.map((file) => URL.createObjectURL(file));
         const newCaptions = [...imageGridCaptions, ...Array(files.length).fill("")];
@@ -368,7 +368,7 @@ export function TiptapEditor({
         setImageGridCaptions(newCaptions);
         setImageGridLinks(newLinks);
       } else {
-        // 替换所有图片
+        // Replace all images
         // Clean up old preview URLs
         imageGridPreviews.forEach((url) => URL.revokeObjectURL(url));
 
@@ -480,7 +480,7 @@ export function TiptapEditor({
           try {
             r2Error = await uploadResponse.text();
           } catch {
-            // intentionally empty
+            /* keep r2Error empty when reading the upload response body fails */
           }
           console.error("R2 Upload Error:", r2Error, uploadResponse);
           toast.error(`Failed to upload ${file.name}`);

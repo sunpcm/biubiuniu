@@ -55,3 +55,14 @@
 | 邮件模板 Props 化       | Phase 2 (S7)  | 所有邮件模板原直接导入 `siteConfig`，改为通过 Props 注入 `site: SiteInfo`，符合 React 纯函数思想，Serverless 友好                  |
 | DB 包自包含化           | Phase 2 (S1)  | 数据库 schema/config/seed/migrations/drizzle.config 全部内聚到 `@niu/db` 包，db:generate/push/studio 命令由包自身管理              |
 | apps/web 依赖精简       | Phase 2 (S10) | 从 apps/web 移除直接 DB 驱动依赖（postgres, pg, @types/pg, drizzle-kit），改为通过 @niu/db 间接依赖                                |
+
+---
+
+## Phase 3 改进
+
+| 改进项                       | 阶段         | 说明                                                                                                                                              |
+| ---------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth 依赖注入工厂模式        | Phase 3 (S3) | 原 auth/index.ts 硬编码所有依赖（siteConfig/sendEmail/tracking/redis），重构为 createAuth() 工厂函数通过参数注入，实现 IoC 解耦                   |
+| Auth 客户端工厂封装          | Phase 3 (S4) | 原 auth-client.ts 硬编码配置，提取为 createBetterAuthClient() 工厂函数，消费端一行代码实例化                                                      |
+| Redis 存储接口抽象           | Phase 3 (S2) | 定义 RedisStorage 接口（get/set），避免 @niu/auth 硬依赖 @upstash/redis，支持任意兼容 Redis 实现                                                  |
+| apps/web auth 层代码精简     | Phase 3 (S7-S9) | auth/index.ts 从 214行精简至 26行，auth-client.ts 从 33行精简至 3行，server.ts 从 30行精简至 9行，总计减少 239行                                    |

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { Editor } from "@tiptap/react";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -20,12 +20,12 @@ export function TableMenu({ editor }: TableMenuProps) {
       setIsTableActive(isActive);
 
       if (isActive) {
-        // 获取当前选中的表格元素
+        // Resolve the DOM node at the current selection
         const { state } = editor;
         const { from } = state.selection;
         const node = editor.view.domAtPos(from);
 
-        // 找到表格元素
+        // Walk up to the table element
         let tableElement = node.node as HTMLElement;
         while (tableElement && tableElement.tagName !== "TABLE") {
           tableElement = tableElement.parentElement as HTMLElement;
@@ -36,7 +36,7 @@ export function TableMenu({ editor }: TableMenuProps) {
           const editorRect = editorElement.getBoundingClientRect();
           const tableRect = tableElement.getBoundingClientRect();
 
-          // 计算相对于编辑器容器的位置
+          // Compute the position relative to the editor container
           const scrollTop = editorElement.scrollTop || 0;
           const scrollLeft = editorElement.scrollLeft || 0;
 
@@ -73,7 +73,7 @@ export function TableMenu({ editor }: TableMenuProps) {
   return (
     <div
       ref={menuRef}
-      className="bg-background absolute z-50 flex items-center gap-1 rounded-md border p-1 shadow-lg"
+      className="absolute z-50 flex items-center gap-1 p-1 bg-background border rounded-md shadow-lg"
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
@@ -88,7 +88,7 @@ export function TableMenu({ editor }: TableMenuProps) {
         className="h-8 px-2"
       >
         <Plus className="h-3 w-3" />
-        <span className="ml-1 text-xs">Row↑</span>
+        <span className="text-xs ml-1">Row↑</span>
       </Button>
       <Button
         type="button"
@@ -99,7 +99,7 @@ export function TableMenu({ editor }: TableMenuProps) {
         className="h-8 px-2"
       >
         <Plus className="h-3 w-3" />
-        <span className="ml-1 text-xs">Row↓</span>
+        <span className="text-xs ml-1">Row↓</span>
       </Button>
       <Button
         type="button"
@@ -110,7 +110,7 @@ export function TableMenu({ editor }: TableMenuProps) {
         className="h-8 px-2"
       >
         <Plus className="h-3 w-3" />
-        <span className="ml-1 text-xs">Column←</span>
+        <span className="text-xs ml-1">Column←</span>
       </Button>
       <Button
         type="button"
@@ -121,10 +121,10 @@ export function TableMenu({ editor }: TableMenuProps) {
         className="h-8 px-2"
       >
         <Plus className="h-3 w-3" />
-        <span className="ml-1 text-xs">Column→</span>
+        <span className="text-xs ml-1">Column→</span>
       </Button>
 
-      <div className="bg-border mx-1 h-6 w-px" />
+      <div className="w-px h-6 bg-border mx-1" />
 
       <Button
         type="button"
@@ -135,7 +135,7 @@ export function TableMenu({ editor }: TableMenuProps) {
         className="h-8 px-2"
       >
         <Trash2 className="h-3 w-3" />
-        <span className="ml-1 text-xs">Row</span>
+        <span className="text-xs ml-1">Row</span>
       </Button>
       <Button
         type="button"
@@ -146,7 +146,7 @@ export function TableMenu({ editor }: TableMenuProps) {
         className="h-8 px-2"
       >
         <Trash2 className="h-3 w-3" />
-        <span className="ml-1 text-xs">Column</span>
+        <span className="text-xs ml-1">Column</span>
       </Button>
       <Button
         type="button"
@@ -157,7 +157,7 @@ export function TableMenu({ editor }: TableMenuProps) {
         className="h-8 px-2"
       >
         <Trash2 className="h-3 w-3" />
-        <span className="ml-1 text-xs">Table</span>
+        <span className="text-xs ml-1">Table</span>
       </Button>
     </div>
   );

@@ -4,17 +4,29 @@ import GenerateButton from "@/components/ai-demo/shared/GenerateButton";
 import ImageUploader from "@/components/ai-demo/shared/ImageUploader";
 import ModelSelector from "@/components/ai-demo/shared/ModelSelector";
 import PromptInput from "@/components/ai-demo/shared/PromptInput";
-import { Button } from "@niu/ui/button";
-import { Card, CardContent } from "@niu/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@niu/ui/collapsible";
-import { Label } from "@niu/ui/label";
-import { Slider } from "@niu/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { IMAGE_MODELS, type ImageModelConfig } from "@/config/ai-models";
-import { ChevronDown, FileText, ImagePlus, Layers, Sparkles } from "lucide-react";
+import {
+  ChevronDown,
+  FileText,
+  ImagePlus,
+  Layers,
+  Sparkles,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
-import ImageAdvancedSettings, { type ImageAdvancedValues } from "./ImageAdvancedSettings";
+import ImageAdvancedSettings, {
+  type ImageAdvancedValues,
+} from "./ImageAdvancedSettings";
 import ImageResultArea from "./ImageResultArea";
 
 function getDefaults(model: ImageModelConfig): ImageAdvancedValues {
@@ -43,29 +55,36 @@ export default function ImagePage() {
   });
 
   const currentModel = IMAGE_MODELS.find(
-    (m) => m.provider === selected.provider && m.id === selected.modelId,
+    (m) => m.provider === selected.provider && m.id === selected.modelId
   )!;
 
   const [prompt, setPrompt] = useState("");
   const [sourceImage, setSourceImage] = useState<string | null>(null);
-  const [advanced, setAdvanced] = useState<ImageAdvancedValues>(getDefaults(currentModel));
+  const [advanced, setAdvanced] = useState<ImageAdvancedValues>(
+    getDefaults(currentModel)
+  );
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [generationTime, setGenerationTime] = useState<number | undefined>();
   const [refImageOpen, setRefImageOpen] = useState(false);
   const startTimeRef = useRef<number>(0);
 
-  const handleModelChange = useCallback((value: { provider: string; modelId: string }) => {
-    setSelected(value);
-    const model = IMAGE_MODELS.find((m) => m.provider === value.provider && m.id === value.modelId);
-    if (model) {
-      setAdvanced(getDefaults(model));
-      if (!model.capabilities.imageToImage) {
-        setSourceImage(null);
-        setRefImageOpen(false);
+  const handleModelChange = useCallback(
+    (value: { provider: string; modelId: string }) => {
+      setSelected(value);
+      const model = IMAGE_MODELS.find(
+        (m) => m.provider === value.provider && m.id === value.modelId
+      );
+      if (model) {
+        setAdvanced(getDefaults(model));
+        if (!model.capabilities.imageToImage) {
+          setSourceImage(null);
+          setRefImageOpen(false);
+        }
       }
-    }
-  }, []);
+    },
+    []
+  );
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -100,10 +119,14 @@ export default function ImagePage() {
       if (advanced.background) body.background = advanced.background;
       if (advanced.outputFormat) body.outputFormat = advanced.outputFormat;
       if (advanced.seed !== undefined) body.seed = advanced.seed;
-      if (advanced.negativePrompt) body.negativePrompt = advanced.negativePrompt;
-      if (advanced.guidanceScale !== undefined) body.guidanceScale = advanced.guidanceScale;
-      if (advanced.inferenceSteps !== undefined) body.inferenceSteps = advanced.inferenceSteps;
-      if (advanced.strength !== undefined && sourceImage) body.strength = advanced.strength;
+      if (advanced.negativePrompt)
+        body.negativePrompt = advanced.negativePrompt;
+      if (advanced.guidanceScale !== undefined)
+        body.guidanceScale = advanced.guidanceScale;
+      if (advanced.inferenceSteps !== undefined)
+        body.inferenceSteps = advanced.inferenceSteps;
+      if (advanced.strength !== undefined && sourceImage)
+        body.strength = advanced.strength;
 
       const response = await fetch("/api/ai-demo/image", {
         method: "POST",
@@ -132,13 +155,13 @@ export default function ImagePage() {
   const caps = currentModel.capabilities;
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Left: Controls */}
       <Card>
-        <CardContent className="space-y-5 p-5">
+        <CardContent className="p-5 space-y-5">
           {/* Model Selector */}
           <div>
-            <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
               <Layers className="h-3.5 w-3.5" />
               {t("model")}
             </Label>
@@ -156,7 +179,7 @@ export default function ImagePage() {
 
           {/* Prompt */}
           <div>
-            <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
               <FileText className="h-3.5 w-3.5" />
               {t("prompt")}
             </Label>
@@ -177,19 +200,19 @@ export default function ImagePage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="w-full justify-between px-0 hover:bg-transparent has-[>svg]:px-0"
+                  className="w-full justify-between px-0 has-[>svg]:px-0 hover:bg-transparent"
                   disabled={loading}
                 >
-                  <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <ImagePlus className="h-3.5 w-3.5" />
                     {t("referenceImage")}
                   </span>
                   <ChevronDown
-                    className={`text-muted-foreground h-4 w-4 transition-transform ${refImageOpen ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 text-muted-foreground transition-transform ${refImageOpen ? "rotate-180" : ""}`}
                   />
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-3 pt-2">
+              <CollapsibleContent className="pt-2 space-y-3">
                 <ImageUploader
                   value={sourceImage}
                   onChange={(v) => {
@@ -200,8 +223,10 @@ export default function ImagePage() {
                 />
                 {sourceImage && caps.strength && (
                   <div>
-                    <div className="mb-2 flex items-center justify-between">
-                      <Label className="text-muted-foreground text-xs">{t("strength")}</Label>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-xs text-muted-foreground">
+                        {t("strength")}
+                      </Label>
                       <span className="text-xs font-medium tabular-nums">
                         {(advanced.strength ?? caps.strength[2]).toFixed(2)}
                       </span>
@@ -211,7 +236,9 @@ export default function ImagePage() {
                       max={caps.strength[1]}
                       step={0.05}
                       value={[advanced.strength ?? caps.strength[2]]}
-                      onValueChange={([v]) => setAdvanced((prev) => ({ ...prev, strength: v }))}
+                      onValueChange={([v]) =>
+                        setAdvanced((prev) => ({ ...prev, strength: v }))
+                      }
                       disabled={loading}
                     />
                   </div>
@@ -235,9 +262,9 @@ export default function ImagePage() {
             loading={loading}
             disabled={!prompt.trim()}
             loadingText={t("generating")}
-            className="h-11 w-full"
+            className="w-full h-11"
           >
-            <Sparkles className="mr-2 h-4 w-4" />
+            <Sparkles className="h-4 w-4 mr-2" />
             {t("generate")}
           </GenerateButton>
         </CardContent>

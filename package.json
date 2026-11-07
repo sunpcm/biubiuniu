@@ -1,6 +1,8 @@
 {
   "name": "monorepo-study-note",
+  "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +14,13 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "turbo typecheck",
-    "test": "turbo test",
+    "test": "pnpm test:engineering && pnpm test:routing && pnpm test:domain && pnpm test:packages",
+    "test:engineering": "node --test --test-concurrency=1 test/engineering.test.mjs",
+    "test:routing": "node --import tsx --test --test-concurrency=1 test/domain/routing.test.mjs",
+    "test:domain": "TSX_TSCONFIG_PATH=test/domain/tsconfig.json node --experimental-test-module-mocks --import tsx --test --test-concurrency=1 test/domain/*.test.ts",
+    "build:packages": "turbo run build --filter=\"@sunpcm/niu-*\"",
+    "check:boundaries": "node scripts/dependency-boundaries.mjs .",
+    "test:packages": "pnpm build:packages && pnpm check:boundaries && node --test --test-concurrency=1 test/packages/*.test.mjs",
     "clean": "rimraf **/node_modules",
     "clean:cache": "rimraf .turbo **/dist **/.vite **/.webpack_cache **/node_modules.vite",
     "clean:all": "pnpm run clean:cache && pnpm run clean",
@@ -23,16 +31,46 @@
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.26.0",
+  "engines": {
+    "node": ">=24.15.0 <25",
+    "pnpm": "10.26.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@opentelemetry/api": "1.9.1",
+      "@prisma/client": "7.4.2",
+      "prisma": "7.4.2"
+    }
+  },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
+    "@google/genai": "1.43.0",
     "@niu/eslint-config": "workspace:*",
-    "@niu/prettier-config": "workspace:*",
+    "@sunpcm/niu-auth": "workspace:*",
+    "@sunpcm/niu-commerce": "workspace:*",
+    "@sunpcm/niu-contracts": "workspace:*",
+    "@sunpcm/niu-db": "workspace:*",
+    "@sunpcm/niu-feature-nano": "workspace:*",
+    "@sunpcm/niu-next": "workspace:*",
+    "@sunpcm/niu-persistence-pg": "workspace:*",
+    "@sunpcm/niu-prettier-config": "workspace:*",
+    "@sunpcm/niu-ui": "workspace:*",
+    "@sunpcm/niu-utils": "workspace:*",
+    "better-auth": "1.4.7",
+    "creem": "^1.6.0",
     "cross-env": "^10.1.0",
+    "drizzle-orm": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "next": "catalog:",
     "plop": "^4.0.1",
+    "postgres": "^3.4.7",
     "prettier": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "rimraf": "^6.1.2",
+    "stripe": "^18.0.0",
+    "tsx": "catalog:",
     "turbo": "^2.7.2"
   },
   "lint-staged": {
@@ -43,5 +81,5 @@
       "eslint --fix"
     ]
   },
-  "prettier": "@niu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

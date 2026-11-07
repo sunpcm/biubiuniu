@@ -1,8 +1,8 @@
 "use client";
 
 import ProviderBadge from "@/components/ai-demo/shared/ProviderBadge";
-import { Button } from "@niu/ui/button";
-import { Card, CardContent } from "@niu/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { downloadBase64File } from "@/lib/downloadFile";
 import { Check, Copy, Download, Loader2, Palette } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -65,16 +65,18 @@ export default function ImageResultArea({
   if (loading) {
     return (
       <Card className="h-full">
-        <CardContent className="flex h-full min-h-[400px] flex-col items-center justify-center p-4">
-          <div className="flex flex-col items-center justify-center gap-4 text-center">
+        <CardContent className="p-4 h-full flex flex-col items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center justify-center text-center gap-4">
             <div className="relative">
-              <div className="bg-primary/10 flex h-16 w-16 animate-pulse items-center justify-center rounded-full">
-                <Loader2 className="text-primary h-8 w-8 animate-spin" />
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
               </div>
             </div>
             <div>
-              <p className="text-lg font-semibold">{t("generating")}</p>
-              <p className="text-muted-foreground mt-1 text-sm tabular-nums">{elapsed}s</p>
+              <p className="font-semibold text-lg">{t("generating")}</p>
+              <p className="text-sm text-muted-foreground mt-1 tabular-nums">
+                {elapsed}s
+              </p>
             </div>
           </div>
         </CardContent>
@@ -86,14 +88,16 @@ export default function ImageResultArea({
   if (!imageUrl) {
     return (
       <Card className="h-full">
-        <CardContent className="flex h-full min-h-[400px] flex-col items-center justify-center p-4">
-          <div className="flex flex-col items-center justify-center gap-3 text-center">
-            <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full">
-              <Palette className="text-muted-foreground/50 h-8 w-8" />
+        <CardContent className="p-4 h-full flex flex-col items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center justify-center text-center gap-3">
+            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+              <Palette className="h-8 w-8 text-muted-foreground/50" />
             </div>
             <div>
-              <p className="text-lg font-semibold">{t("emptyStateTitle")}</p>
-              <p className="text-muted-foreground mt-1 text-sm">{t("emptyState")}</p>
+              <p className="font-semibold text-lg">{t("emptyStateTitle")}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t("emptyState")}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -103,15 +107,20 @@ export default function ImageResultArea({
 
   return (
     <Card className="h-full">
-      <CardContent className="flex h-full flex-col p-4">
+      <CardContent className="p-4 h-full flex flex-col">
         {/* Image */}
-        <div className="relative min-h-[400px] flex-1">
-          <Image src={imageUrl} alt="Generated image" className="rounded-md object-contain" fill />
+        <div className="relative flex-1 min-h-[400px]">
+          <Image
+            src={imageUrl}
+            alt="Generated image"
+            className="rounded-md object-contain"
+            fill
+          />
         </div>
 
         {/* Metadata bar */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-          <div className="text-muted-foreground flex items-center gap-2 text-xs">
+        <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             {provider && <ProviderBadge provider={provider} />}
             {modelName && <span>{modelName}</span>}
             {generationTime !== undefined && (
@@ -133,15 +142,20 @@ export default function ImageResultArea({
                 className="h-7 text-xs"
               >
                 {copied ? (
-                  <Check className="mr-1 h-3.5 w-3.5" />
+                  <Check className="h-3.5 w-3.5 mr-1" />
                 ) : (
-                  <Copy className="mr-1 h-3.5 w-3.5" />
+                  <Copy className="h-3.5 w-3.5 mr-1" />
                 )}
                 {copied ? t("promptCopied") : t("copyPrompt")}
               </Button>
             )}
-            <Button size="sm" variant="outline" onClick={handleDownload} className="h-7 text-xs">
-              <Download className="mr-1 h-3.5 w-3.5" />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDownload}
+              className="h-7 text-xs"
+            >
+              <Download className="h-3.5 w-3.5 mr-1" />
               {t("download")}
             </Button>
           </div>

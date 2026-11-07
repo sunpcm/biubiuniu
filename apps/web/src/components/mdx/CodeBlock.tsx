@@ -50,9 +50,9 @@ const CodeBlock = (allProps: CodeBlockProps) => {
   }
 
   return (
-    <div className="group not-prose relative">
+    <div className="relative group not-prose">
       <CopyButton
-        className="absolute top-2.5 right-2.5 z-10 rounded-md p-1 text-gray-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-gray-600/70 hover:text-gray-200 focus:opacity-100 print:hidden"
+        className="absolute top-2.5 right-2.5 z-10 p-1 rounded-md text-gray-400 hover:text-gray-200 hover:bg-gray-600/70 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 print:hidden"
         text={codeTextToCopy}
       />
       <pre {...restPreAttributes} className={`${preClassName || ""}`.trim()}>

@@ -1,8 +1,8 @@
 {
   "Home": {
     "title": "BiuBiuNiu",
-    "tagLine": "A Modern Next.js Full-Stack SaaS Template",
-    "description": "A production-ready Next.js and Supabase starter template for building modern SaaS applications. Launch your content, AI, or subscription service faster."
+    "tagLine": "Cool Tools Collection",
+    "description": "A collection of experimental AI creation tools and utilities maintained by Xiaoxun and friends."
   },
   "Login": {
     "title": "Welcome back",
@@ -63,57 +63,77 @@
         "icon": "ShoppingCart"
       },
       {
-        "name": "Subscription",
-        "href": "/dashboard/subscription",
-        "icon": "WalletCards"
+        "name": "Billing",
+        "href": "/dashboard/billing",
+        "icon": "CreditCard"
+      },
+      {
+        "name": "Team",
+        "href": "/dashboard/team",
+        "icon": "Users"
       },
       {
         "name": "Credit History",
         "href": "/dashboard/credit-history",
         "icon": "Coins"
+      },
+      {
+        "name": "My Feedback",
+        "href": "/dashboard/my-feedbacks",
+        "icon": "MessageSquare"
       }
     ],
     "AdminMenus": [
       {
         "name": "Overview",
-        "href": "/dashboard/overview",
+        "href": "/dashboard/admin/overview",
         "icon": "LayoutDashboard"
       },
       {
         "name": "Users",
-        "href": "/dashboard/users",
+        "href": "/dashboard/admin/users",
         "icon": "Users"
       },
       {
         "name": "Orders",
-        "href": "/dashboard/orders",
+        "href": "/dashboard/admin/orders",
         "icon": "ShoppingCart"
       },
       {
-        "name": "Prices",
-        "href": "/dashboard/prices",
-        "icon": "DollarSign"
+        "name": "Coupons",
+        "href": "/dashboard/admin/coupons",
+        "icon": "TicketPercent"
+      },
+      {
+        "name": "Credits",
+        "href": "/dashboard/admin/credits",
+        "icon": "Coins"
       },
       {
         "name": "Blogs",
-        "href": "/dashboard/blogs",
+        "href": "/dashboard/admin/blogs",
         "icon": "Rss"
       },
       {
         "name": "Glossary",
-        "href": "/dashboard/glossary",
+        "href": "/dashboard/admin/glossary",
         "icon": "BookOpen"
       },
       {
         "name": "R2 Files",
-        "href": "/dashboard/r2-resources",
+        "href": "/dashboard/admin/r2-resources",
         "icon": "FileBox"
+      },
+      {
+        "name": "Feedbacks",
+        "href": "/dashboard/admin/feedbacks",
+        "icon": "MessageSquareText"
       }
     ]
   },
   "Blogs": {
     "title": "Blog Posts",
-    "description": "Insights on Next.js ecosystem and BiuBiuNiu template updates.",
+    "description": "Insights on Next.js ecosystem and NEXTY.DEV template updates.",
     "emptyState": {
       "title": "No blog posts",
       "description": "We are creating exciting content, please stay tuned!"
@@ -144,6 +164,7 @@
     "title": "AI Capabilities",
     "description": "Production-ready AI components for chat, image generation, and video generation.",
     "metaDescription": "Explore AI capabilities including chat, image generation, and video generation with multiple providers.",
+    "disabled": "AI generation is temporarily unavailable.",
     "hub": {
       "chatTitle": "AI Chat",
       "chatDescription": "Single-turn and multi-turn conversations powered by 18+ language models from OpenAI, Anthropic, Google, DeepSeek, xAI, and OpenRouter.",
@@ -327,6 +348,10 @@
   "Header": {
     "links": [
       {
+        "name": "Nano Banana",
+        "href": "/nano"
+      },
+      {
         "name": "Features",
         "href": "/#features"
       },
@@ -342,35 +367,9 @@
       {
         "name": "Blog",
         "href": "/blog"
-      },
-      {
-        "name": "Demo",
-        "href": "#",
-        "items": [
-          {
-            "name": "Niu Demo",
-            "href": "https://demo.biubiuniu.com/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "Next.js SaaS Boilerplate"
-          },
-          {
-            "name": "AI Image Generator Demo",
-            "href": "https://flux-kontext.biubiuniu.com/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "AI Image Generator Demo Based on BiuBiuNiu"
-          },
-          {
-            "name": "Directory Boilerplate Demo",
-            "href": "https://dofollow.tools/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "Directory Boilerplate Demo Based on BiuBiuNiu"
-          }
-        ]
       }
-    ]
+    ],
+    "nanoClosed": "(new tasks paused)"
   },
   "Footer": {
     "Copyright": "Copyright © {year} {name} All rights reserved.",
@@ -389,9 +388,9 @@
       },
       "unsubscribe": {
         "title": "Newsletter Unsubscription",
-        "success": "You have successfully unsubscribed from Niu newsletters.",
+        "success": "You have successfully unsubscribed from Nexty newsletters.",
         "emailPrefix": "Email:",
-        "regretMessage": "You can resubscribe anytime to receive the latest Niu updates and tutorials.",
+        "regretMessage": "You can resubscribe anytime to receive the latest Nexty updates and tutorials.",
         "errorGeneric": "An error occurred while processing your unsubscribe request",
         "errorNoToken": "No unsubscribe token provided",
         "errorMessage": "Please make sure you're using the correct unsubscribe link. If the problem persists, contact our support team for assistance.",
@@ -438,12 +437,12 @@
           "links": [
             {
               "name": "Docs",
-              "href": "https://docs.biubiuniu.com/docs",
+              "href": "https://docs.nexty.dev/docs",
               "target": "_blank"
             },
             {
               "name": "Roadmap",
-              "href": "https://biubiuniu.com/roadmap"
+              "href": "https://nexty.dev/roadmap"
             }
           ]
         },
@@ -458,11 +457,6 @@
             {
               "href": "/zh",
               "name": "中文",
-              "useA": true
-            },
-            {
-              "href": "/ja",
-              "name": "日本語",
               "useA": true
             }
           ]

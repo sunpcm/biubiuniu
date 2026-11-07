@@ -1,30 +1,26 @@
+/**
+ * Server-only wiring of `lib/auth` guards. Guard rules live in
+ * `@sunpcm/niu-auth` (importable in plain Node); `@sunpcm/niu-next` injects
+ * `next/headers` and the per-request `React.cache`. The fresh channel re-reads
+ * ban state and live membership on every call.
+ */
+
 import "server-only";
 
-import { auth } from "@/lib/auth";
-import { db } from "@niu/db";
-import { user as userSchema } from "@niu/db/schema";
-import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { auth, policyStore } from "@/lib/auth";
+import { createNextServerGuards } from "@sunpcm/niu-next";
 
-export const getSession = async () => {
-  const session = await auth.api.getSession({ headers: await headers() });
-  return session;
-};
+export {
+  createServerGuards,
+  type ServerGuardsDeps,
+  type SessionAuthClient,
+  type WorkspaceContext,
+} from "@/lib/auth/guards";
 
-export const isAdmin = async (): Promise<boolean> => {
-  const session = await getSession();
-  const user = session?.user;
-  if (!user) {
-    redirect("/login");
-  }
-
-  const userDataResults = await db
-    .select({ role: userSchema.role })
-    .from(userSchema)
-    .where(eq(userSchema.id, user.id))
-    .limit(1);
-
-  const userData = userDataResults[0];
-  return !!userData && userData.role === "admin";
-};
+export const {
+  getSession,
+  getFreshSession,
+  getWorkspaceContext,
+  isAdmin,
+  isSuperAdmin,
+} = createNextServerGuards({ auth, policyStore });

@@ -1,4 +1,5 @@
 import { getVideoTaskStatus } from "@/lib/ai/video";
+import { isAdminUserRole } from "@/lib/auth/permissions";
 import { getSession } from "@/lib/auth/server";
 import { apiResponse } from "@/lib/api-response";
 
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
   if (!session?.user) {
     return apiResponse.unauthorized("Please sign in to use the AI demo.");
   }
-  if ((session.user as { role?: string }).role !== "admin") {
+  if (!isAdminUserRole(session.user.role)) {
     return apiResponse.forbidden("Admin privileges required.");
   }
 

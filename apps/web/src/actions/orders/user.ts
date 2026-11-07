@@ -1,77 +1,85 @@
-"use server";
+/**
+ * [INPUT]: Depends on @/lib/db and the schema's orders table, @/lib/auth/server's
+ *          getSession, @/config/pricing's getPlanName, next-intl/server's getLocale
+ * [OUTPUT]: Exports getMyOrders, MyOrderItem (server action + type)
+ * [POS]: The user side of actions/orders — the data source for the billing page's
+ *        order history; planName is resolved from config/pricing by request locale,
+ *        so the UI carries zero translation burden
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
 
-import { actionResponse, ActionResult } from "@/lib/action-response";
-import { getSession } from "@/lib/auth/server";
-import { db } from "@niu/db";
-import { orders as ordersSchema } from "@niu/db/schema";
-import { getErrorMessage } from "@/lib/error-utils";
-import { and, count, desc, eq, ilike, or, sql, type SQL } from "drizzle-orm";
-import { z } from "zod";
+'use server';
 
-const FilterSchema = z.object({
-  pageIndex: z.coerce.number().default(0),
-  pageSize: z.coerce.number().default(10),
-  filter: z.string().optional(),
-  provider: z.string().optional(),
-  orderType: z.string().optional(),
-  status: z.string().optional(),
-});
+import { getPlanName, type PaymentProvider } from '@/config/pricing';
+import { actionResponse, ActionResult } from '@/lib/action-response';
+import { getSession } from '@/lib/auth/server';
+import { db } from '@/lib/db';
+import { orders, OrderStatus, OrderType } from '@/lib/db/schema';
+import { getLogger } from '@/lib/logger';
+import { count, desc, eq } from 'drizzle-orm';
+import { getLocale } from 'next-intl/server';
 
-export type GetMyOrdersResult = ActionResult<{
-  orders: (typeof ordersSchema.$inferSelect)[];
-  totalCount: number;
-}>;
+const logger = getLogger('orders.user')
 
-export async function getMyOrders(
-  params: z.infer<typeof FilterSchema>,
-): Promise<GetMyOrdersResult> {
-  const session = await getSession();
-  const user = session?.user;
-  if (!user) return actionResponse.unauthorized();
+export interface MyOrderItem {
+  id: string
+  planId: string
+  /** Localized plan display name resolved from config/pricing. */
+  planName: string
+  orderType: OrderType
+  status: OrderStatus
+  provider: PaymentProvider
+  creditsGranted: number
+  amountTotal: number
+  amountRefunded: number
+  currency: string
+  createdAt: Date
+}
+
+/** Paginated purchase history for the signed-in user. */
+export async function getMyOrders(params: {
+  pageIndex: number
+  pageSize: number
+}): Promise<ActionResult<{ items: MyOrderItem[]; total: number }>> {
+  const session = await getSession()
+  const user = session?.user
+  if (!user) return actionResponse.unauthorized()
+
+  const { pageIndex, pageSize } = params
+  const where = eq(orders.userId, user.id)
 
   try {
-    const { pageIndex, pageSize, filter, provider, orderType, status } = FilterSchema.parse(params);
+    const locale = await getLocale()
+    const [rows, [{ total }]] = await Promise.all([
+      db
+        .select({
+          id: orders.id,
+          planId: orders.planId,
+          orderType: orders.orderType,
+          status: orders.status,
+          provider: orders.provider,
+          creditsGranted: orders.creditsGranted,
+          amountTotal: orders.amountTotal,
+          amountRefunded: orders.amountRefunded,
+          currency: orders.currency,
+          createdAt: orders.createdAt,
+        })
+        .from(orders)
+        .where(where)
+        .orderBy(desc(orders.createdAt))
+        .limit(pageSize)
+        .offset(pageIndex * pageSize),
+      db.select({ total: count() }).from(orders).where(where),
+    ])
 
-    const baseWhere = eq(ordersSchema.userId, user.id);
-    const optionalConditions: SQL[] = [];
-    if (provider) {
-      optionalConditions.push(eq(ordersSchema.provider, provider));
-    }
-    if (orderType) {
-      optionalConditions.push(eq(ordersSchema.orderType, orderType));
-    }
-    if (status) {
-      optionalConditions.push(eq(ordersSchema.status, status));
-    }
-    if (filter) {
-      optionalConditions.push(
-        or(
-          ilike(ordersSchema.providerOrderId, `%${filter}%`),
-          sql`CAST(${ordersSchema.id} AS TEXT) ILIKE ${`%${filter}%`}`,
-        ) as SQL,
-      );
-    }
-    const whereClause: SQL = optionalConditions.length
-      ? (and(baseWhere, ...optionalConditions) as SQL)
-      : baseWhere;
+    const items = rows.map((row) => ({
+      ...row,
+      planName: getPlanName(row.planId, locale),
+    }))
 
-    const ordersQuery = db
-      .select()
-      .from(ordersSchema)
-      .where(whereClause)
-      .orderBy(desc(ordersSchema.createdAt))
-      .offset(pageIndex * pageSize)
-      .limit(pageSize);
-
-    const totalCountQuery = db.select({ value: count() }).from(ordersSchema).where(whereClause);
-
-    const [orders, totalCountResult] = await Promise.all([ordersQuery, totalCountQuery]);
-
-    const totalCount = totalCountResult[0]?.value ?? 0;
-
-    return actionResponse.success({ orders, totalCount });
+    return actionResponse.success({ items, total })
   } catch (error) {
-    console.error("Error getting my orders", error);
-    return actionResponse.error(getErrorMessage(error));
+    logger.error({ err: error, userId: user.id }, 'Failed to load user orders.')
+    return actionResponse.error('Failed to load orders.')
   }
 }

@@ -1,163 +1,190 @@
+/**
+ * [INPUT]: Depends on @/actions/credits' getMyCreditHistory,
+ *          @/lib/db/schema's CreditTransactionType (type only),
+ *          @/hooks/use-data-table's useDataTable,
+ *          the data-table component family of @/components/shared, ./Columns
+ * [OUTPUT]: Exports the CreditHistoryDataTable component
+ * [POS]: Table container of dashboard/(user)/credit-history — consumed by
+ *        page.tsx; type dropdown filter (server-side type param) + pagination
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
 "use client";
 
-import { CreditLog, getCreditLogs } from "@/actions/usage/logs";
-import { Button } from "@niu/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@niu/ui/table";
-import { flexRender, getCoreRowModel, PaginationState, useReactTable } from "@tanstack/react-table";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { getMyCreditHistory } from "@/actions/credits";
+import {
+  DataTableContainer,
+  DataTableEmptyState,
+} from "@/components/shared/data-table-container";
+import { DataTableToolbar } from "@/components/shared/data-table-toolbar";
+import {
+  PinnedTableCell,
+  PinnedTableHead,
+} from "@/components/shared/pinned-column";
+import { TablePagination } from "@/components/shared/table-elements";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
+import { useDataTable } from "@/hooks/use-data-table";
+import type { CreditTransactionType } from "@/lib/db/schema";
+import { useLocale, useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { toast } from "sonner";
-import { getColumns } from "./Columns";
+import { getColumns, type CreditHistoryItem } from "./Columns";
+
+// subscription_cycle_expire is a bookkeeping row already filtered out
+// server-side — it never enters the filter
+const FILTER_TYPES = [
+  "purchase",
+  "subscription_grant",
+  "usage",
+  "usage_refund",
+  "refund_revoke",
+  "subscription_end_revoke",
+  "admin_adjustment",
+  "signup_bonus",
+] as const satisfies readonly CreditTransactionType[];
 
 interface CreditHistoryDataTableProps {
-  initialData: CreditLog[];
-  initialTotalCount: number;
   pageSize?: number;
 }
 
 export function CreditHistoryDataTable({
-  initialData,
-  initialTotalCount,
-  pageSize = 4,
+  pageSize = 20,
 }: CreditHistoryDataTableProps) {
   const t = useTranslations("CreditHistory");
+  const locale = useLocale();
 
-  const [data, setData] = useState<CreditLog[]>(initialData);
-  const [totalCount, setTotalCount] = useState(initialTotalCount);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: pageSize,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const columns = useMemo(() => getColumns(t, locale), [t, locale]);
 
-  const pageCount = useMemo(
-    () => Math.ceil(totalCount / pagination.pageSize),
-    [totalCount, pagination.pageSize],
-  );
-
-  const columns = useMemo(() => getColumns(t), [t]);
-
-  useEffect(() => {
-    const fetchPage = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const result = await getCreditLogs({
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-        });
-        if (result.success && result.data) {
-          setData(result.data.logs);
-          setTotalCount(result.data.count);
-        } else {
-          throw new Error(result.error || t("load_error"));
-        }
-      } catch (err: any) {
-        const errorMessage = err.message || t("load_error");
-        setError(errorMessage);
-        toast.error("Error", { description: errorMessage });
-        setData([]);
-        setTotalCount(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPage();
-  }, [pagination.pageIndex, pagination.pageSize, t]);
-
-  const table = useReactTable({
+  const {
+    table,
     data,
-    columns,
+    isLoading,
+    isInitialLoading,
+    isFetching,
+    isPlaceholderData,
+    isError,
+    error,
+    pagination,
+    totalCount,
     pageCount,
-    state: {
-      pagination,
+    filters,
+    updateFilter,
+    refetch,
+  } = useDataTable<CreditHistoryItem, { type: string }>({
+    columns,
+    queryKey: ["credit-history"],
+    pageSize,
+    initialFilters: { type: "" },
+    fetchData: async ({ pageIndex, pageSize, filters }) => {
+      const result = await getMyCreditHistory({
+        pageIndex,
+        pageSize,
+        type: (filters.type || undefined) as CreditTransactionType | undefined,
+      });
+
+      if (result.success && result.data) {
+        return {
+          data: result.data.items,
+          totalCount: result.data.total,
+        };
+      }
+
+      if (!result.success) {
+        toast.error(t("load_error"), { description: result.error });
+      }
+
+      return null;
     },
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    manualFiltering: true,
   });
+
+  const hasData = data.length > 0;
 
   return (
-    <div className="space-y-4">
-      {error && (
-        <div className="mb-4 flex items-center space-x-2 rounded border border-red-400 bg-red-100 p-4 text-red-600">
-          <AlertCircle className="h-5 w-5" />
-          <span>
-            {t("load_error")}: {error}
-          </span>
-        </div>
+    <div className="flex flex-col flex-1 min-h-0 gap-4">
+      <DataTableToolbar onRefresh={refetch} isRefreshing={isFetching}>
+        <Select
+          value={filters.type || "all"}
+          onValueChange={(value) =>
+            updateFilter("type", value === "all" ? "" : value)
+          }
+        >
+          <SelectTrigger className="w-[200px] h-8 text-xs">
+            <SelectValue placeholder={t("filter_type_all")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("filter_type_all")}</SelectItem>
+            {FILTER_TYPES.map((type) => (
+              <SelectItem key={type} value={type}>
+                {t(`type_${type}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </DataTableToolbar>
+
+      {isError && error && (
+        <div className="text-sm text-destructive">{error.message}</div>
       )}
 
-      <div className="relative max-h-[calc(100vh-270px)] min-h-[200px] overflow-y-auto rounded-md border">
-        {isLoading && (
-          <div className="bg-background/50 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs">
-            <Loader2 className="text-primary h-8 w-8 animate-spin" />
-          </div>
-        )}
+      <DataTableContainer
+        isInitialLoading={isInitialLoading}
+        isFetching={isPlaceholderData}
+        hasData={hasData}
+        columnCount={columns.length}
+        fillAvailableSpace
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
+                  <PinnedTableHead key={header.id} header={header} />
                 ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length
-              ? table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : !isLoading && (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      {t("no_records")}
-                    </TableCell>
-                  </TableRow>
-                )}
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <PinnedTableCell key={cell.id} cell={cell} />
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <DataTableEmptyState
+                colSpan={columns.length}
+                message={t("no_records")}
+              />
+            )}
           </TableBody>
         </Table>
-      </div>
+      </DataTableContainer>
 
-      <div className="flex items-center justify-between space-x-2">
-        <div className="text-muted-foreground text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} ({totalCount}{" "}
-          Logs)
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage() || isLoading}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage() || isLoading}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <TablePagination
+        pageIndex={pagination.pageIndex}
+        pageCount={pageCount}
+        totalItems={totalCount}
+        isLoading={isLoading}
+        onPrevious={() => table.previousPage()}
+        onNext={() => table.nextPage()}
+        pageSize={pagination.pageSize}
+        onPageSizeChange={(size) => table.setPageSize(size)}
+        onPageChange={(index) => table.setPageIndex(index)}
+        showFirstLast={pageCount > 5}
+        infoMode="range"
+      />
     </div>
   );
 }

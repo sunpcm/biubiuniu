@@ -21,21 +21,23 @@ export default function LoginPage() {
 
   if (session?.user) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-4 w-4 animate-spin" />
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="w-4 h-4 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center py-12">
+    <div className="flex items-center justify-center flex-1 py-12">
       <div className="flex flex-col space-y-6">
         <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t("title")}
+          </h1>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
 
-        <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
+        <Suspense fallback={<Loader2 className="w-4 h-4 animate-spin" />}>
           <LoginForm className="w-[300px]" />
         </Suspense>
       </div>

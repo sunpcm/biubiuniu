@@ -1,21 +1,29 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { Link as I18nLink, LOCALE_NAMES, routing } from "@/i18n/routing";
-import { cn } from "@niu/utils";
+import { cn } from "@/lib/utils";
 import { useLocaleStore } from "@/stores/localeStore";
+import en from "@/i18n/messages/en/common.json";
+import ja from "@/i18n/messages/ja/common.json";
+import zh from "@/i18n/messages/zh/common.json";
 import { ArrowRight, Globe, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+
+const COMMON_MESSAGES = { en, zh, ja } as const;
 
 export function LanguageDetectionAlert() {
   const [countdown, setCountdown] = useState(10); // countdown 10s and dismiss
   const [isVisible, setIsVisible] = useState(false);
   const locale = useLocale();
   const [detectedLocale, setDetectedLocale] = useState<string | null>(null);
-  const [alertMessages, setAlertMessages] = useState<any>(null);
-  const { showLanguageAlert, setShowLanguageAlert, dismissLanguageAlert, getLangAlertDismissed } =
-    useLocaleStore();
+  const {
+    showLanguageAlert,
+    setShowLanguageAlert,
+    dismissLanguageAlert,
+    getLangAlertDismissed,
+  } = useLocaleStore();
 
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
@@ -49,14 +57,6 @@ export function LanguageDetectionAlert() {
   }, [locale, getLangAlertDismissed, setShowLanguageAlert]);
 
   useEffect(() => {
-    if (detectedLocale) {
-      import(`@/i18n/messages/${detectedLocale}/common.json`).then((mod) => {
-        setAlertMessages(mod.default?.LanguageDetection ?? mod.LanguageDetection);
-      });
-    }
-  }, [detectedLocale]);
-
-  useEffect(() => {
     let timer: NodeJS.Timeout;
 
     if (showLanguageAlert && countdown > 0) {
@@ -76,24 +76,30 @@ export function LanguageDetectionAlert() {
     }
   }, [countdown, showLanguageAlert, handleDismiss]);
 
-  if (!showLanguageAlert || !detectedLocale || !alertMessages) return null;
+  if (!showLanguageAlert || !detectedLocale) return null;
+
+  const messages =
+    COMMON_MESSAGES[detectedLocale as keyof typeof COMMON_MESSAGES] ?? en;
+  const alertMessages = messages.LanguageDetection;
 
   return (
     <div
       className={cn(
-        "fixed top-16 right-0 z-50 mx-4 max-w-xs sm:right-4 sm:max-w-sm",
+        "fixed top-16 right-0 sm:right-4 z-50 mx-4 max-w-xs sm:max-w-sm",
         "transform transition-all duration-300 ease-in-out",
-        isVisible ? "translate-x-0 translate-y-0 opacity-100" : "translate-x-full opacity-0",
+        isVisible
+          ? "translate-x-0 translate-y-0 opacity-100"
+          : "translate-x-full opacity-0"
       )}
       role="banner"
       aria-live="polite"
       aria-label="Language detection alert"
     >
-      <div className="bg-background/95 border-border relative rounded-xl border p-4 shadow-lg backdrop-blur-md">
+      <div className="bg-background/95 backdrop-blur-md border border-border rounded-xl shadow-lg p-4 relative">
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-2 right-2 h-6 w-6 opacity-50 hover:opacity-100"
+          className="absolute right-2 top-2 h-6 w-6 opacity-50 hover:opacity-100"
           onClick={handleDismiss}
           aria-label="Dismiss language suggestion"
         >
@@ -101,12 +107,14 @@ export function LanguageDetectionAlert() {
         </Button>
 
         <div className="pr-8">
-          <div className="mb-3 flex items-center gap-2">
-            <Globe className="text-primary h-4 w-4" />
-            <h3 className="text-foreground text-sm font-medium">{alertMessages.title}</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <Globe className="h-4 w-4 text-primary" />
+            <h3 className="font-medium text-sm text-foreground">
+              {alertMessages.title}
+            </h3>
           </div>
 
-          <p className="text-muted-foreground mb-4 text-xs leading-relaxed">
+          <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
             {alertMessages.description}
           </p>
 
@@ -117,10 +125,10 @@ export function LanguageDetectionAlert() {
                 title={`${alertMessages.switchTo} ${LOCALE_NAMES[detectedLocale]}`}
                 locale={detectedLocale as any}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg px-3 py-2",
+                  "flex items-center gap-2 px-3 py-2 rounded-lg",
                   "bg-primary text-primary-foreground hover:bg-primary/90",
                   "text-sm font-medium transition-colors",
-                  "group focus:ring-primary/50 focus:ring-2 focus:outline-hidden",
+                  "group focus:outline-hidden focus:ring-2 focus:ring-primary/50"
                 )}
                 aria-label={`${alertMessages.switchTo} ${LOCALE_NAMES[detectedLocale]}`}
               >
@@ -131,11 +139,11 @@ export function LanguageDetectionAlert() {
               </I18nLink>
             </Button>
 
-            <span className="text-muted-foreground text-xs">{countdown}s</span>
+            <span className="text-xs text-muted-foreground">{countdown}s</span>
           </div>
         </div>
 
-        <div className="from-primary/10 pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r to-transparent opacity-50" />
+        <div className="absolute inset-0 rounded-xl bg-linear-to-r from-primary/10 to-transparent pointer-events-none opacity-50" />
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import { getSession } from "@/lib/auth/server";
-import { user as userSchema } from "@niu/db/schema";
+import { user as userSchema } from "@/lib/db/schema";
 import { constructMetadata } from "@/lib/metadata";
+import { requireValidatedLocale } from "@/i18n/validated-locale";
 import { Metadata } from "next";
-import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import Settings from "./Setting";
@@ -15,10 +15,13 @@ type MetadataProps = {
   params: Params;
 };
 
-export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
+  const validatedLocale = requireValidatedLocale(locale);
   const t = await getTranslations({
-    locale,
+    locale: validatedLocale,
     namespace: "Settings",
   });
 
@@ -26,7 +29,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
     page: "Settings",
     title: t("title"),
     description: t("description"),
-    locale: locale as Locale,
+    locale: validatedLocale,
     path: `/dashboard/settings`,
   });
 }

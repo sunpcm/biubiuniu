@@ -1,4 +1,6 @@
-import { cn } from "@niu/utils";
+"use client";
+
+import { cn } from "./cn.js";
 import React from "react";
 
 interface ChoiceboxGroupProps {
@@ -29,7 +31,7 @@ export const ChoiceboxGroup = ({
       {showLabel && label && <label className="font-sans text-[13px] text-gray-900">{label}</label>}
       <div className={cn("flex gap-4", direction === "row" ? "flex-row" : "flex-col")}>
         {React.Children.map(children, (child) => {
-          const props = disabled
+          const injectedProps: Record<string, unknown> = disabled
             ? {
                 onChange,
                 type,
@@ -41,7 +43,10 @@ export const ChoiceboxGroup = ({
                 type,
                 valueSelected: value,
               };
-          return React.cloneElement(child as React.ReactElement<any>, props);
+          return React.cloneElement(
+            child as React.ReactElement<Record<string, unknown>>,
+            injectedProps,
+          );
         })}
       </div>
     </div>
@@ -51,8 +56,8 @@ export const ChoiceboxGroup = ({
 const getChoiceboxGroupClasses = (isSelected: boolean, type: "radio" | "checkbox") => {
   let className = "relative border w-4 h-4 duration-200";
   if (type === "radio") {
-    className +=
-      " rounded-[50%] after:w-2 after:h-2 after:rounded-[50%] after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 bg-background-100";
+      className +=
+        " rounded-[50%] after:w-2 after:h-2 after:rounded-[50%] after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 bg-background";
     if (isSelected) {
       className += " border-blue-900 after:bg-blue-900 after:scale-100";
     } else {
@@ -63,7 +68,7 @@ const getChoiceboxGroupClasses = (isSelected: boolean, type: "radio" | "checkbox
     if (isSelected) {
       className += " bg-blue-900 border-blue-900";
     } else {
-      className += " bg-background-100 border-gray-500";
+      className += " bg-background border-gray-500";
     }
   }
 
@@ -128,7 +133,7 @@ ChoiceboxGroup.Item = ({
           <span
             className={cn(
               "font-medium",
-              disabled ? "text-gray-500" : isSelected ? "text-blue-900" : "text-gray-1000",
+              disabled ? "text-gray-500" : isSelected ? "text-blue-900" : "text-gray-950",
             )}
           >
             {title}

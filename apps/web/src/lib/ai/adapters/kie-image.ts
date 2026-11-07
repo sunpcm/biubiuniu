@@ -62,7 +62,10 @@ async function ensureImageUrl(imageData: string): Promise<string> {
 /**
  * Submit image generation task to KIE
  */
-async function submitImageTask(input: ImageGenerationInput, apiKey: string): Promise<string> {
+async function submitImageTask(
+  input: ImageGenerationInput,
+  apiKey: string
+): Promise<string> {
   const url = `${KIE_BASE_URL}/api/v1/jobs/createTask`;
 
   const payload: Record<string, any> = {
@@ -83,7 +86,7 @@ async function submitImageTask(input: ImageGenerationInput, apiKey: string): Pro
   }
 
   // Add output format (KIE uses "jpg" not "jpeg", default to "png")
-  const fmt = input.outputFormat === "jpeg" ? "jpg" : input.outputFormat || "png";
+  const fmt = input.outputFormat === "jpeg" ? "jpg" : (input.outputFormat || "png");
   payload.input.output_format = fmt;
 
   // Add reference image for I2I
@@ -127,7 +130,7 @@ async function pollTaskStatus(
   taskId: string,
   apiKey: string,
   maxAttempts = 60,
-  intervalMs = 3000,
+  intervalMs = 3000
 ): Promise<string> {
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const response = await fetch(
@@ -137,7 +140,7 @@ async function pollTaskStatus(
         headers: {
           Authorization: `Bearer ${apiKey}`,
         },
-      },
+      }
     );
 
     if (!response.ok) {
@@ -213,7 +216,7 @@ async function downloadImage(imageUrl: string): Promise<ImageGenerationResult> {
  * Generate image with KIE
  */
 export async function generateImageWithKIE(
-  input: ImageGenerationInput,
+  input: ImageGenerationInput
 ): Promise<ImageGenerationResult> {
   const apiKey = process.env.KIE_API_KEY;
   if (!apiKey) {

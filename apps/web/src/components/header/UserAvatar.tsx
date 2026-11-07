@@ -1,14 +1,14 @@
 "use client";
 
 import LoginButton from "@/components/header/LoginButton";
-import { Avatar, AvatarFallback, AvatarImage } from "@niu/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@niu/ui/dropdown-menu";
-import { user as userSchema } from "@niu/db/schema";
+} from "@/components/ui/dropdown-menu";
+import { user as userSchema } from "@/lib/db/schema";
 import { UserInfo } from "./UserInfo";
 
 type User = typeof userSchema.$inferSelect;

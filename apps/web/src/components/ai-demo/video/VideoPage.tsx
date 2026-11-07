@@ -4,15 +4,11 @@ import GenerateButton from "@/components/ai-demo/shared/GenerateButton";
 import ImageUploader from "@/components/ai-demo/shared/ImageUploader";
 import ModelSelector from "@/components/ai-demo/shared/ModelSelector";
 import PromptInput from "@/components/ai-demo/shared/PromptInput";
-import { Card, CardContent } from "@niu/ui/card";
-import { Label } from "@niu/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@niu/ui/tabs";
-import {
-  VIDEO_MODELS,
-  type VideoModelCapabilities,
-  getVideoModelsByType,
-} from "@/config/ai-models";
-import { cn } from "@niu/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VIDEO_MODELS, type VideoModelCapabilities, getVideoModelsByType } from "@/config/ai-models";
+import { cn } from "@/lib/utils";
 import { Clock, FileText, ImagePlus, Layers, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
@@ -27,16 +23,16 @@ function getDefaults(capabilities: VideoModelCapabilities): VideoAdvancedValues 
   return {
     aspectRatio: capabilities.aspectRatios?.[0],
     resolution: capabilities.resolutions?.[0],
-    generateAudio: capabilities.generateAudio
-      ? (capabilities.generateAudioDefault ?? false)
-      : undefined,
+    generateAudio: capabilities.generateAudio ? (capabilities.generateAudioDefault ?? false) : undefined,
     cameraFixed: capabilities.cameraFixed ? false : undefined,
   };
 }
 
 export default function VideoPage() {
   const t = useTranslations("AIDemo.video");
-  const [activeTab, setActiveTab] = useState<"text-to-video" | "image-to-video">("text-to-video");
+  const [activeTab, setActiveTab] = useState<
+    "text-to-video" | "image-to-video"
+  >("text-to-video");
   const [selected, setSelected] = useState<{
     provider: string;
     modelId: string;
@@ -47,13 +43,17 @@ export default function VideoPage() {
 
   const models = activeTab === "text-to-video" ? T2V_MODELS : I2V_MODELS;
   const currentModel =
-    models.find((m) => m.provider === selected.provider && m.id === selected.modelId) ?? models[0];
+    models.find(
+      (m) => m.provider === selected.provider && m.id === selected.modelId
+    ) ?? models[0];
 
   const [prompt, setPrompt] = useState("");
-  const [duration, setDuration] = useState(String(currentModel.supportedDurations[0]));
+  const [duration, setDuration] = useState(
+    String(currentModel.supportedDurations[0])
+  );
   const [sourceImage, setSourceImage] = useState<string | null>(null);
   const [advanced, setAdvanced] = useState<VideoAdvancedValues>(() =>
-    getDefaults(currentModel.capabilities),
+    getDefaults(currentModel.capabilities)
   );
   const [taskId, setTaskId] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -77,14 +77,19 @@ export default function VideoPage() {
     setTaskId(null);
   };
 
-  const handleModelChange = useCallback((value: { provider: string; modelId: string }) => {
-    setSelected(value);
-    const model = VIDEO_MODELS.find((m) => m.provider === value.provider && m.id === value.modelId);
-    if (model) {
-      setDuration(String(model.supportedDurations[0]));
-      setAdvanced(getDefaults(model.capabilities));
-    }
-  }, []);
+  const handleModelChange = useCallback(
+    (value: { provider: string; modelId: string }) => {
+      setSelected(value);
+      const model = VIDEO_MODELS.find(
+        (m) => m.provider === value.provider && m.id === value.modelId
+      );
+      if (model) {
+        setDuration(String(model.supportedDurations[0]));
+        setAdvanced(getDefaults(model.capabilities));
+      }
+    },
+    []
+  );
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -146,7 +151,7 @@ export default function VideoPage() {
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="mb-6 grid w-full max-w-md grid-cols-2">
+      <TabsList className="grid w-full grid-cols-2 max-w-md mb-6">
         <TabsTrigger value="text-to-video" disabled={loading}>
           {t("textToVideo")}
         </TabsTrigger>
@@ -158,13 +163,13 @@ export default function VideoPage() {
       {/* Both tabs share the same layout — only model list & image section differ */}
       {(["text-to-video", "image-to-video"] as const).map((tab) => (
         <TabsContent key={tab} value={tab} className="mt-0">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left: Controls */}
             <Card>
-              <CardContent className="space-y-5 p-5">
+              <CardContent className="p-5 space-y-5">
                 {/* Model Selector */}
                 <div>
-                  <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+                  <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
                     <Layers className="h-3.5 w-3.5" />
                     {t("model")}
                   </Label>
@@ -182,7 +187,7 @@ export default function VideoPage() {
 
                 {/* Prompt */}
                 <div>
-                  <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+                  <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
                     <FileText className="h-3.5 w-3.5" />
                     {t("prompt")}
                   </Label>
@@ -190,7 +195,9 @@ export default function VideoPage() {
                     value={prompt}
                     onChange={setPrompt}
                     onSubmit={handleGenerate}
-                    placeholder={isI2V ? t("motionPlaceholder") : t("promptPlaceholder")}
+                    placeholder={
+                      isI2V ? t("motionPlaceholder") : t("promptPlaceholder")
+                    }
                     disabled={loading}
                     maxLength={5000}
                   />
@@ -199,7 +206,7 @@ export default function VideoPage() {
                 {/* Duration pills */}
                 {currentModel.supportedDurations.length > 0 && (
                   <div>
-                    <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
                       <Clock className="h-3.5 w-3.5" />
                       {t("duration")}
                     </Label>
@@ -211,12 +218,12 @@ export default function VideoPage() {
                           disabled={loading}
                           onClick={() => setDuration(String(d))}
                           className={cn(
-                            "h-10 min-w-[72px] rounded-lg border px-4 text-sm font-medium transition-all",
+                            "h-10 min-w-[72px] px-4 rounded-lg border text-sm font-medium transition-all",
                             "hover:border-primary/50",
-                            "disabled:cursor-not-allowed disabled:opacity-50",
+                            "disabled:opacity-50 disabled:cursor-not-allowed",
                             duration === String(d)
                               ? "border-primary bg-primary/10 text-primary"
-                              : "border-border bg-background text-foreground",
+                              : "border-border bg-background text-foreground"
                           )}
                         >
                           {t("seconds", { count: d })}
@@ -237,7 +244,7 @@ export default function VideoPage() {
                 {/* Reference Image (only for I2V tab) */}
                 {isI2V && (
                   <div>
-                    <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+                    <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
                       <ImagePlus className="h-3.5 w-3.5" />
                       {t("referenceImage")}
                     </Label>
@@ -265,9 +272,9 @@ export default function VideoPage() {
                   loading={loading}
                   disabled={!prompt.trim() || (isI2V && !sourceImage)}
                   loadingText={t("generating")}
-                  className="h-11 w-full"
+                  className="w-full h-11"
                 >
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <Sparkles className="h-4 w-4 mr-2" />
                   {t("generate")}
                 </GenerateButton>
               </CardContent>

@@ -1,4 +1,4 @@
-import { cn } from "@niu/utils";
+import { cn } from "@/lib/utils";
 
 interface CalloutProps {
   icon?: string;
@@ -6,7 +6,12 @@ interface CalloutProps {
   type?: "default" | "warning" | "danger";
 }
 
-export function Callout({ children, icon, type = "default", ...props }: CalloutProps) {
+export function Callout({
+  children,
+  icon,
+  type = "default",
+  ...props
+}: CalloutProps) {
   return (
     <div
       className={cn("my-6 flex items-start rounded-md border border-l-4 p-4", {

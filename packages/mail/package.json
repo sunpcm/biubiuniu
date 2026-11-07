@@ -12,8 +12,7 @@
   },
   "scripts": {
     "lint": "eslint src --report-unused-disable-directives",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo \"(@niu/mail) no tests\""
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"
@@ -26,5 +25,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "prettier": "@niu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

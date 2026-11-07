@@ -1,22 +1,39 @@
 {
-  "name": "@niu/prettier-config",
-  "version": "1.0.0",
-  "description": "Shared Prettier config for the monorepo",
+  "name": "@sunpcm/niu-prettier-config",
+  "version": "0.1.0-next.0",
+  "description": "Shared Prettier config for Nexty packages",
   "main": "index.cjs",
   "exports": {
     ".": "./index.cjs"
   },
+  "files": [
+    "index.cjs"
+  ],
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpcm/biubiuniu.git",
+    "directory": "packages/configs/prettier-config"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "prettier-plugin-tailwindcss": "catalog:"
+  },
   "peerDependencies": {
-    "prettier": "catalog:"
+    "prettier": ">=3.5.1 <4"
   },
   "keywords": [
     "prettier",
     "prettier-config",
+    "tailwindcss",
     "monorepo"
   ],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "prettier-plugin-tailwindcss": "^0.7.2"
-  }
+  "prettier": "@sunpcm/niu-prettier-config"
 }

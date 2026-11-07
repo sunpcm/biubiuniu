@@ -1,5 +1,5 @@
-import { redis } from "@/lib/upstash";
-import { REDIS_KEYS_CONFIGS } from "@/lib/upstash/redis-keys";
+import { redis } from "@/lib/redis";
+import { REDIS_KEYS_CONFIGS } from "@/lib/redis/redis-keys";
 import type { VideoGenerationTask } from "./video";
 
 // TODO [Persistent Storage]: Redis is used as a short-lived cache (TTL = 1 hour).

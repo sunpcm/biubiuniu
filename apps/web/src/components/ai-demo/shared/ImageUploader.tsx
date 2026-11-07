@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { FileUp, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback } from "react";
@@ -69,7 +69,7 @@ export default function ImageUploader({
       };
       reader.readAsDataURL(file);
     },
-    [maxSizeMB, onChange],
+    [maxSizeMB, onChange]
   );
 
   const handleDrop = useCallback(
@@ -78,7 +78,7 @@ export default function ImageUploader({
       const file = e.dataTransfer.files[0];
       if (file) handleFile(file);
     },
-    [handleFile],
+    [handleFile]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +88,7 @@ export default function ImageUploader({
 
   if (value) {
     return (
-      <div className={`relative h-64 overflow-hidden rounded-md border ${className || ""}`}>
+      <div className={`relative border rounded-md overflow-hidden h-64 ${className || ""}`}>
         <Button
           size="icon"
           variant="destructive"
@@ -98,19 +98,24 @@ export default function ImageUploader({
         >
           <X className="h-4 w-4" />
         </Button>
-        <Image src={value} alt="Uploaded image" fill className="object-contain" />
+        <Image
+          src={value}
+          alt="Uploaded image"
+          fill
+          className="object-contain"
+        />
       </div>
     );
   }
 
   return (
     <label
-      className={`hover:border-primary/50 flex h-64 cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 transition-colors ${className || ""}`}
+      className={`border-2 border-dashed rounded-md p-8 h-64 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors ${className || ""}`}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >
-      <FileUp className="text-muted-foreground mb-4 h-10 w-10" />
-      <span className="text-muted-foreground text-center text-sm">
+      <FileUp className="h-10 w-10 text-muted-foreground mb-4" />
+      <span className="text-muted-foreground text-sm text-center">
         Drag & drop or click to upload
         <br />
         Max size: {maxSizeMB}MB

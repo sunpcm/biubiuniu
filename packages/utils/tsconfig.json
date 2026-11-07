@@ -1,7 +1,14 @@
 {
-  "extends": "@niu/tsconfig/react.json",
   "compilerOptions": {
-    "noEmit": true
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2024"],
+    "strict": true,
+    "noEmit": true,
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

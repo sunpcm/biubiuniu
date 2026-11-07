@@ -14,11 +14,11 @@
 
 import ModelSelector from "@/components/ai-demo/shared/ModelSelector";
 import CopyButton from "@/components/shared/CopyButton";
-import { Badge } from "@niu/ui/badge";
-import { Button } from "@niu/ui/button";
-import { Card, CardContent } from "@niu/ui/card";
-import { Label } from "@niu/ui/label";
-import { Textarea } from "@niu/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { LANGUAGE_MODELS } from "@/config/ai-models";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
@@ -40,15 +40,15 @@ import { toast } from "sonner";
 function TypingIndicator() {
   return (
     <div className="flex justify-start">
-      <div className="flex max-w-[80%] items-end gap-2">
-        <div className="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm">
+      <div className="flex items-end gap-2 max-w-[80%]">
+        <div className="shrink-0 h-8 w-8 rounded-full bg-primary flex items-center justify-center shadow-sm">
           <Bot className="h-4 w-4 text-white" />
         </div>
-        <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-          <div className="flex h-4 items-center gap-1">
-            <span className="bg-muted-foreground/50 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
-            <span className="bg-muted-foreground/50 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
-            <span className="bg-muted-foreground/50 h-2 w-2 animate-bounce rounded-full" />
+        <div className="rounded-2xl rounded-bl-sm px-4 py-3 bg-muted shadow-sm">
+          <div className="flex gap-1 items-center h-4">
+            <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:-0.3s]" />
+            <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:-0.15s]" />
+            <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce" />
           </div>
         </div>
       </div>
@@ -56,27 +56,33 @@ function TypingIndicator() {
   );
 }
 
-function ReasoningBlock({ text, isStreaming }: { text: string; isStreaming?: boolean }) {
+function ReasoningBlock({
+  text,
+  isStreaming,
+}: {
+  text: string;
+  isStreaming?: boolean;
+}) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="border-primary/20 bg-primary/5 mb-2 overflow-hidden rounded-lg border">
+    <div className="mb-2 rounded-lg border border-primary/20 bg-primary/5 overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-primary hover:bg-primary/10 flex w-full items-center gap-2 px-3 py-2 text-xs font-medium transition-colors"
+        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
       >
         <Zap className="h-3 w-3" />
         <span>Reasoning</span>
         {isStreaming && (
-          <span className="bg-primary ml-1 inline-block h-3 w-1 animate-pulse rounded-sm" />
+          <span className="ml-1 inline-block w-1 h-3 bg-primary animate-pulse rounded-sm" />
         )}
         {expanded ? (
-          <ChevronDown className="ml-auto h-3 w-3" />
+          <ChevronDown className="h-3 w-3 ml-auto" />
         ) : (
-          <ChevronRight className="ml-auto h-3 w-3" />
+          <ChevronRight className="h-3 w-3 ml-auto" />
         )}
       </button>
       {expanded && (
-        <div className="text-muted-foreground border-primary/20 border-t px-3 pt-2 pb-3 text-xs leading-relaxed whitespace-pre-wrap">
+        <div className="px-3 pb-3 text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed border-t border-primary/20 pt-2">
           {text}
         </div>
       )}
@@ -84,7 +90,13 @@ function ReasoningBlock({ text, isStreaming }: { text: string; isStreaming?: boo
   );
 }
 
-function MessageBubble({ message, isStreaming }: { message: any; isStreaming: boolean }) {
+function MessageBubble({
+  message,
+  isStreaming,
+}: {
+  message: any;
+  isStreaming: boolean;
+}) {
   const isUser = message.role === "user";
 
   const textContent =
@@ -93,16 +105,19 @@ function MessageBubble({ message, isStreaming }: { message: any; isStreaming: bo
       .map((p: any) => p.text)
       .join("") ?? "";
 
-  const reasoningParts = message.parts?.filter((p: any) => p.type === "reasoning") ?? [];
+  const reasoningParts =
+    message.parts?.filter((p: any) => p.type === "reasoning") ?? [];
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} group`}>
       <div
-        className={`flex max-w-[80%] items-end gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+        className={`flex items-end gap-2 max-w-[80%] ${
+          isUser ? "flex-row-reverse" : "flex-row"
+        }`}
       >
         {/* Avatar */}
         <div
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm ${
+          className={`shrink-0 h-8 w-8 rounded-full flex items-center justify-center shadow-sm ${
             isUser ? "bg-secondary text-secondary-foreground" : "bg-primary"
           }`}
         >
@@ -130,13 +145,15 @@ function MessageBubble({ message, isStreaming }: { message: any; isStreaming: bo
 
           <div
             className={`relative rounded-2xl px-4 py-3 shadow-sm ${
-              isUser ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-muted rounded-bl-sm"
+              isUser
+                ? "rounded-br-sm bg-primary text-primary-foreground"
+                : "rounded-bl-sm bg-muted"
             }`}
           >
-            <div className="text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="whitespace-pre-wrap text-sm leading-relaxed">
               {textContent}
               {isStreaming && !isUser && (
-                <span className="bg-foreground/60 ml-0.5 inline-block h-4 w-0.5 animate-pulse align-middle" />
+                <span className="inline-block w-0.5 h-4 bg-foreground/60 ml-0.5 animate-pulse align-middle" />
               )}
             </div>
 
@@ -145,7 +162,7 @@ function MessageBubble({ message, isStreaming }: { message: any; isStreaming: bo
               <CopyButton
                 text={textContent}
                 variant="bubble"
-                className={`absolute -top-2 ${isUser ? "left-2" : "right-2"} opacity-0 transition-opacity group-hover:opacity-100`}
+                className={`absolute -top-2 ${isUser ? "left-2" : "right-2"} opacity-0 group-hover:opacity-100 transition-opacity`}
               />
             )}
           </div>
@@ -180,7 +197,7 @@ export default function MultiTurnChat() {
           modelId: selectedRef.current.modelId,
           provider: selectedRef.current.provider,
         }),
-      }),
+      })
   );
 
   const { messages, sendMessage, status, setMessages } = useChat({
@@ -210,7 +227,8 @@ export default function MultiTurnChat() {
   };
 
   const isLoading = status === "streaming" || status === "submitted";
-  const showTypingIndicator = isLoading && messages[messages.length - 1]?.role === "user";
+  const showTypingIndicator =
+    isLoading && messages[messages.length - 1]?.role === "user";
 
   // Auto-scroll to bottom within the chat viewport
   useEffect(() => {
@@ -220,15 +238,15 @@ export default function MultiTurnChat() {
   }, [messages, showTypingIndicator]);
 
   const selectedModelConfig = LANGUAGE_MODELS.find(
-    (m) => m.provider === selected.provider && m.id === selected.modelId,
+    (m) => m.provider === selected.provider && m.id === selected.modelId
   );
 
   return (
     <div className="space-y-4">
       {/* Model selector row */}
-      <div className="flex flex-wrap items-start gap-3">
-        <div className="min-w-[200px] flex-1">
-          <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+      <div className="flex items-start gap-3 flex-wrap">
+        <div className="flex-1 min-w-[200px]">
+          <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
             <Layers className="h-3.5 w-3.5" />
             {t("model")}
           </Label>
@@ -243,7 +261,10 @@ export default function MultiTurnChat() {
             className="w-full md:w-72"
           />
           {selectedModelConfig?.outputSupport.includes("reasoning") && (
-            <Badge variant="secondary" className="bg-primary/10 text-primary mt-1.5 gap-1 text-xs">
+            <Badge
+              variant="secondary"
+              className="mt-1.5 text-xs gap-1 bg-primary/10 text-primary"
+            >
               <Zap className="h-3 w-3" />
               {t("reasoning")}
             </Badge>
@@ -256,7 +277,7 @@ export default function MultiTurnChat() {
               variant="outline"
               size="sm"
               onClick={handleClearChat}
-              className="text-muted-foreground hover:text-destructive hover:border-destructive gap-1.5"
+              className="gap-1.5 text-muted-foreground hover:text-destructive hover:border-destructive"
             >
               <Trash2 className="h-3.5 w-3.5" />
               {t("clearChat")}
@@ -266,25 +287,33 @@ export default function MultiTurnChat() {
       </div>
 
       {/* Chat window */}
-      <Card className="flex w-full flex-col" style={{ height: "520px" }}>
-        <CardContent className="flex h-full flex-1 flex-col overflow-hidden p-0">
+      <Card className="w-full flex flex-col" style={{ height: "520px" }}>
+        <CardContent className="flex-1 p-0 flex flex-col h-full overflow-hidden">
           {/* Messages area — native scrollable div for reliable scroll control */}
-          <div ref={viewportRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+          <div
+            ref={viewportRef}
+            className="flex-1 overflow-y-auto px-4 py-4 min-h-0"
+          >
             {messages.length === 0 ? (
-              <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
-                <div className="bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full">
-                  <Bot className="text-primary h-8 w-8" />
+              <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-center p-8 gap-4">
+                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Bot className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <p className="text-foreground/70 font-medium">{t("startConversation")}</p>
-                  <p className="mt-1 text-sm opacity-60">{t("startConversationDescription")}</p>
+                  <p className="font-medium text-foreground/70">
+                    {t("startConversation")}
+                  </p>
+                  <p className="text-sm mt-1 opacity-60">
+                    {t("startConversationDescription")}
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="space-y-4 pb-2">
                 {messages.map((message, index) => {
                   const isLastMessage = index === messages.length - 1;
-                  const isStreaming = isLoading && isLastMessage && message.role === "assistant";
+                  const isStreaming =
+                    isLoading && isLastMessage && message.role === "assistant";
                   return (
                     <MessageBubble
                       key={message.id ?? index}
@@ -299,7 +328,7 @@ export default function MultiTurnChat() {
           </div>
 
           {/* Input area */}
-          <div className="bg-background/50 border-t p-3">
+          <div className="border-t p-3 bg-background/50">
             <div className="flex items-end gap-2">
               <Textarea
                 ref={textareaRef}
@@ -314,7 +343,7 @@ export default function MultiTurnChat() {
                 }}
                 disabled={isLoading}
                 rows={1}
-                className="max-h-[120px] min-h-[40px] flex-1 resize-none text-sm"
+                className="resize-none min-h-[40px] max-h-[120px] flex-1 text-sm"
                 style={{
                   height: "auto",
                   overflowY: input.split("\n").length > 3 ? "auto" : "hidden",
@@ -324,7 +353,7 @@ export default function MultiTurnChat() {
                 size="icon"
                 onClick={handleSend}
                 disabled={isLoading || !input.trim()}
-                className="h-10 w-10 shrink-0"
+                className="shrink-0 h-10 w-10"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -333,8 +362,10 @@ export default function MultiTurnChat() {
                 )}
               </Button>
             </div>
-            <p className="text-muted-foreground mt-1.5 px-1 text-xs">
-              {messages.length > 0 && <span>{t("messages", { count: messages.length })} · </span>}
+            <p className="text-xs text-muted-foreground mt-1.5 px-1">
+              {messages.length > 0 && (
+                <span>{t("messages", { count: messages.length })} · </span>
+              )}
               {t("enterToSend")} · {t("shiftEnterNewLine")}
             </p>
           </div>

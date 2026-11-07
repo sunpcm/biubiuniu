@@ -7,18 +7,25 @@ import {
   createPresignedUploadUrl,
   deleteFile,
   ListedObject,
-  listR2Objects,
+  listR2Objects
 } from "@/lib/cloudflare/r2";
 import { generateR2Key } from "@/lib/cloudflare/r2-utils";
-import { getErrorMessage } from "@/lib/error-utils";
-import { checkRateLimit, getClientIPFromHeaders } from "@/lib/upstash";
-import { REDIS_RATE_LIMIT_CONFIGS } from "@/lib/upstash/redis-rate-limit-configs";
+import { getLogger } from "@/lib/logger";
+import { checkRateLimit, getClientIPFromHeaders, RATE_LIMIT_CONFIGS } from "@/lib/redis";
+import {
+  evaluateDownloadPolicy,
+  evaluateUploadPolicy,
+  normalizeFilenamePart,
+  type R2AccessPrincipal,
+} from "@/lib/storage/object-policy";
 import { z } from "zod";
 
 const PRESIGNED_UPLOAD_EXPIRES_IN = 300; // 10 minutes
 const PRESIGNED_DOWNLOAD_EXPIRES_IN = 300; // 5 minutes
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
+
+const logger = getLogger("actions.r2-resources");
 
 export type R2File = ListedObject;
 
@@ -38,7 +45,9 @@ const listSchema = z.object({
   pageSize: z.number().int().positive().max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
 });
 
-export async function listR2Files(input: z.infer<typeof listSchema>): Promise<ListR2FilesData> {
+export async function listR2Files(
+  input: z.infer<typeof listSchema>
+): Promise<ListR2FilesData> {
   if (!(await isAdmin())) {
     return actionResponse.forbidden("Admin privileges required.");
   }
@@ -68,9 +77,12 @@ export async function listR2Files(input: z.infer<typeof listSchema>): Promise<Li
       files: result.objects,
       nextContinuationToken: result.nextContinuationToken,
     });
-  } catch (error: any) {
-    console.error("Failed to list files using generic R2 lister:", error);
-    return actionResponse.error(`Failed to list files: ${error.message || "Unknown error"}`);
+  } catch (error) {
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "Failed to list files using generic R2 lister",
+    );
+    return actionResponse.error("Failed to list files.");
   }
 }
 
@@ -91,9 +103,12 @@ export async function deleteR2File(key: string): Promise<DeleteR2FileData> {
   try {
     await deleteFile(key.trim());
     return actionResponse.success();
-  } catch (error: any) {
-    console.error(`Failed to delete R2 file (${key}):`, error);
-    return actionResponse.error(error.message || "Failed to delete file from R2.");
+  } catch (error) {
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      `Failed to delete R2 file`,
+    );
+    return actionResponse.error("Failed to delete file from R2.");
   }
 }
 
@@ -112,25 +127,42 @@ const generatePresignedUrlSchema = z.object({
   prefix: z.string().optional(),
   path: z.string(),
 });
-type GeneratePresignedUploadUrlInput = z.infer<typeof generatePresignedUrlSchema>;
+type GeneratePresignedUploadUrlInput = z.infer<
+  typeof generatePresignedUrlSchema
+>;
 
 async function generatePresignedUploadUrl(
   input: GeneratePresignedUploadUrlInput,
+  principal: R2AccessPrincipal,
+  userId: string | null,
 ): Promise<GeneratePresignedUploadUrlData> {
   const validationResult = generatePresignedUrlSchema.safeParse(input);
   if (!validationResult.success) {
     const formattedErrors = validationResult.error.flatten().fieldErrors;
-    return actionResponse.badRequest(`Invalid input: ${JSON.stringify(formattedErrors)}`);
+    return actionResponse.badRequest(
+      `Invalid input: ${JSON.stringify(formattedErrors)}`
+    );
   }
 
   const { fileName, contentType, path, prefix } = validationResult.data;
 
+  const normalizedFileName = normalizeFilenamePart(fileName);
+  if (!normalizedFileName) {
+    return actionResponse.badRequest("File name cannot contain path segments.");
+  }
+
+  const policy = evaluateUploadPolicy(principal, userId, path, prefix);
+  if (!policy.allowed) {
+    return policy.reason === "forbidden"
+      ? actionResponse.forbidden("Access denied.")
+      : actionResponse.badRequest("Invalid upload path.");
+  }
+
   try {
-    const cleanedPath = path.replace(/^\/+|\/+$/g, "");
     const objectKey = generateR2Key({
-      fileName,
-      path: cleanedPath,
-      prefix,
+      fileName: normalizedFileName,
+      path: policy.normalizedPath!,
+      prefix: policy.normalizedPrefix,
     });
 
     const { presignedUrl, publicObjectUrl } = await createPresignedUploadUrl({
@@ -144,45 +176,47 @@ async function generatePresignedUploadUrl(
       key: objectKey,
       publicObjectUrl,
     });
-  } catch (error: any) {
-    console.error(`Failed to generate pre-signed upload URL:`, error);
-    return actionResponse.error(getErrorMessage(error) || "Failed to generate pre-signed URL");
+  } catch (error) {
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "Failed to generate pre-signed upload URL",
+    );
+    return actionResponse.error("Failed to generate upload URL.");
   }
 }
 
 export async function generateAdminPresignedUploadUrl(
-  input: GeneratePresignedUploadUrlInput,
+  input: GeneratePresignedUploadUrlInput
 ): Promise<GeneratePresignedUploadUrlData> {
   if (!(await isAdmin())) {
     return actionResponse.forbidden("Admin privileges required.");
   }
-  return generatePresignedUploadUrl(input);
+  return generatePresignedUploadUrl(input, "admin", null);
 }
 
 export async function generateUserPresignedUploadUrl(
-  input: GeneratePresignedUploadUrlInput,
+  input: GeneratePresignedUploadUrlInput
 ): Promise<GeneratePresignedUploadUrlData> {
-  const session = await getSession();
+  const session = await getSession()
   const user = session?.user;
   if (!user) return actionResponse.unauthorized();
 
-  return generatePresignedUploadUrl({ ...input });
+  return generatePresignedUploadUrl(input, "user", user.id);
 }
 
 export async function generatePublicPresignedUploadUrl(
-  input: GeneratePresignedUploadUrlInput,
+  input: GeneratePresignedUploadUrlInput
 ): Promise<GeneratePresignedUploadUrlData> {
   const clientIP = await getClientIPFromHeaders();
-  const isAllowed = await checkRateLimit(clientIP, REDIS_RATE_LIMIT_CONFIGS.anonymousUpload);
+  const isAllowed = await checkRateLimit(clientIP, RATE_LIMIT_CONFIGS.anonymousUpload);
 
   if (!isAllowed) {
-    return actionResponse.badRequest(
-      `Rate limit exceeded. Anonymous users can upload up to ${REDIS_RATE_LIMIT_CONFIGS.anonymousUpload.maxRequests} images per day.`,
-    );
+    return actionResponse.badRequest(`Rate limit exceeded. Anonymous users can upload up to ${RATE_LIMIT_CONFIGS.anonymousUpload.maxRequests} images per day.`);
   }
 
-  return generatePresignedUploadUrl({ ...input });
+  return generatePresignedUploadUrl(input, "public", null);
 }
+
 
 export interface GeneratePresignedDownloadUrlData {
   success: boolean;
@@ -194,37 +228,45 @@ export interface GeneratePresignedDownloadUrlData {
 
 async function generatePresignedDownloadUrl(
   key: string,
+  principal: R2AccessPrincipal,
+  userId: string | null,
 ): Promise<GeneratePresignedDownloadUrlData> {
-  if (!key || key.trim() === "") {
+  const trimmedKey = key.trim();
+  if (!trimmedKey) {
     return actionResponse.badRequest("File key cannot be empty");
+  }
+
+  if (!evaluateDownloadPolicy(principal, userId, trimmedKey)) {
+    return actionResponse.forbidden("Access denied.");
   }
 
   try {
     const presignedUrl = await createPresignedDownloadUrl({
-      key: key.trim(),
+      key: trimmedKey,
       expiresIn: PRESIGNED_DOWNLOAD_EXPIRES_IN,
     });
 
     return actionResponse.success({ presignedUrl });
-  } catch (error: any) {
-    console.error(`Failed to generate pre-signed download URL for ${key}:`, error);
-    return actionResponse.error(
-      getErrorMessage(error) || "Failed to generate pre-signed download URL",
+  } catch (error) {
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      "Failed to generate pre-signed download URL",
     );
+    return actionResponse.error("Failed to generate download URL.");
   }
 }
 
 export async function generateAdminPresignedDownloadUrl(
-  key: string,
+  key: string
 ): Promise<GeneratePresignedDownloadUrlData> {
   if (!(await isAdmin())) {
     return actionResponse.forbidden("Admin privileges required.");
   }
-  return generatePresignedDownloadUrl(key);
+  return generatePresignedDownloadUrl(key, "admin", null);
 }
 
 export async function generateUserPresignedDownloadUrl(
-  key: string,
+  key: string
 ): Promise<GeneratePresignedDownloadUrlData> {
   const session = await getSession();
   const user = session?.user;
@@ -233,19 +275,17 @@ export async function generateUserPresignedDownloadUrl(
     return actionResponse.unauthorized();
   }
 
-  return generatePresignedDownloadUrl(key);
+  return generatePresignedDownloadUrl(key, "user", user.id);
 }
 
 export async function generatePublicPresignedDownloadUrl(
-  key: string,
+  key: string
 ): Promise<GeneratePresignedDownloadUrlData> {
   const clientIP = await getClientIPFromHeaders();
-  const isAllowed = await checkRateLimit(clientIP, REDIS_RATE_LIMIT_CONFIGS.anonymousDownload);
+  const isAllowed = await checkRateLimit(clientIP, RATE_LIMIT_CONFIGS.anonymousDownload);
 
   if (!isAllowed) {
-    return actionResponse.badRequest(
-      `Rate limit exceeded. Anonymous users can download up to ${REDIS_RATE_LIMIT_CONFIGS.anonymousDownload.maxRequests} images per day.`,
-    );
+    return actionResponse.badRequest(`Rate limit exceeded. Anonymous users can download up to ${RATE_LIMIT_CONFIGS.anonymousDownload.maxRequests} images per day.`);
   }
-  return generatePresignedDownloadUrl(key);
+  return generatePresignedDownloadUrl(key, "public", null);
 }

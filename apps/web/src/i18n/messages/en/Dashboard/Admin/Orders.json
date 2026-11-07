@@ -1,12 +1,67 @@
 {
   "title": "Orders",
   "description": "Here's a list of all orders.",
-  "user": "User",
-  "orderId": "Order ID",
-  "amount": "Amount",
-  "discount": "Discount",
-  "type": "Type",
-  "status": "Status",
-  "createdAt": "Created At",
-  "filterByEmail": "Filter by email..."
+  "searchPlaceholder": "Search by email or plan ID...",
+  "columns": {
+    "createdAt": "Created At",
+    "user": "User",
+    "planId": "Plan",
+    "orderType": "Type",
+    "provider": "Provider",
+    "credits": "Credits",
+    "amount": "Amount",
+    "refunded": "Refunded",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "filters": {
+    "allProviders": "All Providers",
+    "providerPlaceholder": "Provider",
+    "allTypes": "All Types",
+    "typePlaceholder": "Order Type",
+    "allStatuses": "All Statuses",
+    "statusPlaceholder": "Status"
+  },
+  "orderType": {
+    "one_time": "Credit Pack",
+    "subscription_initial": "Subscription (Initial)",
+    "subscription_renewal": "Subscription (Renewal)",
+    "subscription_upgrade": "Subscription (Upgrade)"
+  },
+  "status": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "partially_refunded": "Partially Refunded",
+    "refunded": "Refunded",
+    "failed": "Failed"
+  },
+  "actions": {
+    "menuLabel": "Actions",
+    "copyOrderId": "Copy order ID",
+    "copyPaymentId": "Copy payment ID",
+    "refund": "Refund…"
+  },
+  "refundDialog": {
+    "title": "Refund order",
+    "description": "Issue a refund through the payment provider. Credits are clawed back automatically once the provider confirms via webhook.",
+    "orderAmount": "Order amount",
+    "alreadyRefunded": "Already refunded",
+    "refundable": "Refundable",
+    "creemHint": "Creem's refund API refunds the full remaining amount of the transaction — for a partial refund use the Creem dashboard. Local order state and credits sync automatically via the refund.created webhook.",
+    "fullRefund": "Full refund of the remainder",
+    "partialRefund": "Partial refund",
+    "amountLabel": "Refund amount ({currency})",
+    "amountPlaceholder": "e.g. 5.00",
+    "invalidAmount": "Enter a valid amount greater than zero.",
+    "exceedsRefundable": "Amount exceeds the refundable remainder ({max}).",
+    "cancel": "Cancel",
+    "confirm": "Confirm refund",
+    "processing": "Processing..."
+  },
+  "toast": {
+    "fetchFailed": "Failed to fetch orders",
+    "refundInitiated": "Refund initiated — status updates once the provider confirms",
+    "refundFailed": "Refund failed",
+    "copied": "Copied to clipboard"
+  }
 }

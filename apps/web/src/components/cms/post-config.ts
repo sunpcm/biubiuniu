@@ -1,5 +1,5 @@
 import { BLOGS_IMAGE_PATH, GLOSSARY_IMAGE_PATH } from "@/config/common";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { z } from "zod";
 
 export const tagSchema = z.object({
@@ -65,15 +65,16 @@ export const POST_CONFIGS: Record<PostType, PostConfig> = {
     enableTags: true,
     localDirectory: "blogs",
     viewCount: {
-      enabled: false, // Set to true to enable view count tracking
+      // Default off. When true, view counting requires Redis to be configured.
+      enabled: false,
       mode: "all",
       showInUI: true,
     },
     showCoverInList: true,
     routes: {
-      list: "/dashboard/blogs",
-      create: "/dashboard/blogs/new",
-      edit: (id: string) => `/dashboard/blogs/${id}`,
+      list: "/dashboard/admin/blogs",
+      create: "/dashboard/admin/blogs/new",
+      edit: (id: string) => `/dashboard/admin/blogs/${id}`,
     },
   },
   glossary: {
@@ -83,15 +84,16 @@ export const POST_CONFIGS: Record<PostType, PostConfig> = {
     imagePath: GLOSSARY_IMAGE_PATH,
     enableTags: true,
     viewCount: {
-      enabled: false, // Set to true to enable view count tracking
+      // Default off. When true, view counting requires Redis to be configured.
+      enabled: false,
       mode: "all",
       showInUI: true,
     },
     showCoverInList: false,
     routes: {
-      list: "/dashboard/glossary",
-      create: "/dashboard/glossary/new",
-      edit: (id: string) => `/dashboard/glossary/${id}`,
+      list: "/dashboard/admin/glossary",
+      create: "/dashboard/admin/glossary/new",
+      edit: (id: string) => `/dashboard/admin/glossary/${id}`,
     },
   },
 };

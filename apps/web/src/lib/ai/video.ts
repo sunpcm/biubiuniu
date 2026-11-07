@@ -44,7 +44,7 @@ export interface VideoGenerationTask {
  * Returns a taskId; the client polls for results via /api/ai-demo/video/status?taskId=xxx.
  */
 export async function submitVideoGeneration(
-  input: VideoGenerationInput,
+  input: VideoGenerationInput
 ): Promise<{ taskId: string }> {
   const taskId = crypto.randomUUID();
   const task: VideoGenerationTask = {
@@ -67,7 +67,7 @@ export async function submitVideoGeneration(
         status: "failed",
         error: error.message,
       });
-    }),
+    })
   );
 
   return { taskId };
@@ -85,7 +85,7 @@ export async function getVideoTaskStatus(taskId: string): Promise<VideoGeneratio
  * Requires WEBHOOK_BASE_URL env var (e.g. https://your-domain.com or ngrok URL for local dev).
  */
 function buildWebhookUrl(provider: string, taskId: string): string {
-  const base = process.env.WEBHOOK_BASE_URL?.replace(/\/+$/, "");
+  const base = process.env.WEBHOOK_BASE_URL?.replace(/\/+$/, '');
   if (!base) throw new Error("WEBHOOK_BASE_URL is not configured");
   switch (provider) {
     case "replicate":
@@ -103,7 +103,10 @@ function buildWebhookUrl(provider: string, taskId: string): string {
  * Internal: submit video generation task to provider (async, webhook-based).
  * All providers return immediately after submission; completion is notified via webhook.
  */
-async function processVideoGeneration(taskId: string, input: VideoGenerationInput): Promise<void> {
+async function processVideoGeneration(
+  taskId: string,
+  input: VideoGenerationInput
+): Promise<void> {
   await taskStore.update(taskId, { status: "processing" });
 
   const webhookUrl = buildWebhookUrl(input.provider, taskId);

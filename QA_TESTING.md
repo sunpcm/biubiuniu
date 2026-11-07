@@ -1,14 +1,18 @@
-# QA Testing Checklist - Phase 2
+# QA Testing Checklist - Phase 2 & Phase 3
 
-Phase 2 核心服务抽取后的手动测试清单。请逐项验证以下核心链路正常工作。
+Phase 2 核心服务抽取 + Phase 3 Auth 模块抽离后的手动测试清单。请逐项验证以下核心链路正常工作。
 
 ## 前置条件
 
 - [ ] 确保 `.env` 文件包含 `DATABASE_URL`
 - [ ] 确保 `.env` 文件包含 `RESEND_API_KEY` 和 `ADMIN_EMAIL`
+- [ ] 确保 `.env` 文件包含 `BETTER_AUTH_SECRET` 和 `NEXT_PUBLIC_BETTER_AUTH_URL`
+- [ ] 确保 `.env` 文件包含 OAuth 配置（`NEXT_PUBLIC_GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXT_PUBLIC_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`）
+- [ ] 如需速率限制测试，确保 `UPSTASH_REDIS_REST_URL` 和 `UPSTASH_REDIS_REST_TOKEN` 已配置
+- [ ] 如需验证码测试，确保 `TURNSTILE_SECRET_KEY` 已配置
 - [ ] 确保 Stripe 相关环境变量已配置
 - [ ] 执行 `pnpm install` 并确认无错误
-- [ ] 执行 `pnpm turbo typecheck` 确认全部通过
+- [ ] 执行 `pnpm turbo typecheck` 确认全部通过（6包：db, utils, mail, auth, ui, web）
 - [ ] 执行 `pnpm turbo build` 确认构建通过
 
 ---
@@ -121,14 +125,75 @@ Phase 2 核心服务抽取后的手动测试清单。请逐项验证以下核心
 
 ---
 
-## 5. 认证系统
+## 5. 认证系统 (@niu/auth)
 
-- [ ] Email + Password 登录正常
-- [ ] GitHub OAuth 登录正常
-- [ ] Google OAuth 登录正常
-- [ ] Magic Link 登录正常
-- [ ] OTP 验证码登录正常
-- [ ] 登出正常
+> Phase 3 重点测试区域 — Auth 模块已从 apps/web 抽离到 @niu/auth 包。
+> 核心逻辑通过 `createAuth()` 工厂函数注入，需验证所有认证链路功能不变。
+
+### 5.1 登录方式
+
+- [ ] OTP 验证码登录：输入邮箱 → 收到 6 位验证码 → 输入验证码 → 登录成功
+- [ ] Magic Link 登录：输入邮箱 → 收到登录链接邮件 → 点击链接 → 登录成功
+- [ ] GitHub OAuth 登录：点击 GitHub 按钮 → 跳转授权 → 回调成功登录
+- [ ] Google OAuth 登录：点击 Google 按钮 → 跳转授权 → 回调成功登录
+- [ ] Google One Tap 登录：页面加载后 One Tap 弹窗出现（需 Google 已登录浏览器）
+- [ ] 匿名登录：匿名用户可访问受限功能（如启用）
+
+### 5.2 Session 管理
+
+- [ ] 登录后 `getSession()` 返回正确的用户信息
+- [ ] 刷新页面后 session 保持（cookie cache 工作正常）
+- [ ] 登出后 session 清除，访问受保护页面跳转到 `/login`
+- [ ] Session 过期后自动要求重新登录（30天过期）
+
+### 5.3 账户链接
+
+- [ ] 使用 GitHub 登录后，再用相同邮箱的 Google 登录 → 自动关联账户
+- [ ] 使用 Google 登录后，再用相同邮箱的 GitHub 登录 → 自动关联账户
+
+### 5.4 权限控制
+
+- [ ] `isAdmin()` 对管理员用户返回 `true`
+- [ ] `isAdmin()` 对普通用户返回 `false`（或 redirect 到 /login）
+- [ ] `AuthGuard` 组件对未登录用户正确重定向到 `/login`
+- [ ] Admin Dashboard 页面仅管理员可访问
+
+### 5.5 速率限制（需 Upstash Redis）
+
+- [ ] Magic Link 请求：60秒内超过 3 次后被限流
+- [ ] OTP 发送请求：60秒内超过 3 次后被限流
+- [ ] OTP 验证请求：60秒内超过 5 次后被限流
+- [ ] getSession 请求不受速率限制
+
+### 5.6 Captcha 验证（需 Turnstile）
+
+- [ ] 启用 Turnstile 后，登录表单显示验证组件
+- [ ] 未通过 Captcha 验证时登录请求被拒绝
+
+### 5.7 用户注册后 Hook
+
+- [ ] 新用户注册后收到欢迎邮件（验证 createAuth 的 sendEmail 注入正常）
+- [ ] 新用户注册后用户来源追踪数据正确写入数据库（验证 tracking hooks 注入正常）
+- [ ] 欢迎邮件中品牌名称、Logo、退订链接正确
+
+### 5.8 跨域 SSO（Cross-Domain Auth）
+
+- [ ] 访问 `/auth/cross-login` 页面正常加载
+- [ ] `/api/auth/token` 端点正确生成 JWT Token
+- [ ] `/api/auth/verify` 端点正确验证 JWT Token
+- [ ] `/api/auth/refresh` 端点正确刷新 JWT Token
+- [ ] postMessage 跨域通信正常工作
+
+### 5.9 Better Auth API 路由
+
+- [ ] `/api/auth/[...all]` catch-all 路由正常响应
+- [ ] Better Auth 内置 API（如 `/api/auth/get-session`）正常工作
+
+### 5.10 用户管理
+
+- [ ] 用户可在 `/dashboard/settings` 更新个人资料
+- [ ] 用户可删除自己的账户
+- [ ] 删除账户后无法登录
 
 ---
 
@@ -152,6 +217,6 @@ Phase 2 核心服务抽取后的手动测试清单。请逐项验证以下核心
 
 ## 测试优先级
 
-**P0 (必须通过)**：1.1, 1.2, 2.1, 3.1, 3.2, 3.3, 5.x, 7.x
-**P1 (重要)**：1.3, 2.2-2.5, 3.4, 4.x, 6.x
-**P2 (有条件测试)**：3.5-3.8, 1.4
+**P0 (必须通过)**：1.1, 1.2, 2.1, 3.1, 3.2, 3.3, 5.1, 5.2, 5.4, 5.7, 5.9, 7.x
+**P1 (重要)**：1.3, 2.2-2.5, 3.4, 4.x, 5.3, 5.10, 6.x
+**P2 (有条件测试)**：3.5-3.8, 1.4, 5.5, 5.6, 5.8

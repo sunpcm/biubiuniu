@@ -6,10 +6,11 @@ import { PostCard } from "@/components/cms/PostCard";
 import { RelatedPosts } from "@/components/cms/RelatedPosts";
 import { ViewCounter } from "@/components/cms/ViewCounter";
 import { TableOfContents } from "@/components/tiptap/TableOfContents";
-import { TiptapRenderer } from "@/components/tiptap/TiptapRenderer";
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
+import { PRICING_PATH } from "@/config/public-paths";
 import { Link as I18nLink, Locale, LOCALES } from "@/i18n/routing";
 import { blogCms } from "@/lib/cms";
+import { renderPostMarkdown } from "@/lib/cms/render-markdown";
 import { constructMetadata } from "@/lib/metadata";
 import { PostBase } from "@/types/cms";
 import dayjs from "dayjs";
@@ -112,7 +113,7 @@ export default async function BlogPage({ params }: { params: Params }) {
       messageTitle = t("BlogDetail.premium");
       messageContent = t("BlogDetail.premiumContent");
       actionText = t("BlogDetail.upgrade");
-      actionLink = process.env.NEXT_PUBLIC_PRICING_PATH!;
+      actionLink = PRICING_PATH;
     }
   }
 
@@ -144,6 +145,11 @@ export default async function BlogPage({ params }: { params: Params }) {
   };
 
   const visibilityInfo = getVisibilityInfo();
+
+  const contentHtml =
+    !showRestrictionMessageInsteadOfContent && post.content
+      ? await renderPostMarkdown(post.content)
+      : "";
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -243,9 +249,12 @@ export default async function BlogPage({ params }: { params: Params }) {
               backText={t("BlogDetail.backToBlogs")}
               backLink={`/blog`}
             />
-          ) : (
-            <article>{post.content ? <TiptapRenderer content={post.content} /> : null}</article>
-          )}
+          ) : contentHtml ? (
+            <article
+              className="prose dark:prose-invert prose-p:leading-normal prose-p:my-2 prose-headings:font-semibold prose-headings:tracking-tight prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-li:my-0.5 prose-blockquote:not-italic prose-blockquote:font-normal prose-blockquote:text-muted-foreground prose-blockquote:border-l-4 prose-blockquote:border-primary/50 lg:prose-lg max-w-none [&_blockquote_p]:before:content-none [&_blockquote_p]:after:content-none [&_td_p]:my-0 [&_th_p]:my-0"
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
+          ) : null}
 
           {/* Related Posts */}
           {post.id && (

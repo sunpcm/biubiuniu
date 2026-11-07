@@ -8,7 +8,7 @@ export const isValidJsonString = (str: string): boolean => {
   try {
     JSON.parse(str);
     return true;
-  } catch (_e) {
+  } catch {
     return false;
   }
 };
@@ -110,7 +110,9 @@ export const safeJsonParse = (jsonString: string): any => {
     }
 
     // Try to extract from code blocks
-    const codeBlockMatches = jsonString.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/i);
+    const codeBlockMatches = jsonString.match(
+      /```(?:json)?\s*(\{[\s\S]*?\})\s*```/i
+    );
     if (codeBlockMatches && codeBlockMatches[1]) {
       try {
         return JSON.parse(codeBlockMatches[1]);

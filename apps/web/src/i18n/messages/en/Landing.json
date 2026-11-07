@@ -3,14 +3,18 @@
     "badge": {
       "label": "NEW",
       "text": "Next.js SaaS Full Stack Template",
-      "href": "https://biubiuniu.com/#pricing"
+      "href": "https://nexty.dev/#pricing"
     },
-    "title": "A Modern Next.js Full Stack SaaS Boilerplate",
-    "description": "Our Next.js boilerplate includes authentication, Stripe payments, AI integration, CMS, and everything you need to start earning immediately.",
+    "title": "Xiaoxun and Friends' Cool Tools Collection",
+    "description": "There are indeed many cool tools here, but to catch up with the Nano Banana trend, others are temporarily hidden due to lack of time to set permissions. They will be opened one by one when I have time later, purely for showing off",
     "getStarted": "Get Started",
-    "getStartedLink": "https://biubiuniu.com/#pricing",
+    "getStartedLink": "https://nexty.dev/#pricing",
     "viewDocs": "View Documentation",
-    "viewDocsLink": "https://biubiuniu.com/docs"
+    "viewDocsLink": "https://nexty.dev/docs",
+    "nanoBananaButton": "🦙.🍌 Nano Banana",
+    "discordButton": "Join Discord",
+    "nanoPaused": "New Nano Banana generation is temporarily paused",
+    "nanoHistoryButton": "View task history"
   },
   "Features": {
     "badge": {
@@ -25,17 +29,17 @@
         "description": "Purchase once, get 3 powerful boilerplates.",
         "details": [
           {
-            "title": "Boilerplate 1: Niu",
+            "title": "Boilerplate 1: Nexty",
             "description": "Universal SaaS boilerplate with every feature you need.",
-            "href": "https://demo.biubiuniu.com"
+            "href": "https://demo.nexty.dev"
           },
           {
-            "title": "Boilerplate 2: niu-flux-kontext",
+            "title": "Boilerplate 2: nexty-flux-kontext",
             "description": "AI Image Generation SaaS boilerplate.",
-            "href": "https://flux-kontext.biubiuniu.com"
+            "href": "https://flux-kontext.nexty.dev"
           },
           {
-            "title": "Boilerplate 3: niu-directory",
+            "title": "Boilerplate 3: nexty-directory",
             "description": "Directory & listing website boilerplate.",
             "href": "https://dofollow.tools"
           }
@@ -63,7 +67,9 @@
             "description": "Protect your app from bots with Cloudflare Turnstile."
           }
         ],
-        "images": ["/images/features/login.png"]
+        "images": [
+          "/images/features/login.png"
+        ]
       },
       {
         "title": "Database",
@@ -82,7 +88,10 @@
             "description": "Supabase, Neon, and Self-hosted PostgreSQL."
           }
         ],
-        "images": ["/images/features/database-config.webp", "/images/features/database-tables.webp"]
+        "images": [
+          "/images/features/database-config.webp",
+          "/images/features/database-tables.webp"
+        ]
       },
       {
         "title": "Payment System",
@@ -90,18 +99,21 @@
         "details": [
           {
             "title": "All Payment Methods",
-            "description": "Niu supports monthly and annual subscriptions, and one-time payments."
+            "description": "Nexty supports monthly and annual subscriptions, and one-time payments."
           },
           {
             "title": "Usage-based Billing",
-            "description": "Niu supports usage-based billing for apps that need to charge users based on their usage."
+            "description": "Nexty supports usage-based billing for apps that need to charge users based on their usage."
           },
           {
             "title": "Smart Admin Management",
-            "description": "Niu's pricing plans are managed through the admin dashboard, bound to Stripe Price IDs for intelligent, secure, and real-time preview capabilities."
+            "description": "Nexty's pricing plans are managed through the admin dashboard, bound to Stripe Price IDs for intelligent, secure, and real-time preview capabilities."
           }
         ],
-        "images": ["/images/features/payment-1.png", "/images/features/payment-2.png"]
+        "images": [
+          "/images/features/payment-1.png",
+          "/images/features/payment-2.png"
+        ]
       },
       {
         "title": "AI Capabilities",
@@ -109,18 +121,21 @@
         "details": [
           {
             "title": "AI Demo Hub",
-            "description": "Niu includes built-in demos for chat, text-to-image, image-to-image, and video generation to help developers learn AI workflows and test models quickly."
+            "description": "Nexty includes built-in demos for chat, text-to-image, image-to-image, and video generation to help developers learn AI workflows and test models quickly."
           },
           {
             "title": "Universal AI Provider Support",
-            "description": "Niu offers AI SDK integration supporting GPT, Claude, Gemini, DeepSeek, Grok, OpenRouter, and Replicate for maximum flexibility."
+            "description": "Nexty offers AI SDK integration supporting GPT, Claude, Gemini, DeepSeek, Grok, OpenRouter, and Replicate for maximum flexibility."
           },
           {
             "title": "Bonus:  AI Image Generation Website",
-            "description": "Niu paid users receive a complete Flux Kontext AI image generation website template for rapid deployment of AI art platforms."
+            "description": "Nexty paid users receive a complete Flux Kontext AI image generation website template for rapid deployment of AI art platforms."
           }
         ],
-        "images": ["/images/features/ai-1.png", "/images/features/ai-2.png"]
+        "images": [
+          "/images/features/ai-1.png",
+          "/images/features/ai-2.png"
+        ]
       },
       {
         "title": "CMS",
@@ -128,15 +143,15 @@
         "details": [
           {
             "title": "Content Access Control",
-            "description": "Niu's CMS supports public, logged-in users, and subscriber-only content with paywall protection for monetized content sites."
+            "description": "Nexty's CMS supports public, logged-in users, and subscriber-only content with paywall protection for monetized content sites."
           },
           {
             "title": "AI-Powered Translation",
-            "description": "Niu's CMS includes built-in AI translation for multilingual content creation, plus duplicate feature for efficient content production workflows."
+            "description": "Nexty's CMS includes built-in AI translation for multilingual content creation, plus duplicate feature for efficient content production workflows."
           },
           {
             "title": "Multi-Purpose Publishing",
-            "description": "Niu's CMS enables both free blog sites and paid content platforms with advanced status management (draft, published, archived)."
+            "description": "Nexty's CMS enables both free blog sites and paid content platforms with advanced status management (draft, published, archived)."
           }
         ],
         "images": [
@@ -153,34 +168,36 @@
         "details": [
           {
             "title": "Admin File Management",
-            "description": "Niu provides a dedicated admin dashboard for comprehensive file management with upload, delete, and organization capabilities."
+            "description": "Nexty provides a dedicated admin dashboard for comprehensive file management with upload, delete, and organization capabilities."
           },
           {
             "title": "Cloudflare R2 Integration",
-            "description": "Niu leverages Cloudflare R2 for cost-effective, high-performance file storage with automatic CDN distribution worldwide."
+            "description": "Nexty leverages Cloudflare R2 for cost-effective, high-performance file storage with automatic CDN distribution worldwide."
           },
           {
             "title": "Optimized Upload Experience",
-            "description": "Niu features drag-and-drop uploads, preview functionality, and automatic file processing for seamless user experience."
+            "description": "Nexty features drag-and-drop uploads, preview functionality, and automatic file processing for seamless user experience."
           }
         ],
-        "images": ["/images/features/admin-4.png"]
+        "images": [
+          "/images/features/admin-4.png"
+        ]
       },
       {
         "title": "Visual Pricing Management",
-        "description": "Niu introduces dashboard pricing management that's secure and convenient, update your pricing without touching code.",
+        "description": "Nexty introduces dashboard pricing management that's secure and convenient, update your pricing without touching code.",
         "details": [
           {
             "title": "Real-Time Preview",
-            "description": "Niu's pricing card editor includes real-time preview, enabling you to see how pricing cards will look before saving."
+            "description": "Nexty's pricing card editor includes real-time preview, enabling you to see how pricing cards will look before saving."
           },
           {
             "title": "Stripe Integration",
-            "description": "Niu fetches pricing data from Stripe with one-click verification for accurate billing setup."
+            "description": "Nexty fetches pricing data from Stripe with one-click verification for accurate billing setup."
           },
           {
             "title": "Multi-language Support",
-            "description": "Niu supports AI-powered translation for pricing cards, enabling easy management of multilingual pricing content."
+            "description": "Nexty supports AI-powered translation for pricing cards, enabling easy management of multilingual pricing content."
           }
         ],
         "images": [
@@ -198,18 +215,21 @@
         "details": [
           {
             "title": "Professional Domain Email",
-            "description": "Niu implements domain email through Cloudflare, making your brand appear more professional and helping build trust with users."
+            "description": "Nexty implements domain email through Cloudflare, making your brand appear more professional and helping build trust with users."
           },
           {
             "title": "Advanced Email Marketing",
-            "description": "Niu includes Resend integration for subscriber management and email campaigns, with built-in newsletter subscription module in the footer."
+            "description": "Nexty includes Resend integration for subscriber management and email campaigns, with built-in newsletter subscription module in the footer."
           },
           {
             "title": "Built-in Email Automation",
-            "description": "Niu includes newsletter subscription and payment failure notification emails, plus pre-built templates for essential user communications."
+            "description": "Nexty includes newsletter subscription and payment failure notification emails, plus pre-built templates for essential user communications."
           }
         ],
-        "images": ["/images/features/email-2.png", "/images/features/email-1.png"]
+        "images": [
+          "/images/features/email-2.png",
+          "/images/features/email-1.png"
+        ]
       },
       {
         "title": "User Dashboard",
@@ -217,15 +237,15 @@
         "details": [
           {
             "title": "Profile Management",
-            "description": "Niu includes comprehensive profile settings."
+            "description": "Nexty includes comprehensive profile settings."
           },
           {
             "title": "Subscription Management",
-            "description": "Niu provides subscription management with billing history and plan upgrades through Stripe integration."
+            "description": "Nexty provides subscription management with billing history and plan upgrades through Stripe integration."
           },
           {
             "title": "Credit History & Usage",
-            "description": "Niu tracks credit grants and usage with detailed history, supporting both one-time and subscription-based credit systems."
+            "description": "Nexty tracks credit grants and usage with detailed history, supporting both one-time and subscription-based credit systems."
           }
         ],
         "images": [
@@ -240,15 +260,15 @@
         "details": [
           {
             "title": "User Management",
-            "description": "Niu provides complete user management with role control, Stripe customer integration, and account administration."
+            "description": "Nexty provides complete user management with role control, Stripe customer integration, and account administration."
           },
           {
             "title": "Pricing Management",
-            "description": "Niu offers visual pricing plan management with environment separation, Stripe integration, and real-time preview."
+            "description": "Nexty offers visual pricing plan management with environment separation, Stripe integration, and real-time preview."
           },
           {
             "title": "CMS & File Management",
-            "description": "Niu includes blog management with multilingual support, access control, and R2 file management with preview capabilities."
+            "description": "Nexty includes blog management with multilingual support, access control, and R2 file management with preview capabilities."
           }
         ],
         "images": [
@@ -264,15 +284,15 @@
         "details": [
           {
             "title": "i18n",
-            "description": "Niu supports multiple languages out-of-the-box with easy expansion for worldwide market reach."
+            "description": "Nexty supports multiple languages out-of-the-box with easy expansion for worldwide market reach."
           },
           {
             "title": "Analytics & AdSense",
-            "description": "Niu includes Google Analytics, Plausible tracking, and AdSense integration for insights and revenue generation."
+            "description": "Nexty includes Google Analytics, Plausible tracking, and AdSense integration for insights and revenue generation."
           },
           {
             "title": "SEO Optimization",
-            "description": "Niu provides comprehensive SEO optimization with meta tags and sitemaps for better rankings."
+            "description": "Nexty provides comprehensive SEO optimization with meta tags and sitemaps for better rankings."
           }
         ],
         "images": [
@@ -330,11 +350,11 @@
     "items": [
       {
         "question": "Can I use this boilerplate as a non-technical person?",
-        "answer": "Absolutely! Niu is specifically designed to work seamlessly with AI assistants, allowing even those with zero programming experience to develop products through AI-assisted development. Our code structure and documentation are AI-friendly, making it easier for AI to understand and modify the code. Technical teams will benefit from even greater development efficiency."
+        "answer": "Absolutely! Nexty is specifically designed to work seamlessly with AI assistants, allowing even those with zero programming experience to develop products through AI-assisted development. Our code structure and documentation are AI-friendly, making it easier for AI to understand and modify the code. Technical teams will benefit from even greater development efficiency."
       },
       {
         "question": "What makes this the best Next.js SaaS boilerplate?",
-        "answer": "Niu is the most comprehensive Next.js SaaS starter kit available. Unlike other templates that only provide basic components, we include complete business workflows: authentication, payments, AI integration, content management, and monetization features. Everything is production-ready and battle-tested in real applications."
+        "answer": "Nexty is the most comprehensive Next.js SaaS starter kit available. Unlike other templates that only provide basic components, we include complete business workflows: authentication, payments, AI integration, content management, and monetization features. Everything is production-ready and battle-tested in real applications."
       },
       {
         "question": "How quickly can I launch my SaaS with this boilerplate?",
@@ -362,27 +382,13 @@
       },
       {
         "question": "How do I manage pricing cards?",
-        "answer": "This is a key selling point of Niu. You can manage pricing cards in the Dashboard, including adding, editing, and deleting pricing cards with AI multilingual translation support, eliminating complex multilingual file configuration."
+        "answer": "This is a key selling point of Nexty. You can manage pricing cards in the Dashboard, including adding, editing, and deleting pricing cards with AI multilingual translation support, eliminating complex multilingual file configuration."
       }
     ]
   },
-  "TempHero": {
-    "title": "Xiaoxun and Friends' Cool Tools Collection",
-    "description": "There are indeed many cool tools here, but to catch up with the Nano Banana trend, others are temporarily hidden due to lack of time to set permissions. They will be opened one by one when I have time later, purely for showing off",
-    "nanoBananaButton": "🦙.🍌 Nano Banana",
-    "discordButton": "Join Discord"
-  },
-  "TempDonation": {
-    "title": "WeChat Tip for Xiaoxun",
-    "warning": "Note: No refunds after tipping, unless you treat me to roasted whole lamb",
-    "button": "Support Our Project"
-  },
-  "TempFooter": {
-    "description": "Cool Tools Collection 🧱"
-  },
   "CTA": {
     "title": "Launch Your Product Fast, and Earn Money Fast",
-    "description": "Stop starting from scratch! Use Niu templates to focus on your core idea, rapidly build, validate, and start earning.",
+    "description": "Stop starting from scratch! Use Nexty templates to focus on your core idea, rapidly build, validate, and start earning.",
     "button": "Get Template Now",
     "trustText": "Trusted by developers worldwide",
     "features": {
@@ -390,6 +396,133 @@
       "production": "🔧 Production Ready",
       "updates": "💎 Lifetime Updates",
       "i18n": "🌍 Internationalization"
+    }
+  },
+  "Donation": {
+    "title": "WeChat Tip for Xiaoxun",
+    "description": "WeChat tipping is an independent, optional support channel. It is not a payment checkout and does not grant credits.",
+    "warning": "Note: No refunds after tipping, unless you treat me to roasted whole lamb",
+    "button": "Support Our Project",
+    "imageAlt": "WeChat tipping QR code"
+  },
+  "LegacyPricing": {
+    "notice": "Historical test plans are shown for reference only. New purchases are closed and these IDs are not live payment references."
+  },
+  "Nano": {
+    "title": "Nano Banana",
+    "metaDescription": "Create images from a prompt and a reference image with durable Nano tasks.",
+    "description": "Upload one image, describe the transformation, and follow the task through to its result. Existing tasks and history remain available when new generation is paused.",
+    "ui": {
+      "status": {
+        "closedTitle": "New generation is paused",
+        "closedBody": "New Nano tasks are temporarily closed. Existing tasks, results, cancellation and history remain available.",
+        "loginTitle": "Sign in required",
+        "loginBody": "Sign in to create a task or view your task history.",
+        "unknownBody": "This task needs manual confirmation. Refresh to read the latest server state; it will not be resent automatically.",
+        "queued": "Queued",
+        "leased": "Leased",
+        "dispatching": "Dispatching",
+        "running": "Running",
+        "unknown": "Needs confirmation",
+        "succeeded": "Succeeded",
+        "failed": "Failed",
+        "canceled": "Canceled"
+      },
+      "errors": {
+        "AUTH_REQUIRED": "Please sign in first.",
+        "FORBIDDEN": "You do not have access to this task.",
+        "NANO_DISABLED": "New Nano generation is currently paused.",
+        "INVALID_INPUT": "Check the prompt, image type and image size.",
+        "UNKNOWN_CASE": "This case is not in the product catalog.",
+        "INSUFFICIENT_CREDITS": "Your available credits are not enough for this task.",
+        "IDEMPOTENCY_CONFLICT": "The same request key was used with different content. Start a new request.",
+        "NOT_FOUND": "The task was not found.",
+        "INVALID_STATE": "This task can no longer be canceled.",
+        "INTERNAL": "The service could not complete the request. Please refresh later.",
+        "NETWORK_ERROR": "The network request failed. Please refresh and try again.",
+        "ABORTED": "The request was stopped. Please refresh if you still need the result.",
+        "UNKNOWN": "The request could not be completed."
+      },
+      "composer": {
+        "title": "Image composer",
+        "description": "One reference image and a prompt are required. Costs and limits are decided by the server.",
+        "image": "Reference image",
+        "limits": "Up to {size} MB · {types} · {cost} credits per task",
+        "previewAlt": "Selected reference image",
+        "prompt": "Prompt",
+        "promptPlaceholder": "Describe the change you want to make to this image...",
+        "chars": "{count} / {max} characters",
+        "selectedCase": "Selected case: {id}",
+        "submit": "Create task",
+        "replay": "Replay same request",
+        "refresh": "Refresh task",
+        "manualConfirm": "Confirm again",
+        "cancel": "Cancel queued task",
+        "working": "Working...",
+        "polling": "Task accepted. Waiting for the server state...",
+        "admitted": "Task accepted. Waiting for the result.",
+        "idempotentReplay": "Existing task returned by idempotency; no extra charge.",
+        "canceled": "The queued task was canceled.",
+        "caseLoaded": "Case loaded with its reference image.",
+        "caseNoImage": "Case prompt loaded; upload a reference image to continue.",
+        "statsSkipped": "Case statistics are paused with new generation.",
+        "errorTitle": "Nano request failed"
+      },
+      "cases": {
+        "title": "Case gallery",
+        "description": "{count} cases, in source order. Popular cases come from the server 30-day aggregate.",
+        "searchPlaceholder": "Search cases",
+        "noAsset": "No preview asset",
+        "hot": "Popular",
+        "inputs": "{count} inputs",
+        "outputs": "{count} outputs",
+        "select": "Use case",
+        "selected": "Selected",
+        "noMatch": "No matching case."
+      },
+      "result": {
+        "title": "Task result",
+        "empty": "Select a task or create one to see its result.",
+        "taskId": "Task {id}",
+        "cost": "Cost {cost}",
+        "updatedAt": "Updated {time}",
+        "unknown": "The provider result is unknown. Use manual refresh; this task will not be resent automatically.",
+        "failed": "The task failed. Its original charge is handled by the server refund flow.",
+        "canceled": "The task was canceled.",
+        "noImages": "No result image is available yet.",
+        "text": "Result text",
+        "unsafeResultUrl": "Result URL was rejected by the client.",
+        "status": {
+          "queued": "Queued",
+          "leased": "Leased",
+          "dispatching": "Dispatching",
+          "running": "Running",
+          "unknown": "Needs confirmation",
+          "succeeded": "Succeeded",
+          "failed": "Failed",
+          "canceled": "Canceled"
+        }
+      },
+      "history": {
+        "title": "Task history",
+        "refresh": "Refresh",
+        "loading": "Loading...",
+        "empty": "No tasks yet.",
+        "open": "Open",
+        "cancel": "Cancel",
+        "loadMore": "Load more",
+        "status": {
+          "queued": "Queued",
+          "leased": "Leased",
+          "dispatching": "Dispatching",
+          "running": "Running",
+          "unknown": "Needs confirmation",
+          "succeeded": "Succeeded",
+          "failed": "Failed",
+          "canceled": "Canceled"
+        },
+        "createdAt": "Created {time}"
+      }
     }
   }
 }

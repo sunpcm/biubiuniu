@@ -72,7 +72,8 @@ export function TiptapRenderer({ content }: TiptapRendererProps) {
             {
               ...HTMLAttributes,
               id,
-              class: `${HTMLAttributes.class || ""} ${classes.join(" ")}`.trim(),
+              class:
+                `${HTMLAttributes.class || ""} ${classes.join(" ")}`.trim(),
             },
             0,
           ];
@@ -91,7 +92,8 @@ export function TiptapRenderer({ content }: TiptapRendererProps) {
       }),
       TiptapImage.configure({
         HTMLAttributes: {
-          class: "rounded-md max-w-full h-auto my-4 border border-4 border-primary/10",
+          class:
+            "rounded-md max-w-full h-auto my-4 border border-4 border-primary/10",
         },
       }),
       BulletList,

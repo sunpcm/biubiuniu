@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@niu/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Mail } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import UnsubscribeForm from "./UnsubscribeForm";
@@ -15,7 +21,7 @@ async function validateToken(token: string, _locale: string) {
     }
 
     return { isValid: true, email, error: "" };
-  } catch (_error) {
+  } catch {
     return { isValid: false, email: "", error: "Invalid token" };
   }
 }
@@ -38,14 +44,16 @@ export default async function Page(props: { searchParams: SearchParams }) {
   }
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4 py-12">
+    <div className="flex min-h-[60vh] items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-4 pb-2 text-center">
-          <div className="bg-primary/10 mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-            <Mail className="text-primary h-8 w-8" />
+        <CardHeader className="text-center space-y-4 pb-2">
+          <div className="mx-auto bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center">
+            <Mail className="w-8 h-8 text-primary" />
           </div>
           <div className="space-y-2">
-            <CardTitle className="text-2xl font-bold">{t("unsubscribe.title")}</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              {t("unsubscribe.title")}
+            </CardTitle>
             <CardDescription className="text-base">
               {tokenValidation.isValid
                 ? t("unsubscribe.confirmMessage")
@@ -60,25 +68,27 @@ export default async function Page(props: { searchParams: SearchParams }) {
               token={token}
               email={tokenValidation.email}
               locale={currentLocale}
-              adminEmail={process.env.ADMIN_EMAIL || ""}
+              adminEmail={process.env.DEFAULT_ADMIN_EMAIL || ""}
             />
           ) : (
             <div className="space-y-6">
-              <div className="bg-destructive/10 border-destructive/20 rounded-lg border p-4 text-center">
-                <p className="text-destructive font-medium">{tokenValidation.error}</p>
+              <div className="bg-destructive/10 border border-destructive/20 p-4 rounded-lg text-center">
+                <p className="text-destructive font-medium">
+                  {tokenValidation.error}
+                </p>
               </div>
 
-              <div className="border-border border-t pt-4 text-center">
-                <p className="text-muted-foreground text-sm">
+              <div className="pt-4 border-t border-border text-center">
+                <p className="text-sm text-muted-foreground">
                   {t("unsubscribe.contactPrefix")}
                   <a
-                    href={`mailto:${process.env.ADMIN_EMAIL}`}
-                    title={process.env.ADMIN_EMAIL}
-                    className="text-primary hover:text-primary/80 ml-1 transition-colors hover:underline"
+                    href={`mailto:${process.env.DEFAULT_ADMIN_EMAIL}`}
+                    title={process.env.DEFAULT_ADMIN_EMAIL}
+                    className="text-primary hover:text-primary/80 ml-1 hover:underline transition-colors"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {process.env.ADMIN_EMAIL}
+                    {process.env.DEFAULT_ADMIN_EMAIL}
                   </a>
                 </p>
               </div>

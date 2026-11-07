@@ -1,11 +1,11 @@
-import Cookies from "js-cookie";
-import { create } from "zustand";
+import Cookies from 'js-cookie';
+import { create } from 'zustand';
 
 interface LocaleState {
-  showLanguageAlert: boolean;
-  setShowLanguageAlert: (show: boolean) => void;
-  dismissLanguageAlert: () => void;
-  getLangAlertDismissed: () => boolean;
+  showLanguageAlert: boolean
+  setShowLanguageAlert: (show: boolean) => void
+  dismissLanguageAlert: () => void
+  getLangAlertDismissed: () => boolean
 }
 
 export const useLocaleStore = create<LocaleState>((set) => ({
@@ -19,4 +19,4 @@ export const useLocaleStore = create<LocaleState>((set) => ({
   getLangAlertDismissed: () => {
     return Cookies.get("langAlertDismissed") === "true";
   },
-}));
+}))

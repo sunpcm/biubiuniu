@@ -1,0 +1,62 @@
+{
+  "name": "@sunpcm/niu-next",
+  "version": "0.1.0-next.0",
+  "description": "Next.js server/client adapters for @sunpcm/niu-auth",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint src --report-unused-disable-directives",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "@sunpcm/niu-auth": "^0.1.0-next.0",
+    "better-auth": "^1.4.7",
+    "next": "^16.0.0",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@niu/tsconfig": "workspace:*",
+    "@sunpcm/niu-auth": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "better-auth": "1.4.7",
+    "next": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpcm/biubiuniu.git",
+    "directory": "packages/next"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "prettier": "@sunpcm/niu-prettier-config"
+}

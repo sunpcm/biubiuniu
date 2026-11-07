@@ -8,7 +8,10 @@ type ConsentGateProps = {
   fallback?: React.ReactNode;
 };
 
-export default function ConsentGate({ children, fallback = null }: ConsentGateProps) {
+export default function ConsentGate({
+  children,
+  fallback = null,
+}: ConsentGateProps) {
   const { consented, mounted } = useCookieConsent();
   if (!mounted) return null;
   return <>{consented ? children : fallback}</>;

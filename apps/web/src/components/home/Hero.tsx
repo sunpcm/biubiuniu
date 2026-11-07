@@ -1,5 +1,5 @@
 import FeatureBadge from "@/components/shared/FeatureBadge";
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { Link as I18nLink } from "@/i18n/routing";
 import { MousePointerClick } from "lucide-react";
@@ -13,41 +13,51 @@ export default function Hero() {
   return (
     <div className="w-full">
       <div className="container mx-auto">
-        <div className="flex flex-col items-center justify-center gap-8 py-16 lg:py-24 2xl:py-40">
-          <FeatureBadge label={t("badge.label")} text={t("badge.text")} href={t("badge.href")} />
-          <div className="flex max-w-3xl flex-col gap-4">
-            <h1 className="z-10 text-center font-sans text-lg font-bold md:text-7xl">
+        <div className="flex gap-8 py-16 lg:py-24 2xl:py-40 items-center justify-center flex-col">
+          <FeatureBadge
+            label={t("badge.label")}
+            text={t("badge.text")}
+            href={t("badge.href")}
+          />
+          <div className="flex gap-4 flex-col max-w-3xl">
+            <h1 className="text-center z-10 text-lg md:text-7xl font-sans font-bold">
               <span className="title-gradient">{t("title")}</span>
             </h1>
 
-            <p className="text-muted-foreground text-center text-lg leading-relaxed tracking-tight md:text-xl">
+            <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground text-center">
               {t("description")}
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               asChild
-              className="border-primary h-11 rounded-xl border-2 px-8 py-2 text-white"
+              className="h-11 rounded-xl px-8 py-2 text-white border-2 border-primary"
             >
-              <I18nLink href={t("getStartedLink") || "#"} className="flex items-center gap-2">
-                <MousePointerClick className="h-4 w-4" />
+              <I18nLink
+                href={t("getStartedLink") || "#"}
+                className="flex items-center gap-2"
+              >
+                <MousePointerClick className="w-4 h-4" />
                 {t("getStarted")}
               </I18nLink>
             </Button>
             <Button
-              className="hover:bg-background h-11 rounded-xl border-2 bg-white px-8 py-2 text-indigo-500 hover:text-indigo-600"
+              className="h-11 rounded-xl px-8 py-2 bg-white hover:bg-background text-indigo-500 hover:text-indigo-600 border-2"
               variant="outline"
               asChild
             >
               <Link
-                href={siteConfig.socialLinks?.discord || "https://discord.gg/4sSVt8b2"}
+                href={
+                  siteConfig.socialLinks?.discord ||
+                  "https://discord.com/invite/R7bUxWKRqZ"
+                }
                 target="_blank"
                 rel="noopener noreferrer nofollow"
                 title="Join Discord"
                 prefetch={false}
                 className="flex items-center gap-2"
               >
-                <SiDiscord className="h-4 w-4 text-indigo-500" />
+                <SiDiscord className="w-4 h-4 text-indigo-500" />
                 Join Discord
               </Link>
             </Button>

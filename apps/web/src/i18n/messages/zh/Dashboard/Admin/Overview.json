@@ -1,21 +1,65 @@
 {
   "title": "概览",
-  "users": "用户",
-  "oneTimePayments": "一次性付款",
-  "monthlySubscriptions": "月度订阅",
-  "yearlySubscriptions": "年度订阅",
-  "today": "今日",
-  "yesterday": "昨日",
-  "growthRate": "增长率",
-  "newUsers": "新用户",
-  "totalUsers": "总用户数",
-  "orders": "订单",
-  "revenue": "收入",
-  "count": "数量",
-  "growthTrend": "增长趋势",
-  "totalOrders": "总订单数",
-  "newOrders": "新订单",
-  "last7Days": "最近7天",
-  "last30Days": "最近30天",
-  "last90Days": "最近90天"
+  "description": "一眼看清营收、增长与用量。",
+  "subtitle": "最近 {days} 天，对比此前 {days} 天 · UTC",
+  "range": {
+    "label": "时间范围",
+    "7d": "7 天",
+    "30d": "30 天",
+    "90d": "90 天"
+  },
+  "kpi": {
+    "revenue": "净营收",
+    "revenueFootnote": "{orders} 笔订单 · 退款 {refunds}",
+    "mrr": "MRR",
+    "mrrMovement": "本期新增 / 流失订阅",
+    "mrrFootnote": "{subscribers} 个活跃订阅 · {trialing} 个试用中",
+    "signups": "新注册",
+    "signupsFootnote": "累计 {total} 位用户",
+    "credits": "积分消耗",
+    "creditsFootnote": "{users} 位活跃用户"
+  },
+  "delta": {
+    "vsPrevious": "对比上一周期",
+    "noBaseline": "暂无对照数据"
+  },
+  "trend": {
+    "title": "趋势",
+    "total": "{metric}：本期 {value}",
+    "empty": "本期没有{metric}数据"
+  },
+  "metric": {
+    "revenue": "营收",
+    "signups": "注册",
+    "orders": "订单",
+    "creditsConsumed": "积分"
+  },
+  "breakdown": {
+    "revenueByPlan": "营收按计划",
+    "revenueByProvider": "营收按支付渠道",
+    "signupsBySource": "注册按来源",
+    "other": "其他",
+    "direct": "直接访问 / 未知",
+    "empty": "本期暂无数据"
+  },
+  "attention": {
+    "title": "需要关注",
+    "allClear": "一切正常",
+    "pastDueSubscriptions": "逾期未付的订阅",
+    "pendingOrders": "在途未结清订单",
+    "cancelScheduled": "已安排期末取消",
+    "openFeedback": "待处理反馈",
+    "failedOrders": "失败订单",
+    "foreignCurrencyOrders": "非报表币种订单"
+  },
+  "recent": {
+    "title": "最近订单",
+    "viewAll": "查看全部",
+    "empty": "还没有订单",
+    "deletedUser": "已删除用户"
+  },
+  "error": {
+    "load": "该分区加载失败。",
+    "empty": "暂无数据。"
+  }
 }

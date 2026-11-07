@@ -8,7 +8,11 @@ import { ChevronRight } from "lucide-react";
 
 type Params = Promise<{ locale: string }>;
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({
     locale,
@@ -23,7 +27,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   });
 }
 
-export default async function ChatDemoPage({ params }: { params: Params }) {
+export default async function ChatDemoPage({
+  params,
+}: {
+  params: Params;
+}) {
   const { locale } = await params;
   const t = await getTranslations({
     locale,
@@ -32,7 +40,7 @@ export default async function ChatDemoPage({ params }: { params: Params }) {
 
   return (
     <div>
-      <div className="text-muted-foreground mb-6 flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link href="/ai-demo" className="hover:text-foreground transition-colors">
           {t("common.backToHub")}
         </Link>
@@ -41,8 +49,10 @@ export default async function ChatDemoPage({ params }: { params: Params }) {
       </div>
 
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold">{t("chat.title")}</h1>
-        <p className="text-muted-foreground">{t("chat.metaDescription")}</p>
+        <h1 className="text-3xl font-bold mb-2">{t("chat.title")}</h1>
+        <p className="text-muted-foreground">
+          {t("chat.metaDescription")}
+        </p>
       </div>
 
       <ChatPage />

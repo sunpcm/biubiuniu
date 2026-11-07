@@ -28,8 +28,7 @@ export default function CrispChat() {
   }, []);
 
   useEffect(() => {
-    if (!CRISP_WEBSITE_ID) return;
-    if (!email) return;
+    if (!CRISP_WEBSITE_ID || !email) return;
     window.$crisp = window.$crisp || [];
     window.$crisp.push(["set", "user:email", [email]]);
     if (name) window.$crisp.push(["set", "user:nickname", [name]]);

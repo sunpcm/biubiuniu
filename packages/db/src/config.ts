@@ -1,157 +1,103 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import * as schema from "./schema";
+import type postgres from "postgres";
 
-interface DBConfig {
+/**
+ * Explicit `postgres` driver transform hooks.
+ *
+ * The concrete field set matches the locked `postgres` 3.4.x driver. The
+ * historical `date: true` transform is intentionally absent: postgres.js 3.x
+ * removed the `transform.date` hook, so that value was silently ignored and
+ * never affected date serialization. Only the hooks the driver actually
+ * reads are exposed here.
+ */
+export interface DBTransform {
+  /** Replace outcoming `undefined` values before sending (e.g. `null`). */
+  undefined?: unknown;
+  /** Transform incoming/outgoing column names. */
+  column?:
+    | ((column: string) => string)
+    | { from?: (column: string) => string; to?: (column: string) => string };
+  /** Transform incoming row values. */
+  value?:
+    | ((value: unknown) => unknown)
+    | { from?: (value: unknown, column?: unknown) => unknown };
+  /** Transform entire incoming rows. */
+  row?: ((row: unknown) => unknown) | { from?: (row: unknown) => unknown };
+}
+
+/**
+ * Explicit connection options for the `postgres` driver.
+ *
+ * Every deployment-affecting value is passed in by the caller. The factory
+ * performs no platform auto-detection and reads no process environment (no
+ * `NODE_ENV`, `VERCEL_ENV`, `DATABASE_URL`, or similar). Importing this module
+ * never opens a connection and never runs DDL.
+ */
+export interface DBConfig {
+  /** PostgreSQL connection string (required at `createDatabase` time). */
   connectionString: string;
+  /** Max pooled connections (`postgres` `max`). */
   maxConnections?: number;
+  /** Enable prepared statements (`postgres` `prepare`). */
   enablePrepare?: boolean;
+  /** TLS mode (`postgres` `ssl`). */
   enableSSL?: boolean | "require";
-  debug?: boolean;
+  /** Debug logging (`postgres` `debug`). */
+  debug?: boolean | ((connection: number, query: string, parameters: unknown[], paramTypes: unknown[]) => void);
+  /** Idle connection timeout in seconds (`postgres` `idle_timeout`). */
+  idleTimeout?: number;
+  /** Connection timeout in seconds (`postgres` `connect_timeout`). */
+  connectTimeout?: number;
+  /** Max connection lifetime in seconds (`postgres` `max_lifetime`). */
+  maxLifetime?: number | null;
+  /** Server `application_name` (`postgres` `connection.application_name`). */
+  applicationName?: string;
+  /** Notice callback (`postgres` `onnotice`). */
+  onNotice?: (notice: postgres.Notice) => void;
+  /** Explicit driver transform hooks (e.g. `{ undefined: null }`). */
+  transform?: DBTransform;
+  /**
+   * Explicit driver connection parameters (e.g.
+   * `{ statement_timeout: 30000 }`). Merged with `applicationName`; an
+   * explicit `application_name` here wins over the legacy top-level field.
+   */
+  connection?: Partial<postgres.ConnectionParameters>;
 }
 
-// detect deployment platform
-function detectPlatform() {
-  if (process.env.VERCEL_ENV) return "vercel";
-  if (process.env.NETLIFY) return "netlify";
-  if (process.env.AWS_LAMBDA_FUNCTION_NAME) return "lambda";
-  return "server";
-}
+/**
+ * Build a fresh `postgres` options object from explicit DBConfig fields.
+ *
+ * A new object is returned on every call; two callers never share a mutable
+ * options instance. No value falls back to `process.env`.
+ */
+export function createDatabaseConfig(
+  config: Omit<DBConfig, "connectionString">,
+): postgres.Options<Record<string, postgres.PostgresType>> {
+  const options: postgres.Options<Record<string, postgres.PostgresType>> = {};
 
-// detect database provider
-function detectDatabase(connectionString: string) {
-  if (connectionString.includes("supabase")) return "supabase";
-  if (connectionString.includes("neon")) return "neon";
-  if (connectionString.includes("amazonaws.com")) return "aws-rds";
-  if (connectionString.includes("googleapis.com")) return "gcp-sql";
-  return "self-hosted";
-}
+  if (config.maxConnections !== undefined) options.max = config.maxConnections;
+  if (config.enablePrepare !== undefined) options.prepare = config.enablePrepare;
+  if (config.enableSSL !== undefined) options.ssl = config.enableSSL;
+  if (config.debug !== undefined) options.debug = config.debug;
+  if (config.idleTimeout !== undefined) options.idle_timeout = config.idleTimeout;
+  if (config.connectTimeout !== undefined) options.connect_timeout = config.connectTimeout;
+  if (config.maxLifetime !== undefined) options.max_lifetime = config.maxLifetime;
+  if (config.onNotice !== undefined) options.onnotice = config.onNotice;
 
-// generate database configuration
-export function createDatabaseConfig(config: DBConfig) {
-  const platform = detectPlatform();
-  const database = detectDatabase(config.connectionString);
+  if (config.transform !== undefined) {
+    options.transform = { ...config.transform };
+  }
 
-  // base configuration template
-  const platformConfigs = {
-    // Serverless platform configuration
-    vercel: {
-      max: 3,
-      prepare: false,
-      idle_timeout: 20,
-      max_lifetime: 60 * 30,
-      connect_timeout: 15,
-    },
-    netlify: {
-      max: 3,
-      prepare: false,
-      idle_timeout: 20,
-      max_lifetime: 60 * 30,
-      connect_timeout: 15,
-    },
-    lambda: {
-      max: 3,
-      prepare: false,
-      idle_timeout: 20,
-      max_lifetime: 60 * 30,
-      connect_timeout: 30,
-    },
-    // long running server
-    server: {
-      max: 30,
-      prepare: true,
-      idle_timeout: 300,
-      max_lifetime: 3600,
-      connect_timeout: 30,
-    },
-  };
+  if (config.applicationName !== undefined || config.connection !== undefined) {
+    const connection: Partial<postgres.ConnectionParameters> = {
+      ...(config.connection ?? {}),
+    };
+    // Merge the legacy top-level applicationName into the connection map
+    // without clobbering other connection parameters (e.g. statement_timeout).
+    if (config.applicationName !== undefined && connection.application_name === undefined) {
+      connection.application_name = config.applicationName;
+    }
+    options.connection = connection;
+  }
 
-  // database specific configuration
-  const databaseConfigs = {
-    supabase: {
-      ssl: "require" as const,
-      application_name: "drizzle-supabase",
-      // PostgreSQL connection parameters
-      // See: https://www.postgresql.org/docs/current/runtime-config-client.html
-      connection: {
-        statement_timeout: 30000,
-      },
-    },
-    neon: {
-      ssl: "require" as const,
-      application_name: "drizzle-neon",
-      prepare: false,
-      connect_timeout: 20,
-    },
-    "aws-rds": {
-      ssl: "require" as const,
-      application_name: "drizzle-aws",
-      keepalive: true,
-      idle_timeout: 60,
-    },
-    "gcp-sql": {
-      ssl: "require" as const,
-      application_name: "drizzle-gcp",
-      keepalive: true,
-    },
-    "self-hosted": {
-      ssl: false,
-      application_name: "drizzle-app",
-    },
-  };
-
-  const platformConfig = platformConfigs[platform];
-  const databaseConfig = databaseConfigs[database];
-
-  const finalConfig = {
-    ...platformConfig,
-    ...databaseConfig,
-
-    ...(config.maxConnections && { max: config.maxConnections }),
-    ...(config.enablePrepare !== undefined && { prepare: config.enablePrepare }),
-    ...(config.enableSSL !== undefined && { ssl: config.enableSSL }),
-
-    transform: {
-      undefined: null,
-      date: true,
-    },
-
-    debug: config.debug ?? process.env.NODE_ENV === "development",
-    onnotice: process.env.NODE_ENV === "development" ? console.log : undefined,
-  };
-
-  return finalConfig;
-}
-
-// create database connection
-export function createDatabase(config: DBConfig) {
-  const connectionConfig = createDatabaseConfig(config);
-  const client = postgres(config.connectionString, connectionConfig);
-
-  // console.log(`🚀 Database initialized:`);
-  // console.log(`   Platform: ${detectPlatform()}`);
-  // console.log(`   Database: ${detectDatabase(config.connectionString)}`);
-  // console.log(`   Max connections: ${connectionConfig.max}`);
-  // console.log(`   Prepare statements: ${connectionConfig.prepare}`);
-  // console.log(`   SSL: ${connectionConfig.ssl}`);
-
-  return drizzle(client, { schema });
-}
-
-export function previewConfig(config: DBConfig) {
-  const finalConfig = createDatabaseConfig(config);
-  const platform = detectPlatform();
-  const database = detectDatabase(config.connectionString);
-
-  return {
-    platform,
-    database,
-    config: finalConfig,
-    summary: {
-      isServerless: ["vercel", "netlify", "lambda"].includes(platform),
-      requiresSSL: finalConfig.ssl !== false,
-      connectionPooling: finalConfig.max > 1,
-      preparedStatements: finalConfig.prepare,
-    },
-  };
+  return options;
 }

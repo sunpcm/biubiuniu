@@ -1,6 +1,6 @@
 "use client";
 
-import { Textarea } from "@niu/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PromptInputProps {
   value: string;
@@ -43,11 +43,11 @@ export default function PromptInput({
         maxLength={maxLength}
       />
       <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           Press Enter to send, Shift + Enter for new line
         </p>
         {maxLength && (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             {value.length}/{maxLength}
           </p>
         )}

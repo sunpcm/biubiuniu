@@ -1,9 +1,9 @@
 "use client";
 
 import { createTagAction } from "@/actions/posts/tags";
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
-import { PostType } from "@niu/db/schema";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PostType } from "@/lib/db/schema";
 import { Tag } from "@/types/cms";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
@@ -33,7 +33,11 @@ export function TagCreateForm({
       return;
     }
 
-    if (existingTags.some((tag) => tag.name.toLowerCase() === trimmedName.toLowerCase())) {
+    if (
+      existingTags.some(
+        (tag) => tag.name.toLowerCase() === trimmedName.toLowerCase()
+      )
+    ) {
       toast.info(`Tag "${trimmedName}" already exists.`);
       return;
     }

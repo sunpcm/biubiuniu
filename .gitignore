@@ -60,7 +60,15 @@ pnpm-debug.log*
 ############################
 # Environment files
 ############################
-# In this repo, apps contain checked-in example envs like .env.development/.env.production.
-# So we only ignore local override variants.
-.env.local
-.env.*.local
+# Ignore all environment files by default, including root/app/package variants.
+# Safe templates remain checked in; never place credential values in them.
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.*.example
+!.env.*.sample
+!**/.env.example
+!**/.env.sample
+!**/.env.*.example
+!**/.env.*.sample

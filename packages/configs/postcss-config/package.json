@@ -11,9 +11,7 @@
     "autoprefixer": "catalog:",
     "tailwindcss": "catalog:"
   },
-  "scripts": {
-    "test": "echo \"(@niu/postcss-config) no tests\""
-  },
+  "scripts": {},
   "license": "ISC",
-  "prettier": "@niu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

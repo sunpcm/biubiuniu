@@ -1,0 +1,98 @@
+{
+  "title": "請求とクレジット",
+  "description": "サブスクリプション、クレジット残高、購入履歴を管理します。",
+  "balance": {
+    "title": "クレジット残高",
+    "subscription": "サブスククレジット",
+    "purchased": "購入クレジット",
+    "buyMore": "クレジットを追加購入"
+  },
+  "sidebar": {
+    "subscriptionShort": "サブスク",
+    "packShort": "パック",
+    "upgrade": "アップグレード",
+    "buyPack": "パック購入",
+    "creditsTooltip": "クレジット残高：{credits}"
+  },
+  "plan": {
+    "title": "現在のプラン",
+    "noPlan": "有効なサブスクリプションはありません",
+    "noPlanDescription": "サブスクリプションに登録すると、毎月お得な価格でクレジットを獲得できます。",
+    "viewPlans": "プランを見る",
+    "manage": "サブスクリプションを管理",
+    "manageFailed": "請求ポータルを開けませんでした。もう一度お試しください。",
+    "monthlyCredits": "毎月 {credits} クレジット",
+    "renewsOn": "{date} に更新",
+    "endsOn": "{date} に終了",
+    "cancelNotice": "このサブスクリプションは更新されず、{date} に終了します。",
+    "nextRefresh": "次回のクレジット更新：{date}",
+    "nextRefreshUtc": "UTC {date}",
+    "interval": {
+      "month": "月払い",
+      "year": "年払い"
+    },
+    "status": {
+      "active": "有効",
+      "trialing": "トライアル中",
+      "past_due": "支払い遅延",
+      "unpaid": "未払い"
+    }
+  },
+  "tabs": {
+    "orders": "購入履歴",
+    "credits": "クレジット履歴"
+  },
+  "orders": {
+    "empty": "購入履歴はまだありません。",
+    "columns": {
+      "date": "日付",
+      "plan": "プラン",
+      "type": "種類",
+      "provider": "決済方法",
+      "credits": "クレジット",
+      "amount": "金額"
+    },
+    "type": {
+      "one_time": "クレジットパック",
+      "subscription_initial": "サブスクリプション",
+      "subscription_renewal": "更新",
+      "subscription_upgrade": "アップグレード"
+    },
+    "status": {
+      "pending": "決済処理中",
+      "failed": "失敗",
+      "partially_refunded": "一部返金済み",
+      "refunded": "返金済み"
+    },
+    "refundedAmount": "{amount} 返金済み"
+  },
+  "credits": {
+    "empty": "クレジットの履歴はまだありません。",
+    "columns": {
+      "date": "日付",
+      "type": "種類",
+      "note": "詳細",
+      "amount": "増減",
+      "balance": "変動後残高"
+    },
+    "type": {
+      "purchase": "クレジット購入",
+      "subscription_grant": "サブスク付与",
+      "usage": "機能の利用",
+      "usage_refund": "タスク失敗返還",
+      "refund_revoke": "返金による回収",
+      "subscription_end_revoke": "サブスク終了による失効",
+      "admin_adjustment": "管理者による調整",
+      "signup_bonus": "登録ボーナス"
+    },
+    "balanceBreakdown": "サブスク {subscription} · 購入 {purchased}"
+  },
+  "pagination": {
+    "previous": "前へ",
+    "next": "次へ",
+    "range": "{total} 件中 {from}-{to} 件"
+  },
+  "loadError": "データを読み込めませんでした。もう一度お試しください。",
+  "teamWorkspaceNotice": "現在チームワークスペースです。ワークスペース内の利用分はチームプールから消費されます。このページは個人の請求情報です。",
+  "teamWorkspaceCta": "チームページへ"
+}

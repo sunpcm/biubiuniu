@@ -6,8 +6,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@niu/ui/dialog";
+} from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import LoginForm from "./LoginForm";
 
 interface LoginDialogProps {
@@ -17,6 +18,7 @@ interface LoginDialogProps {
 
 export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
   const t = useTranslations("Login");
+  const pathname = usePathname();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -26,7 +28,9 @@ export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
-        <LoginForm />
+        {/* Log in where you already are — the dialog opens over a page, so
+            that page is the return hop; sanitizing happens inside LoginForm */}
+        <LoginForm callbackURL={pathname} />
       </DialogContent>
     </Dialog>
   );

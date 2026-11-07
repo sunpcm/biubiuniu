@@ -1,36 +1,46 @@
-import { db } from "@niu/db";
-import { userSource } from "@niu/db/schema";
-import Bowser from "bowser";
-import { headers } from "next/headers";
+/**
+ * [INPUT]: Depends on @/lib/db + schema's userSource table, @/lib/ip for
+ *          getClientIPFromHeaders + the UNKNOWN_IP sentinel, next/headers for
+ *          the Cloudflare geo / user-agent headers, bowser for UA parsing,
+ *          ./shared for the tracking types and the cookie parser
+ * [OUTPUT]: Exports parseUserAgent, getCloudflareGeoHeaders, extractReferrerDomain,
+ *           getUserAgentFromHeaders, buildUserSourceData, saveUserSource;
+ *           re-exports parseTrackingCookie, TRACKING_COOKIE_NAME and the shared types
+ * [POS]: Server half of lib/tracking: turns the client tracking cookie plus the
+ *        request headers into a userSource row at signup (consumed by the
+ *        user.create.after hook in lib/auth/index.ts); client.ts writes the cookie
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
+import { db } from '@/lib/db'
+import { userSource } from '@/lib/db/schema'
+import { getClientIPFromHeaders, UNKNOWN_IP } from '@/lib/ip'
+import Bowser from 'bowser'
+import { headers } from 'next/headers'
 
 import {
   type ClientTrackingData,
   type GeoLocationData,
   type ParsedUserAgent,
-  type UserSourceData,
-} from "./shared";
+  type UserSourceData
+} from './shared'
 
 // Re-export all types and utilities from types.ts
-export { parseTrackingCookie, TRACKING_COOKIE_NAME } from "./shared";
-export type {
-  ClientTrackingData,
-  GeoLocationData,
-  ParsedUserAgent,
-  UserSourceData,
-} from "./shared";
+export { parseTrackingCookie, TRACKING_COOKIE_NAME } from './shared'
+export type { ClientTrackingData, GeoLocationData, ParsedUserAgent, UserSourceData } from './shared'
 
 /**
  * Parse user agent string using bowser (MIT license)
  */
 export function parseUserAgent(userAgentString: string): ParsedUserAgent {
-  const parser = Bowser.parse(userAgentString);
+  const parser = Bowser.parse(userAgentString)
 
   // Determine device type
-  let deviceType: string | undefined;
+  let deviceType: string | undefined
   if (parser.platform.type) {
-    deviceType = parser.platform.type; // 'mobile', 'tablet', 'desktop'
+    deviceType = parser.platform.type // 'mobile', 'tablet', 'desktop'
   } else {
-    deviceType = "desktop";
+    deviceType = 'desktop'
   }
 
   return {
@@ -41,41 +51,40 @@ export function parseUserAgent(userAgentString: string): ParsedUserAgent {
     deviceType,
     deviceBrand: parser.platform.vendor,
     deviceModel: parser.platform.model,
-  };
+  }
 }
 
 /**
  * Extract geo location data from Cloudflare headers
  */
 export async function getCloudflareGeoHeaders(): Promise<GeoLocationData> {
-  const headersList = await headers();
+  const headersList = await headers()
 
-  // IP address (priority: cf-connecting-ip > x-real-ip > x-forwarded-for)
-  const cfIP = headersList.get("cf-connecting-ip");
-  const realIP = headersList.get("x-real-ip");
-  const forwarded = headersList.get("x-forwarded-for");
-  const ipAddress = cfIP || realIP || (forwarded ? forwarded.split(",")[0].trim() : undefined);
+  // Source IP goes through lib/ip, the one reader shared with Better Auth and
+  // rate limiting; the column is nullable, so the sentinel never lands in the DB
+  const ip = await getClientIPFromHeaders()
+  const ipAddress = ip === UNKNOWN_IP ? undefined : ip
 
   // Cloudflare geo headers
-  const countryCode = headersList.get("cf-ipcountry") || undefined;
+  const countryCode = headersList.get('cf-ipcountry') || undefined
 
   return {
     ipAddress,
     countryCode,
-  };
+  }
 }
 
 /**
  * Extract referrer domain from full referrer URL
  */
 export function extractReferrerDomain(referrer: string | undefined): string | undefined {
-  if (!referrer) return undefined;
+  if (!referrer) return undefined
 
   try {
-    const url = new URL(referrer);
-    return url.hostname;
+    const url = new URL(referrer)
+    return url.hostname
   } catch {
-    return undefined;
+    return undefined
   }
 }
 
@@ -83,8 +92,8 @@ export function extractReferrerDomain(referrer: string | undefined): string | un
  * Get user agent from headers
  */
 export async function getUserAgentFromHeaders(): Promise<string | undefined> {
-  const headersList = await headers();
-  return headersList.get("user-agent") || undefined;
+  const headersList = await headers()
+  return headersList.get('user-agent') || undefined
 }
 
 /**
@@ -95,12 +104,12 @@ export async function buildUserSourceData(
   clientData?: ClientTrackingData,
 ): Promise<UserSourceData> {
   // Get server-side data
-  const geoData = await getCloudflareGeoHeaders();
-  const userAgentString = await getUserAgentFromHeaders();
-  const parsedUA = userAgentString ? parseUserAgent(userAgentString) : {};
+  const geoData = await getCloudflareGeoHeaders()
+  const userAgentString = await getUserAgentFromHeaders()
+  const parsedUA = userAgentString ? parseUserAgent(userAgentString) : {}
 
   // Extract referrer domain
-  const referrerDomain = extractReferrerDomain(clientData?.referrer);
+  const referrerDomain = extractReferrerDomain(clientData?.referrer)
 
   return {
     userId,
@@ -126,7 +135,7 @@ export async function buildUserSourceData(
     timezone: clientData?.timezone,
     // Geo from Cloudflare
     ...geoData,
-  };
+  }
 }
 
 /**
@@ -166,9 +175,9 @@ export async function saveUserSource(data: UserSourceData): Promise<void> {
       countryCode: data.countryCode,
       // Extra
       metadata: data.metadata,
-    });
-    console.log(`User source saved for user ${data.userId}`);
+    })
+    console.log(`User source saved for user ${data.userId}`)
   } catch (error) {
-    console.error("Failed to save user source:", error);
+    console.error('Failed to save user source:', error)
   }
 }

@@ -1,12 +1,35 @@
 {
   "badge": {
-    "label": "PRICING",
-    "text": "One-Time Payment, Lifetime Updates"
+    "label": "PRICING"
   },
-  "title": "Ship your SaaS in days, not months",
-  "description": "Using our battle-tested SaaS starter template, so you can skip boilerplate coding and focus on the features your users actually need.",
-  "annual": "Annual",
-  "monthly": "Monthly",
-  "onetime": "One-Time",
-  "saveTip": "Save 20%"
+  "title": "Simple pricing that scales with your creativity",
+  "description": "Subscribe for monthly credits at the best rate, or top up anytime with one-time credit packs. Every image and video you generate simply spends credits.",
+  "tabs": {
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "packs": "Credit Packs"
+  },
+  "saveTip": "Save 17%",
+  "teamSection": {
+    "title": "For teams",
+    "subtitle": "No seat fees — the same per-credit rate as personal plans, just a bigger shared pool for the whole crew."
+  },
+  "popular": "Most Popular",
+  "perMonth": "/month",
+  "perYear": "/year",
+  "creditsPerMonth": "{credits} credits / month",
+  "creditsOneTime": "{credits} credits",
+  "packNote": "One-time purchase. Credits never expire.",
+  "subscribe": "Subscribe",
+  "buy": "Buy credits",
+  "processing": "Processing...",
+  "checkoutFailed": "Could not start checkout. Please try again.",
+  "subscriptionExists": "You already have an active subscription — manage or change your plan from the billing page.",
+  "teamOrgRequired": "Team plans need a team first — set yours up and checkout continues automatically.",
+  "creditPackPersonalOnly": "Credit packs are personal purchases — switch to your personal workspace to buy one.",
+  "paypalNotConfigured": "PayPal is not configured",
+  "loginRequired": "You must be logged in to purchase a plan.",
+  "paymentFailed": "Payment failed. Please try again.",
+  "paymentPending": "Your payment is being processed. Please check back in a moment.",
+  "purchaseDisabled": "Purchases are temporarily unavailable. Existing subscriptions, credits, and payment history are unaffected."
 }

@@ -1,7 +1,10 @@
 "use client";
 
-import { incrementUniqueViewCountAction, incrementViewCountAction } from "@/actions/posts/views";
-import { PostType } from "@niu/db/schema";
+import {
+  incrementUniqueViewCountAction,
+  incrementViewCountAction,
+} from "@/actions/posts/views";
+import { PostType } from "@/lib/db/schema";
 import { useLocale } from "next-intl";
 import { useEffect } from "react";
 
@@ -12,7 +15,12 @@ interface ViewCounterProps {
   trackMode: "all" | "unique";
 }
 
-export function ViewCounter({ slug, postType, trackView, trackMode }: ViewCounterProps) {
+export function ViewCounter({
+  slug,
+  postType,
+  trackView,
+  trackMode,
+}: ViewCounterProps) {
   const locale = useLocale();
 
   useEffect(() => {

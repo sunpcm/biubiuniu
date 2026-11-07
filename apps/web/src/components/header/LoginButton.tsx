@@ -1,7 +1,7 @@
 "use client";
 
 import LoginDialog from "@/components/auth/LoginDialog";
-import { Button } from "@niu/ui/button";
+import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -28,12 +28,15 @@ export default function LoginButton() {
 
   return (
     <>
-      <Button onClick={handleLogin} variant="default" className={`shadow-lg`}>
+      <Button onClick={handleLogin} size="sm">
         {t("Button.signIn")}
       </Button>
 
       {process.env.NEXT_PUBLIC_LOGIN_MODE === "dialog" && (
-        <LoginDialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen} />
+        <LoginDialog
+          open={isLoginDialogOpen}
+          onOpenChange={setIsLoginDialogOpen}
+        />
       )}
     </>
   );

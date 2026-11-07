@@ -6,7 +6,7 @@ const replicate = new Replicate({
 });
 
 export async function generateVideoWithReplicate(
-  input: VideoGenerationInput,
+  input: VideoGenerationInput
 ): Promise<{ videoUrl: string; externalId: string }> {
   const replicateInput: Record<string, any> = {
     prompt: input.prompt,

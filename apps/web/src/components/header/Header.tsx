@@ -1,3 +1,12 @@
+/**
+ * [INPUT]: Depends on the Home i18n title, getSession from @/lib/auth/server,
+ *          sibling header/ components (HeaderLinks/MobileMenu/UserAvatar),
+ *          LocaleSwitcher/ThemeToggle and the font-brand brand-face utility
+ * [OUTPUT]: Exports the Header server component (site top bar: logo + brand title + nav)
+ * [POS]: Entry shell of components/header, consumed by the public basic-layout;
+ *        the brand title shares font-brand with MobileMenu/Footer/DashboardSidebar
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
 import HeaderLinks from "@/components/header/HeaderLinks";
 import MobileMenu from "@/components/header/MobileMenu";
 import { UserAvatar } from "@/components/header/UserAvatar";
@@ -5,10 +14,9 @@ import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link as I18nLink } from "@/i18n/routing";
 import { getSession } from "@/lib/auth/server";
-import { user as userSchema } from "@niu/db/schema";
+import { user as userSchema } from "@/lib/db/schema";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-
 type User = typeof userSchema.$inferSelect;
 
 const Header = async () => {
@@ -17,8 +25,8 @@ const Header = async () => {
   const user = session?.user;
 
   return (
-    <header className="sticky top-0 z-50 px-6 py-2 backdrop-blur-md">
-      <nav className="mx-auto flex w-full items-center justify-between">
+    <header className="sticky top-0 z-50 py-2 backdrop-blur-md">
+      <nav className="max-w-8xl container mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-6 md:space-x-12">
           <I18nLink
             href="/"
@@ -26,8 +34,14 @@ const Header = async () => {
             prefetch={true}
             className="flex items-center space-x-1"
           >
-            <Image src="/logo.png" alt="Logo" width={100} height={0} />
-            {/* <span className={cn("text-md font-medium")}>{t("title")}</span> */}
+            <Image
+              src="/logo.png"
+              alt={t("title")}
+              width={100}
+              height={26}
+              className="h-auto w-auto max-w-[100px]"
+              priority
+            />
           </I18nLink>
 
           <HeaderLinks />

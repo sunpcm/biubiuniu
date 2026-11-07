@@ -1,13 +1,29 @@
+/**
+ * [INPUT]: Depends on @/lib/auth/auth-client for the Better Auth client,
+ *          @/lib/url's sanitizeNextPath, @/lib/email's normalizeEmail,
+ *          @marsidev/react-turnstile for the captcha, @/i18n/routing's
+ *          DEFAULT_LOCALE, next-intl and next/navigation
+ * [OUTPUT]: Exports the default LoginForm component (social providers + magic
+ *           link + email OTP + Turnstile captcha)
+ * [POS]: The login surface of components/auth, shared by the /login page and
+ *        LoginDialog; the return hop is `callbackURL` prop > ?next=, both
+ *        sanitized through sanitizeNextPath before reaching any channel.
+ *        It does NOT touch signup attribution — the attribution cookie is
+ *        written by proxy.ts via lib/tracking/capture, because hanging it on
+ *        this form would miss One Tap and every other signup entry point
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
 "use client";
 
 import { GoogleIcon } from "@/components/icons";
-import { Badge } from "@niu/ui/badge";
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/auth-client";
 import { normalizeEmail } from "@/lib/email";
-import { initializeTracking } from "@/lib/tracking/client";
+import { sanitizeNextPath } from "@/lib/url";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { Github, Link as LinkIcon, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -17,11 +33,16 @@ import { toast } from "sonner";
 
 interface LoginFormProps {
   className?: string;
+  /** Return hop supplied by the host (the dialog passes the current path); wins over ?next= */
+  callbackURL?: string;
 }
 
 type LoginMode = "otp" | "magic-link";
 
-export default function LoginForm({ className = "" }: LoginFormProps) {
+export default function LoginForm({
+  className = "",
+  callbackURL,
+}: LoginFormProps) {
   const t = useTranslations("Login");
   const locale = useLocale();
 
@@ -48,11 +69,6 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
     setLastMethod(authClient.getLastUsedLoginMethod());
   }, []);
 
-  // Initialize user tracking on component mount
-  useEffect(() => {
-    initializeTracking();
-  }, []);
-
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -61,10 +77,11 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
   }, [countdown]);
 
   const getCallbackUrl = () => {
-    return new URL(
-      next || locale === DEFAULT_LOCALE ? "" : `/${locale}`,
-      window.location.origin,
-    ).toString();
+    // Sanitized through sanitizeNextPath (open-redirect guard); with no hop to
+    // return to, fall back to the current locale root
+    const safeNext = sanitizeNextPath(callbackURL ?? next);
+    const fallback = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
+    return new URL(safeNext ?? fallback, window.location.origin).toString();
   };
 
   const handleEmailLogin = async (e?: React.FormEvent) => {
@@ -74,7 +91,9 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
     try {
       const { error } = await authClient.signIn.magicLink({
         email: normalizeEmail(email),
-        name: "my-name",
+        // No name is passed — a new user's name stays empty and every display
+        // site falls back to the email, matching the OTP signup path. A
+        // hard-coded placeholder would leak into the whole team's member list.
         callbackURL: getCallbackUrl(),
         errorCallbackURL: "/redirect-error",
         fetchOptions: {
@@ -101,7 +120,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
       toast.success(t("Toast.Email.successTitle"), {
         description: t("Toast.Email.successDescription"),
       });
-    } catch (_error) {
+    } catch {
       toast.error(t("Toast.Email.errorTitle"), {
         description: t("Toast.Email.errorDescription"),
       });
@@ -146,7 +165,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
         description: t("Toast.OTP.sendSuccessDescription"),
       });
       setCountdown(60);
-    } catch (_error) {
+    } catch {
       toast.error(t("Toast.OTP.errorTitle"), {
         description: t("Toast.OTP.sendErrorDescription"),
       });
@@ -194,7 +213,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
       });
 
       window.location.assign(getCallbackUrl());
-    } catch (_error) {
+    } catch {
       toast.error(t("Toast.OTP.errorTitle"), {
         description: t("Toast.OTP.verifyErrorDescription"),
       });
@@ -204,15 +223,10 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
   };
 
   const signInSocial = async (provider: string) => {
-    const callback = new URL(
-      next || locale === DEFAULT_LOCALE ? "" : `/${locale}`,
-      window.location.origin,
-    );
-
     await authClient.signIn.social(
       {
         provider: provider,
-        callbackURL: callback.toString(),
+        callbackURL: getCallbackUrl(),
         errorCallbackURL: `/redirect-error`,
       },
       {
@@ -239,7 +253,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
             description: ctx.error.message,
           });
         },
-      },
+      }
     );
   };
 
@@ -266,7 +280,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
           {lastMethod === "google" && (
             <Badge
               variant="secondary"
-              className="pointer-events-none absolute right-2 px-1.5 py-0.5 text-[10px]"
+              className="absolute right-2 text-[10px] px-1.5 py-0.5 pointer-events-none"
             >
               Last used
             </Badge>
@@ -287,7 +301,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
           {lastMethod === "github" && (
             <Badge
               variant="secondary"
-              className="pointer-events-none absolute right-2 px-1.5 py-0.5 text-[10px]"
+              className="absolute right-2 text-[10px] px-1.5 py-0.5 pointer-events-none"
             >
               Last used
             </Badge>
@@ -300,7 +314,9 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background text-muted-foreground px-2">{t("signInMethods.or")}</span>
+          <span className="bg-background px-2 text-muted-foreground">
+            {t("signInMethods.or")}
+          </span>
         </div>
       </div>
 
@@ -319,7 +335,9 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
 
         {mode === "otp" && (
           <div className="grid">
-            <div className="text-sm font-medium">{t("signInMethods.otpMethod")}</div>
+            <div className="text-sm font-medium">
+              {t("signInMethods.otpMethod")}
+            </div>
             <div className="flex gap-2">
               <Input
                 type="text"
@@ -339,7 +357,8 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
                   !email ||
                   isOtpLoading ||
                   countdown > 0 ||
-                  (!!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken)
+                  (!!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY &&
+                    !captchaToken)
                 }
               >
                 {isOtpLoading ? (
@@ -392,7 +411,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
             (mode === "otp" && otpCode.length !== 6) ||
             (!!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken)
           }
-          className="bg-primary/90 hover:bg-primary w-full"
+          className="w-full bg-primary/90 hover:bg-primary"
         >
           {isLoading || isOtpLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -409,7 +428,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
         <div className="text-center">
           <Button
             variant="link"
-            className="text-muted-foreground hover:text-primary text-xs font-normal"
+            className="text-xs font-normal text-muted-foreground hover:text-primary"
             onClick={toggleMode}
           >
             {mode === "otp"

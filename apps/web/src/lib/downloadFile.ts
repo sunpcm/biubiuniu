@@ -1,6 +1,6 @@
 export const downloadBase64File = (base64Data: string, fileName: string) => {
-  const base64WithoutPrefix = base64Data.includes("base64,")
-    ? base64Data.substring(base64Data.indexOf("base64,") + 7)
+  const base64WithoutPrefix = base64Data.includes('base64,')
+    ? base64Data.substring(base64Data.indexOf('base64,') + 7)
     : base64Data;
 
   const byteCharacters = atob(base64WithoutPrefix);
@@ -18,11 +18,11 @@ export const downloadBase64File = (base64Data: string, fileName: string) => {
     byteArrays.push(byteArray);
   }
 
-  const blob = new Blob(byteArrays, { type: "application/octet-stream" });
+  const blob = new Blob(byteArrays, { type: 'application/octet-stream' });
 
   const url = window.URL.createObjectURL(blob);
 
-  const downloadLink = document.createElement("a");
+  const downloadLink = document.createElement('a');
   downloadLink.href = url;
   downloadLink.download = fileName;
 
@@ -31,4 +31,4 @@ export const downloadBase64File = (base64Data: string, fileName: string) => {
 
   document.body.removeChild(downloadLink);
   window.URL.revokeObjectURL(url);
-};
+}

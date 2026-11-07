@@ -17,149 +17,35 @@ export interface LanguageModelConfig {
 
 export const LANGUAGE_MODELS: LanguageModelConfig[] = [
   // OpenAI
-  {
-    provider: "openai",
-    id: "gpt-4o-mini",
-    name: "GPT-4o Mini",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "openai",
-    id: "gpt-4o",
-    name: "GPT-4o",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "openai",
-    id: "o3",
-    name: "o3",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text", "reasoning"],
-  },
-  {
-    provider: "openai",
-    id: "o4-mini",
-    name: "o4 Mini",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text", "reasoning"],
-  },
+  { provider: "openai", id: "gpt-4o-mini", name: "GPT-4o Mini", inputSupport: ["text", "image"], outputSupport: ["text"] },
+  { provider: "openai", id: "gpt-4o", name: "GPT-4o", inputSupport: ["text", "image"], outputSupport: ["text"] },
+  { provider: "openai", id: "o3", name: "o3", inputSupport: ["text", "image"], outputSupport: ["text", "reasoning"] },
+  { provider: "openai", id: "o4-mini", name: "o4 Mini", inputSupport: ["text", "image"], outputSupport: ["text", "reasoning"] },
 
   // Anthropic
-  {
-    provider: "anthropic",
-    id: "claude-opus-4-6",
-    name: "Claude Opus 4.6",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "anthropic",
-    id: "claude-sonnet-4-6",
-    name: "Claude Sonnet 4.6",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "anthropic",
-    id: "claude-3-7-sonnet-20250219",
-    name: "Claude 3.7 Sonnet",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text", "reasoning"],
-  },
-  {
-    provider: "anthropic",
-    id: "claude-haiku-4-5",
-    name: "Claude Haiku 4.5",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
+  { provider: "anthropic", id: "claude-opus-4-6", name: "Claude Opus 4.6", inputSupport: ["text", "image"], outputSupport: ["text"] },
+  { provider: "anthropic", id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6", inputSupport: ["text", "image"], outputSupport: ["text"] },
+  { provider: "anthropic", id: "claude-3-7-sonnet-20250219", name: "Claude 3.7 Sonnet", inputSupport: ["text", "image"], outputSupport: ["text", "reasoning"] },
+  { provider: "anthropic", id: "claude-haiku-4-5", name: "Claude Haiku 4.5", inputSupport: ["text", "image"], outputSupport: ["text"] },
 
   // Google
-  {
-    provider: "google",
-    id: "gemini-2.5-pro",
-    name: "Gemini 2.5 Pro",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text", "reasoning"],
-  },
-  {
-    provider: "google",
-    id: "gemini-2.5-flash",
-    name: "Gemini 2.5 Flash",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text", "reasoning"],
-  },
+  { provider: "google", id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", inputSupport: ["text", "image"], outputSupport: ["text", "reasoning"] },
+  { provider: "google", id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", inputSupport: ["text", "image"], outputSupport: ["text", "reasoning"] },
 
   // DeepSeek
-  {
-    provider: "deepseek",
-    id: "deepseek-chat",
-    name: "DeepSeek V3.2",
-    inputSupport: ["text"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "deepseek",
-    id: "deepseek-reasoner",
-    name: "DeepSeek R1",
-    inputSupport: ["text"],
-    outputSupport: ["text", "reasoning"],
-  },
+  { provider: "deepseek", id: "deepseek-chat", name: "DeepSeek V3.2", inputSupport: ["text"], outputSupport: ["text"] },
+  { provider: "deepseek", id: "deepseek-reasoner", name: "DeepSeek R1", inputSupport: ["text"], outputSupport: ["text", "reasoning"] },
 
   // xAI
-  {
-    provider: "xai",
-    id: "grok-4",
-    name: "Grok 4",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "xai",
-    id: "grok-3",
-    name: "Grok 3",
-    inputSupport: ["text"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "xai",
-    id: "grok-3-mini",
-    name: "Grok 3 Mini",
-    inputSupport: ["text"],
-    outputSupport: ["text", "reasoning"],
-  },
+  { provider: "xai", id: "grok-4", name: "Grok 4", inputSupport: ["text", "image"], outputSupport: ["text"] },
+  { provider: "xai", id: "grok-3", name: "Grok 3", inputSupport: ["text"], outputSupport: ["text"] },
+  { provider: "xai", id: "grok-3-mini", name: "Grok 3 Mini", inputSupport: ["text"], outputSupport: ["text", "reasoning"] },
 
   // OpenRouter
-  {
-    provider: "openrouter",
-    id: "openai/o4-mini",
-    name: "o4 Mini (OpenRouter)",
-    inputSupport: ["text"],
-    outputSupport: ["text", "reasoning"],
-  },
-  {
-    provider: "openrouter",
-    id: "openai/gpt-4o",
-    name: "GPT-4o (OpenRouter)",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "openrouter",
-    id: "anthropic/claude-opus-4-6",
-    name: "Claude Opus 4.6 (OpenRouter)",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text"],
-  },
-  {
-    provider: "openrouter",
-    id: "google/gemini-2.5-pro",
-    name: "Gemini 2.5 Pro (OpenRouter)",
-    inputSupport: ["text", "image"],
-    outputSupport: ["text", "reasoning"],
-  },
+  { provider: "openrouter", id: "openai/o4-mini", name: "o4 Mini (OpenRouter)", inputSupport: ["text"], outputSupport: ["text", "reasoning"] },
+  { provider: "openrouter", id: "openai/gpt-4o", name: "GPT-4o (OpenRouter)", inputSupport: ["text", "image"], outputSupport: ["text"] },
+  { provider: "openrouter", id: "anthropic/claude-opus-4-6", name: "Claude Opus 4.6 (OpenRouter)", inputSupport: ["text", "image"], outputSupport: ["text"] },
+  { provider: "openrouter", id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro (OpenRouter)", inputSupport: ["text", "image"], outputSupport: ["text", "reasoning"] },
 ];
 
 // ------ Custom OpenAI-Compatible Models ------
@@ -222,9 +108,7 @@ export interface ImageModelConfig {
 export const IMAGE_MODELS: ImageModelConfig[] = [
   // OpenAI
   {
-    provider: "openai",
-    id: "gpt-image-1",
-    name: "GPT Image 1.5",
+    provider: "openai", id: "gpt-image-1", name: "GPT Image 1.5",
     capabilities: {
       imageToImage: true,
       aspectRatios: ["1:1", "3:2", "2:3"],
@@ -235,35 +119,16 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
   },
   // Google (special path via generateText + responseModalities)
   {
-    provider: "google",
-    id: "gemini-3.1-flash-image-preview",
-    name: "Nano Banana 2",
+    provider: "google", id: "gemini-3.1-flash-image-preview", name: "Nano Banana 2",
     generationMethod: "gemini",
     capabilities: {
       imageToImage: true,
-      aspectRatios: [
-        "1:1",
-        "1:4",
-        "1:8",
-        "2:3",
-        "3:2",
-        "3:4",
-        "4:1",
-        "4:3",
-        "4:5",
-        "5:4",
-        "8:1",
-        "9:16",
-        "16:9",
-        "21:9",
-      ],
+      aspectRatios: ["1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3", "4:5", "5:4", "8:1", "9:16", "16:9", "21:9"],
       resolutions: ["512px", "1K", "2K", "4K"],
     },
   },
   {
-    provider: "google",
-    id: "gemini-3-pro-image-preview",
-    name: "Nano Banana Pro",
+    provider: "google", id: "gemini-3-pro-image-preview", name: "Nano Banana Pro",
     generationMethod: "gemini",
     capabilities: {
       imageToImage: true,
@@ -273,9 +138,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
   },
   // xAI
   {
-    provider: "xai",
-    id: "grok-2-image",
-    name: "Grok 2 Image",
+    provider: "xai", id: "grok-2-image", name: "Grok 2 Image",
     capabilities: {
       imageToImage: true,
       aspectRatios: ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "2:1", "1:2"],
@@ -283,9 +146,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
   },
   // Replicate
   {
-    provider: "replicate",
-    id: "black-forest-labs/flux-schnell",
-    name: "Flux Schnell (Replicate)",
+    provider: "replicate", id: "black-forest-labs/flux-schnell", name: "Flux Schnell (Replicate)",
     capabilities: {
       aspectRatios: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "4:5", "5:4"],
       seed: true,
@@ -293,9 +154,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
     },
   },
   {
-    provider: "replicate",
-    id: "black-forest-labs/flux-1.1-pro",
-    name: "Flux 1.1 Pro (Replicate)",
+    provider: "replicate", id: "black-forest-labs/flux-1.1-pro", name: "Flux 1.1 Pro (Replicate)",
     capabilities: {
       imageToImage: true,
       aspectRatios: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "4:5", "5:4"],
@@ -306,9 +165,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
   },
   // fal.ai
   {
-    provider: "fal",
-    id: "fal-ai/flux/schnell",
-    name: "Flux Schnell (fal.ai)",
+    provider: "fal", id: "fal-ai/flux/schnell", name: "Flux Schnell (fal.ai)",
     capabilities: {
       imageToImage: true,
       sizes: ["512x512", "768x768", "1024x1024"],
@@ -320,9 +177,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
     },
   },
   {
-    provider: "fal",
-    id: "fal-ai/flux-pro/v1.1",
-    name: "Flux Pro 1.1 (fal.ai)",
+    provider: "fal", id: "fal-ai/flux-pro/v1.1", name: "Flux Pro 1.1 (fal.ai)",
     capabilities: {
       sizes: ["512x512", "768x768", "1024x1024"],
       seed: true,
@@ -332,9 +187,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
     },
   },
   {
-    provider: "fal",
-    id: "fal-ai/flux/dev/image-to-image",
-    name: "Flux Dev I2I (fal.ai)",
+    provider: "fal", id: "fal-ai/flux/dev/image-to-image", name: "Flux Dev I2I (fal.ai)",
     capabilities: {
       imageToImage: true,
       seed: true,
@@ -347,9 +200,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
 
   // KIE - Image Models
   {
-    provider: "kie",
-    id: "nano-banana-pro",
-    name: "Nano Banana Pro (KIE)",
+    provider: "kie", id: "nano-banana-pro", name: "Nano Banana Pro (KIE)",
     capabilities: {
       imageToImage: true,
       aspectRatios: ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"],
@@ -360,9 +211,7 @@ export const IMAGE_MODELS: ImageModelConfig[] = [
     },
   },
   {
-    provider: "kie",
-    id: "z-image",
-    name: "Z-Image (KIE)",
+    provider: "kie", id: "z-image", name: "Z-Image (KIE)",
     capabilities: {
       aspectRatios: ["1:1", "4:3", "3:4", "16:9", "9:16"],
     },
@@ -396,187 +245,77 @@ export interface VideoModelConfig {
 export const VIDEO_MODELS: VideoModelConfig[] = [
   // --- Text-to-Video ---
   {
-    provider: "replicate",
-    id: "kwaivgi/kling-v2.5-turbo-pro",
-    name: "Kling 2.5 Turbo Pro (Replicate)",
-    type: "text-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["16:9", "9:16", "1:1"],
-      negativePrompt: true,
-      cfgScale: [0, 1, 0.5],
-    },
+    provider: "replicate", id: "kwaivgi/kling-v2.5-turbo-pro", name: "Kling 2.5 Turbo Pro (Replicate)",
+    type: "text-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["16:9", "9:16", "1:1"], negativePrompt: true, cfgScale: [0, 1, 0.5] },
   },
   {
-    provider: "replicate",
-    id: "bytedance/seedance-1.5-pro",
-    name: "Seedance 1.5 Pro (Replicate)",
-    type: "text-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
-      resolutions: ["480p", "720p"],
-      generateAudio: true,
-      generateAudioDefault: true,
-      cameraFixed: true,
-      seed: true,
-    },
+    provider: "replicate", id: "bytedance/seedance-1.5-pro", name: "Seedance 1.5 Pro (Replicate)",
+    type: "text-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"], resolutions: ["480p", "720p"], generateAudio: true, generateAudioDefault: true, cameraFixed: true, seed: true },
   },
   {
-    provider: "fal",
-    id: "fal-ai/kling-video/v2.6/pro/text-to-video",
-    name: "Kling 2.6 Pro (fal.ai)",
-    type: "text-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["16:9", "9:16", "1:1"],
-      negativePrompt: true,
-      cfgScale: [0, 1, 0.5],
-      generateAudio: true,
-    },
+    provider: "fal", id: "fal-ai/kling-video/v2.6/pro/text-to-video", name: "Kling 2.6 Pro (fal.ai)",
+    type: "text-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["16:9", "9:16", "1:1"], negativePrompt: true, cfgScale: [0, 1, 0.5], generateAudio: true },
   },
   {
-    provider: "fal",
-    id: "fal-ai/bytedance/seedance/v1.5/pro/text-to-video",
-    name: "Seedance 1.5 Pro (fal.ai)",
-    type: "text-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
-      resolutions: ["480p", "720p"],
-      generateAudio: true,
-      generateAudioDefault: true,
-      cameraFixed: true,
-      seed: true,
-    },
+    provider: "fal", id: "fal-ai/bytedance/seedance/v1.5/pro/text-to-video", name: "Seedance 1.5 Pro (fal.ai)",
+    type: "text-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"], resolutions: ["480p", "720p"], generateAudio: true, generateAudioDefault: true, cameraFixed: true, seed: true },
   },
   {
-    provider: "fal",
-    id: "fal-ai/wan/v2.6/text-to-video",
-    name: "Wan 2.6 (fal.ai)",
-    type: "text-to-video",
-    supportedDurations: [5, 10, 15],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["16:9", "9:16", "1:1", "4:3", "3:4"],
-      resolutions: ["720p", "1080p"],
-      negativePrompt: true,
-      seed: true,
-    },
+    provider: "fal", id: "fal-ai/wan/v2.6/text-to-video", name: "Wan 2.6 (fal.ai)",
+    type: "text-to-video", supportedDurations: [5, 10, 15], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["16:9", "9:16", "1:1", "4:3", "3:4"], resolutions: ["720p", "1080p"], negativePrompt: true, seed: true },
   },
 
   // --- Image-to-Video ---
   {
-    provider: "replicate",
-    id: "kwaivgi/kling-v2.6",
-    name: "Kling 2.6 (Replicate)",
-    type: "image-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["16:9", "9:16", "1:1"],
-      negativePrompt: true,
-      generateAudio: true,
-    },
+    provider: "replicate", id: "kwaivgi/kling-v2.6", name: "Kling 2.6 (Replicate)",
+    type: "image-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["16:9", "9:16", "1:1"], negativePrompt: true, generateAudio: true },
   },
   {
-    provider: "replicate",
-    id: "bytedance/seedance-1.5-pro",
-    name: "Seedance 1.5 Pro (Replicate)",
-    type: "image-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
-      resolutions: ["480p", "720p"],
-      generateAudio: true,
-      generateAudioDefault: true,
-      cameraFixed: true,
-      seed: true,
-    },
+    provider: "replicate", id: "bytedance/seedance-1.5-pro", name: "Seedance 1.5 Pro (Replicate)",
+    type: "image-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"], resolutions: ["480p", "720p"], generateAudio: true, generateAudioDefault: true, cameraFixed: true, seed: true },
   },
   {
-    provider: "fal",
-    id: "fal-ai/kling-video/v2.6/pro/image-to-video",
-    name: "Kling 2.6 Pro (fal.ai)",
-    type: "image-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
+    provider: "fal", id: "fal-ai/kling-video/v2.6/pro/image-to-video", name: "Kling 2.6 Pro (fal.ai)",
+    type: "image-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
     capabilities: { negativePrompt: true, generateAudio: true },
   },
   {
-    provider: "fal",
-    id: "fal-ai/bytedance/seedance/v1.5/pro/image-to-video",
-    name: "Seedance 1.5 Pro (fal.ai)",
-    type: "image-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
-      resolutions: ["480p", "720p"],
-      generateAudio: true,
-      generateAudioDefault: true,
-      cameraFixed: true,
-      seed: true,
-    },
+    provider: "fal", id: "fal-ai/bytedance/seedance/v1.5/pro/image-to-video", name: "Seedance 1.5 Pro (fal.ai)",
+    type: "image-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"], resolutions: ["480p", "720p"], generateAudio: true, generateAudioDefault: true, cameraFixed: true, seed: true },
   },
   {
-    provider: "fal",
-    id: "fal-ai/wan/v2.6/image-to-video",
-    name: "Wan 2.6 (fal.ai)",
-    type: "image-to-video",
-    supportedDurations: [5, 10, 15],
-    maxWaitSeconds: 600,
+    provider: "fal", id: "fal-ai/wan/v2.6/image-to-video", name: "Wan 2.6 (fal.ai)",
+    type: "image-to-video", supportedDurations: [5, 10, 15], maxWaitSeconds: 600,
     capabilities: { resolutions: ["720p", "1080p"], negativePrompt: true, seed: true },
   },
 
   // KIE - Video Models
   {
-    provider: "kie",
-    id: "kling-2.6/text-to-video",
-    name: "Kling 2.6 (KIE)",
-    type: "text-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["16:9", "9:16", "1:1"],
-      negativePrompt: true,
-      cfgScale: [0, 1, 0.5],
-      generateAudio: true,
-    },
+    provider: "kie", id: "kling-2.6/text-to-video", name: "Kling 2.6 (KIE)",
+    type: "text-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["16:9", "9:16", "1:1"], negativePrompt: true, cfgScale: [0, 1, 0.5], generateAudio: true },
   },
   {
-    provider: "kie",
-    id: "grok-imagine/text-to-video",
-    name: "Grok Imagine (KIE)",
-    type: "text-to-video",
-    supportedDurations: [6, 10],
-    maxWaitSeconds: 600,
-    capabilities: {
-      aspectRatios: ["2:3", "3:2", "1:1", "16:9", "9:16"],
-      resolutions: ["480p", "720p"],
-    },
+    provider: "kie", id: "grok-imagine/text-to-video", name: "Grok Imagine (KIE)",
+    type: "text-to-video", supportedDurations: [6, 10], maxWaitSeconds: 600,
+    capabilities: { aspectRatios: ["2:3", "3:2", "1:1", "16:9", "9:16"], resolutions: ["480p", "720p"] },
   },
   {
-    provider: "kie",
-    id: "kling-2.6/image-to-video",
-    name: "Kling 2.6 (KIE)",
-    type: "image-to-video",
-    supportedDurations: [5, 10],
-    maxWaitSeconds: 600,
+    provider: "kie", id: "kling-2.6/image-to-video", name: "Kling 2.6 (KIE)",
+    type: "image-to-video", supportedDurations: [5, 10], maxWaitSeconds: 600,
     capabilities: { generateAudio: true },
   },
   {
-    provider: "kie",
-    id: "grok-imagine/image-to-video",
-    name: "Grok Imagine (KIE)",
-    type: "image-to-video",
-    supportedDurations: [6, 10],
-    maxWaitSeconds: 600,
+    provider: "kie", id: "grok-imagine/image-to-video", name: "Grok Imagine (KIE)",
+    type: "image-to-video", supportedDurations: [6, 10], maxWaitSeconds: 600,
     capabilities: { resolutions: ["480p", "720p"] },
   },
 ];
@@ -590,7 +329,7 @@ export function getVideoModelsByType(type: "text-to-video" | "image-to-video") {
 
 /** Group models by provider (used for grouped display in the frontend ModelSelector) */
 export function groupModelsByProvider<T extends { provider: string }>(
-  models: T[],
+  models: T[]
 ): Record<string, T[]> {
   return models.reduce(
     (acc, model) => {
@@ -598,6 +337,6 @@ export function groupModelsByProvider<T extends { provider: string }>(
       acc[model.provider].push(model);
       return acc;
     },
-    {} as Record<string, T[]>,
+    {} as Record<string, T[]>
   );
 }

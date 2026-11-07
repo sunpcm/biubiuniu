@@ -1,10 +1,12 @@
 "use client";
 
 import { DynamicIcon } from "@/components/DynamicIcon";
-import { useAuth } from "@/components/providers/AuthProvider";
+import { SidebarUserCard } from "@/components/layout/SidebarUserCard";
+import { WorkspaceSwitcher } from "@/components/shared/WorkspaceSwitcher";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -14,8 +16,10 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
   useSidebar,
-} from "@niu/ui/sidebar";
+} from "@/components/ui/sidebar";
 import { Link as I18nLink, usePathname } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/auth-client";
+import { isAdminUserRole } from "@/lib/auth/permissions";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -27,9 +31,11 @@ type Menu = {
 };
 
 export function DashboardSidebar() {
-  const { user } = useAuth();
+  const { data: session } = authClient.useSession();
+  const user = session?.user as any | undefined;
   const pathname = usePathname();
   const t = useTranslations("Login");
+  const tHome = useTranslations("Home");
 
   const userMenus: Menu[] = t.raw("UserMenus");
   const adminMenus: Menu[] = t.raw("AdminMenus");
@@ -45,16 +51,33 @@ export function DashboardSidebar() {
       <SidebarHeader>
         <I18nLink
           href="/"
-          title={t("title")}
+          title={tHome("title")}
           prefetch={true}
           className="flex items-center space-x-1 px-2 py-1"
         >
-          <Image src="/logo.png" alt="Logo" width={84} height={44} className="rounded-md" />
-          {/* {!isCollapsed && <h1 className="font-semibold">{siteConfig.name}</h1>} */}
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={24}
+            height={24}
+            className="rounded-md"
+          />
+          {!isCollapsed && (
+            <h1 className="font-brand lowercase">{tHome("title")}</h1>
+          )}
         </I18nLink>
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Workspace context: personal/team switcher, signed-in users only */}
+        {session?.user && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <WorkspaceSwitcher />
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -81,7 +104,7 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {user?.role === "admin" && (
+        {isAdminUserRole(user?.role) && (
           <>
             <SidebarSeparator />
             <SidebarGroup>
@@ -91,7 +114,11 @@ export function DashboardSidebar() {
                   {adminMenus.map((menu) => (
                     <SidebarMenuItem key={menu.href}>
                       <SidebarMenuButton asChild isActive={isActive(menu.href)}>
-                        <I18nLink href={menu.href} title={menu.name} prefetch={false}>
+                        <I18nLink
+                          href={menu.href}
+                          title={menu.name}
+                          prefetch={false}
+                        >
                           <DynamicIcon name={menu.icon} className="h-4 w-4" />
                           {!isCollapsed && <span>{menu.name}</span>}
                         </I18nLink>
@@ -104,6 +131,10 @@ export function DashboardSidebar() {
           </>
         )}
       </SidebarContent>
+
+      <SidebarFooter>
+        {session?.user && <SidebarUserCard user={user} />}
+      </SidebarFooter>
     </Sidebar>
   );
 }

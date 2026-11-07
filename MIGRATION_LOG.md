@@ -108,3 +108,52 @@
 | lib/utils.ts 桥接层策略    | 全量替换，不保留桥接      | 长痛不如短痛，直接替换所有 23 处导入                  |
 | 邮件模板 siteConfig 注入   | Props 参数注入            | React 纯函数思想，避免全局变量，Serverless 友好       |
 | formatCurrency process.env | 改为 defaultCurrency 参数 | 共享包不应依赖 process.env，保持运行环境无关性        |
+
+---
+
+## Phase 3: 业务领域化构建 — Auth 模块抽离
+
+### 开始日期: 2026-03-01
+
+### 步骤记录
+
+| 步骤                                | 状态 | 说明                                                                                    |
+| ----------------------------------- | ---- | --------------------------------------------------------------------------------------- |
+| S1 - 创建 @niu/auth 包              | 完成 | 新建 packages/auth，含 package.json, tsconfig.json                                      |
+| S2 - 定义 Auth 类型接口             | 完成 | 创建 types.ts：AuthSiteInfo, SendEmailFn, UserTrackingHooks, RedisStorage, CreateAuthConfig |
+| S3 - 创建 createAuth 工厂函数       | 完成 | create-auth.ts：依赖注入模式封装 betterAuth()，接收 site/sendEmail/templates/redis/tracking |
+| S4 - 创建 createBetterAuthClient    | 完成 | client.ts：封装客户端 Better Auth 实例化逻辑                                             |
+| S5 - 创建 server helpers 工厂       | 完成 | server.ts：createGetSession/createIsAdmin 工厂函数，绑定 auth 实例                       |
+| S6 - 创建包入口文件                 | 完成 | index.ts：导出 createAuth, AuthInstance, 所有类型接口                                    |
+| S7 - 重写 apps/web auth/index.ts    | 完成 | 改为调用 createAuth()，注入 siteConfig/sendEmail/templates/redis/tracking                |
+| S8 - 重写 apps/web auth-client.ts   | 完成 | 改为从 @niu/auth/client 导入 createBetterAuthClient                                      |
+| S9 - 重写 apps/web auth/server.ts   | 完成 | 改为从 @niu/auth/server 导入工厂函数并绑定本地 auth 实例                                 |
+| S10 - 更新 apps/web 依赖            | 完成 | 添加 @niu/auth workspace 依赖                                                            |
+| S11 - 验证                          | 完成 | pnpm install 通过, typecheck 6包全部通过, build 通过                                     |
+
+### 新增包一览
+
+| 包名         | 路径           | 用途                                          | exports                       |
+| ------------ | -------------- | --------------------------------------------- | ----------------------------- |
+| `@niu/auth`  | packages/auth  | Better Auth 工厂函数、服务端 helpers、客户端封装 | `.`, `./client`, `./server`  |
+
+### 架构决策记录
+
+| 决策点                       | 选择                           | 理由                                                                      |
+| ---------------------------- | ------------------------------ | ------------------------------------------------------------------------- |
+| auth 核心逻辑下沉策略       | Factory 模式 (createAuth)     | IoC 依赖注入，将 siteConfig/sendEmail/tracking 等应用级配置与核心逻辑解耦 |
+| auth-client 下沉策略        | createBetterAuthClient 工厂   | 客户端配置简单，封装为纯函数，消费端一行代码实例化                        |
+| server helpers 下沉策略     | createGetSession/createIsAdmin | 将 auth 实例作为参数注入，避免循环依赖                                    |
+| apps/web auth 目录保留策略  | 保留为 IoC 装配层              | auth 需要主应用注入 siteConfig、sendEmail、tracking 等，属于合理 IoC 层   |
+| Redis 类型处理              | 自定义 RedisStorage 接口       | 避免将 @upstash/redis 作为 @niu/auth 的硬依赖，仅约束 get/set 方法签名   |
+| next 依赖处理               | peerDependencies               | auth 包使用 next/headers 和 next/navigation，通过 peer dep 声明           |
+| tsconfig 预设选择           | nextjs.json                    | auth 包使用 Next.js API（cookies/headers/redirect），需要 next 类型声明    |
+
+### apps/web 文件变更记录
+
+| 文件                                  | 变更类型 | 说明                                                |
+| ------------------------------------- | -------- | --------------------------------------------------- |
+| `src/lib/auth/index.ts`              | 重写     | 214行 → 26行，调用 createAuth() 注入应用依赖        |
+| `src/lib/auth/auth-client.ts`        | 重写     | 33行 → 3行，从 @niu/auth/client 导入工厂函数        |
+| `src/lib/auth/server.ts`             | 重写     | 30行 → 9行，从 @niu/auth/server 导入工厂函数        |
+| `package.json`                        | 更新     | 添加 `@niu/auth: "workspace:*"` 依赖                |

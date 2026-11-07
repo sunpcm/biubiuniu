@@ -1,16 +1,12 @@
-import {
-  getPostMetadataAction,
-  getPublishedPostBySlugAction,
-  listPublishedPostsAction,
-} from "@/actions/posts/posts";
-import { POST_CONFIGS } from "@/components/cms/post-config";
-import { DEFAULT_LOCALE } from "@/i18n/routing";
-import { PostType } from "@niu/db/schema";
-import { PostBase, PublicPost, PublicPostWithContent } from "@/types/cms";
-import dayjs from "dayjs";
-import fs from "fs";
-import matter from "gray-matter";
-import path from "path";
+import { getPostMetadataAction, getPublishedPostBySlugAction, listPublishedPostsAction } from '@/actions/posts/posts';
+import { POST_CONFIGS } from '@/components/cms/post-config';
+import { DEFAULT_LOCALE } from '@/i18n/routing';
+import { PostType } from '@/lib/db/schema';
+import { PostBase, PublicPost, PublicPostWithContent } from '@/types/cms';
+import dayjs from 'dayjs';
+import fs from 'fs';
+import matter from 'gray-matter';
+import path from 'path';
 
 const POSTS_BATCH_SIZE = 10;
 
@@ -22,39 +18,34 @@ function mapServerPostToPostBase(serverPost: PublicPostWithContent, locale: stri
     locale: locale,
     id: serverPost.id || undefined,
     title: serverPost.title,
-    description: serverPost.description ?? "",
-    featuredImageUrl: serverPost.featuredImageUrl ?? "",
+    description: serverPost.description ?? '',
+    featuredImageUrl: serverPost.featuredImageUrl ?? '',
     slug: serverPost.slug,
-    tags: serverPost.tags ?? "",
+    tags: serverPost.tags ?? '',
     publishedAt:
-      (serverPost.publishedAt && dayjs(serverPost.publishedAt).toDate()) ||
-      new Date(serverPost.createdAt),
-    status: serverPost.status ?? "published",
-    visibility: serverPost.visibility ?? "public",
+      (serverPost.publishedAt && dayjs(serverPost.publishedAt).toDate()) || new Date(serverPost.createdAt),
+    status: serverPost.status ?? 'published',
+    visibility: serverPost.visibility ?? 'public',
     isPinned: serverPost.isPinned ?? false,
-    content: serverPost.content ?? "",
+    content: serverPost.content ?? '',
   };
 }
 
 /**
  * Maps local markdown file data to PostBase format
  */
-function mapLocalFileToPostBase(
-  data: Record<string, any>,
-  content: string,
-  locale: string,
-): PostBase {
+function mapLocalFileToPostBase(data: Record<string, any>, content: string, locale: string): PostBase {
   return {
     locale,
     id: data.id || undefined,
     title: data.title,
-    description: data.description || "",
-    featuredImageUrl: data.featuredImageUrl || "",
+    description: data.description || '',
+    featuredImageUrl: data.featuredImageUrl || '',
     slug: data.slug,
-    tags: data.tags || "",
+    tags: data.tags || '',
     publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
-    status: data.status || "published",
-    visibility: data.visibility || "public",
+    status: data.status || 'published',
+    visibility: data.visibility || 'public',
     isPinned: data.isPinned || false,
     content,
     metadata: data,
@@ -101,7 +92,7 @@ export function createCmsModule(postType: PostType) {
    */
   async function getBySlug(
     slug: string,
-    locale: string = DEFAULT_LOCALE,
+    locale: string = DEFAULT_LOCALE
   ): Promise<GetBySlugResult> {
     // Try local filesystem first if localDirectory is configured
     if (localDirectory) {
@@ -111,13 +102,13 @@ export function createCmsModule(postType: PostType) {
         for (const filename of filenames) {
           const fullPath = path.join(postsDirectory, filename);
           try {
-            const fileContents = await fs.promises.readFile(fullPath, "utf8");
+            const fileContents = await fs.promises.readFile(fullPath, 'utf8');
             const { data, content } = matter(fileContents);
 
-            const localSlug = (data.slug || "").replace(/^\//, "").replace(/\/$/, "");
-            const targetSlug = slug.replace(/^\//, "").replace(/\/$/, "");
+            const localSlug = (data.slug || '').replace(/^\//, '').replace(/\/$/, '');
+            const targetSlug = slug.replace(/^\//, '').replace(/\/$/, '');
 
-            if (localSlug === targetSlug && data.status !== "draft") {
+            if (localSlug === targetSlug && data.status !== 'draft') {
               return {
                 post: mapLocalFileToPostBase(data, content, locale),
                 error: undefined,
@@ -143,11 +134,7 @@ export function createCmsModule(postType: PostType) {
     } else if (!serverResult.success) {
       return { post: null, error: serverResult.error, errorCode: serverResult.customCode };
     } else {
-      return {
-        post: null,
-        error: `${postType} not found (unexpected server response).`,
-        errorCode: undefined,
-      };
+      return { post: null, error: `${postType} not found (unexpected server response).`, errorCode: undefined };
     }
   }
 
@@ -178,17 +165,17 @@ export function createCmsModule(postType: PostType) {
       const batchPosts: PostBase[] = await Promise.all(
         batchFilenames.map(async (filename) => {
           const fullPath = path.join(postsDirectory, filename);
-          const fileContents = await fs.promises.readFile(fullPath, "utf8");
+          const fileContents = await fs.promises.readFile(fullPath, 'utf8');
           const { data, content } = matter(fileContents);
           return mapLocalFileToPostBase(data, content, locale);
-        }),
+        })
       );
 
       allPosts.push(...batchPosts);
     }
 
     // Filter out non-published articles
-    allPosts = allPosts.filter((post) => post.status === "published");
+    allPosts = allPosts.filter(post => post.status === 'published');
 
     // Sort posts by isPinned and publishedAt
     allPosts = allPosts.sort((a, b) => {
@@ -210,8 +197,8 @@ export function createCmsModule(postType: PostType) {
       pageIndex?: number;
       pageSize?: number;
       tagId?: string | null;
-      visibility?: "public" | "logged_in" | "subscribers" | null;
-    } = {},
+      visibility?: 'public' | 'logged_in' | 'subscribers' | null;
+    } = {}
   ): Promise<GetPublishedListResult> {
     const result = await listPublishedPostsAction({
       postType,
@@ -238,7 +225,7 @@ export function createCmsModule(postType: PostType) {
    */
   async function getPostMetadata(
     slug: string,
-    locale: string = DEFAULT_LOCALE,
+    locale: string = DEFAULT_LOCALE
   ): Promise<GetMetadataResult> {
     // Try local filesystem first if localDirectory is configured
     if (localDirectory) {
@@ -248,19 +235,19 @@ export function createCmsModule(postType: PostType) {
         for (const filename of filenames) {
           const fullPath = path.join(postsDirectory, filename);
           try {
-            const fileContents = await fs.promises.readFile(fullPath, "utf8");
+            const fileContents = await fs.promises.readFile(fullPath, 'utf8');
             const { data } = matter(fileContents);
 
-            const localSlug = (data.slug || "").replace(/^\//, "").replace(/\/$/, "");
-            const targetSlug = slug.replace(/^\//, "").replace(/\/$/, "");
+            const localSlug = (data.slug || '').replace(/^\//, '').replace(/\/$/, '');
+            const targetSlug = slug.replace(/^\//, '').replace(/\/$/, '');
 
-            if (localSlug === targetSlug && data.status !== "draft") {
+            if (localSlug === targetSlug && data.status !== 'draft') {
               return {
                 metadata: {
                   title: data.title,
                   description: data.description || null,
                   featuredImageUrl: data.featuredImageUrl || null,
-                  visibility: data.visibility || "public",
+                  visibility: data.visibility || 'public',
                 },
               };
             }
@@ -292,5 +279,5 @@ export function createCmsModule(postType: PostType) {
 }
 
 // Pre-configured CMS modules for common post types
-export const blogCms = createCmsModule("blog");
-export const glossaryCms = createCmsModule("glossary");
+export const blogCms = createCmsModule('blog');
+export const glossaryCms = createCmsModule('glossary');

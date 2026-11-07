@@ -4,7 +4,6 @@ export interface HeaderLink {
   href: string;
   target?: string;
   rel?: string;
-  hidden?: boolean;
   items?: HeaderLink[];
   description?: string;
 }
@@ -12,7 +11,7 @@ export interface HeaderLink {
 export interface FooterLink {
   title: string;
   links: Link[];
-}
+};
 
 interface Link {
   id?: string;
@@ -21,6 +20,4 @@ interface Link {
   target?: string;
   rel?: string;
   useA?: boolean;
-  disabled?: boolean;
-  hidden?: boolean;
-}
+};

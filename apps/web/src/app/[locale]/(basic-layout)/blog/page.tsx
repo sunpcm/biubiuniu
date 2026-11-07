@@ -10,13 +10,17 @@ import { TextSearch } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
+export const revalidate = 60;
+
 type Params = Promise<{ locale: string }>;
 
 type MetadataProps = {
   params: Params;
 };
 
-export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Blogs" });
 
@@ -53,7 +57,10 @@ export default async function Page({ params }: { params: Params }) {
       : 0;
 
   if (!initialServerPostsResult.success) {
-    console.error("Failed to fetch initial server posts:", initialServerPostsResult.error);
+    console.error(
+      "Failed to fetch initial server posts:",
+      initialServerPostsResult.error
+    );
   }
 
   const tagsResult = await listTagsAction({ postType: "blog" });
@@ -62,20 +69,22 @@ export default async function Page({ params }: { params: Params }) {
     serverTags = tagsResult.data.tags;
   }
 
-  const noPostsFound = localPosts.length === 0 && initialServerPosts.length === 0;
+  const noPostsFound =
+    localPosts.length === 0 && initialServerPosts.length === 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-center text-4xl font-bold">{t("title")}</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center">{t("title")}</h1>
 
       {noPostsFound ? (
-        <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
-          <TextSearch className="mb-4 h-16 w-16 text-gray-400" />
-          <h2 className="mb-2 text-2xl font-semibold">
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+          <TextSearch className="h-16 w-16 text-gray-400 mb-4" />
+          <h2 className="text-2xl font-semibold mb-2">
             {t("emptyState.title") || "No blog posts"}
           </h2>
-          <p className="max-w-md text-gray-500">
-            {t("emptyState.description") || "We are creating exciting content, please stay tuned!"}
+          <p className="text-gray-500 max-w-md">
+            {t("emptyState.description") ||
+              "We are creating exciting content, please stay tuned!"}
           </p>
         </div>
       ) : (

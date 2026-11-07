@@ -1,92 +1,146 @@
+/**
+ * [INPUT]: Depends on @/actions/credits for the CreditHistoryPage type,
+ *          @/lib/format for formatDate/formatNumber,
+ *          @/components/ui/{badge,tooltip}, @tanstack/react-table
+ * [OUTPUT]: Exports the getColumns column-definition factory and the
+ *           CreditHistoryItem type
+ * [POS]: The column definitions of dashboard/(user)/credit-history —
+ *        consumed by CreditHistoryDataTable; type badges are colored by
+ *        semantics, the amount column is colored by sign, and the two
+ *        bucket balance snapshots each get their own column
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
 "use client";
 
-import type { CreditLog } from "@/actions/usage/logs";
-import { Badge } from "@niu/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@niu/ui/tooltip";
+import type { CreditHistoryPage } from "@/actions/credits";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { formatDate, formatNumber } from "@/lib/format";
 import type { ColumnDef } from "@tanstack/react-table";
-import dayjs from "dayjs";
 
-const formatLogType = (type: string, t: (key: string) => string) => {
-  switch (type) {
-    case "one_time_purchase":
-      return (
-        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-          {t("type_one_time_purchase")}
-        </Badge>
-      );
-    case "subscription_grant":
-      return (
-        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-          {t("type_subscription_grant")}
-        </Badge>
-      );
-    case "feature_usage":
-      return <Badge variant="secondary">{t("type_feature_usage")}</Badge>;
-    case "refund_revoke":
-      return <Badge variant="destructive">{t("type_refund_revoke")}</Badge>;
-    case "subscription_ended_revoke":
-      return <Badge variant="destructive">{t("type_subscription_ended_revoke")}</Badge>;
-    case "welcome_bonus":
-      return (
-        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-          {t("type_welcome_bonus")}
-        </Badge>
-      );
-    default:
-      return <Badge variant="outline">{type}</Badge>;
+export type CreditHistoryItem = CreditHistoryPage["items"][number];
+
+// ────────────────────────────────────────────────────────────────
+//  Type badges — grants green, clawbacks red, usage/adjustments neutral;
+//  unknown types degrade to an outline badge rendered as-is, so the UI
+//  never breaks on a newly added enum value
+// ────────────────────────────────────────────────────────────────
+
+const GRANT_TYPES = new Set([
+  "purchase",
+  "subscription_grant",
+  "usage_refund",
+  "signup_bonus",
+]);
+const REVOKE_TYPES = new Set(["refund_revoke", "subscription_end_revoke"]);
+
+function TypeBadge({ type, t }: { type: string; t: (key: string) => string }) {
+  const labelKey = `type_${type}`;
+  if (GRANT_TYPES.has(type)) {
+    return (
+      <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+        {t(labelKey)}
+      </Badge>
+    );
   }
-};
+  if (REVOKE_TYPES.has(type)) {
+    return <Badge variant="destructive">{t(labelKey)}</Badge>;
+  }
+  if (type === "usage" || type === "admin_adjustment") {
+    return <Badge variant="secondary">{t(labelKey)}</Badge>;
+  }
+  return <Badge variant="outline">{type}</Badge>;
+}
 
-export const getColumns = (t: (key: string) => string): ColumnDef<CreditLog>[] => [
+export const getColumns = (
+  t: (key: string) => string,
+  locale: string
+): ColumnDef<CreditHistoryItem>[] => [
   {
     accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }) => <div>{dayjs(row.getValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")}</div>,
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => formatLogType(row.getValue("type"), t),
-  },
-  {
-    accessorKey: "notes",
-    header: "Details",
+    header: t("header_date"),
+    size: 180,
+    minSize: 160,
     cell: ({ row }) => (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="max-w-[200px] truncate">{row.getValue("notes")}</div>
-          </TooltipTrigger>
-          <TooltipContent>{row.getValue("notes")}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="whitespace-nowrap">
+        {formatDate(row.original.createdAt, locale, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })}
+      </div>
     ),
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    accessorKey: "type",
+    header: t("header_type"),
+    size: 160,
+    minSize: 120,
+    cell: ({ row }) => <TypeBadge type={row.original.type} t={t} />,
+  },
+  {
+    accessorKey: "note",
+    header: t("header_details"),
+    size: 260,
+    minSize: 180,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = amount > 0 ? `+${amount}` : amount.toString();
+      const note = row.original.note;
+      if (!note) return <span className="text-muted-foreground">-</span>;
       return (
-        <div className={`font-medium ${amount > 0 ? "text-green-600" : "text-destructive"}`}>
-          {formatted}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[220px] truncate">{note}</div>
+            </TooltipTrigger>
+            <TooltipContent>{note}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
+    accessorKey: "amount",
+    header: t("header_amount"),
+    size: 120,
+    minSize: 100,
+    cell: ({ row }) => {
+      const amount = row.original.amount;
+      return (
+        <div
+          className={`font-medium tabular-nums ${
+            amount > 0 ? "text-green-600" : amount < 0 ? "text-destructive" : ""
+          }`}
+        >
+          {formatNumber(amount, locale, { signDisplay: "always" })}
         </div>
       );
     },
   },
   {
-    accessorKey: "oneTimeBalanceAfter",
-    header: "One-Time Balance After",
+    accessorKey: "subscriptionCreditsAfter",
+    header: t("header_balance_subscription"),
+    size: 180,
+    minSize: 160,
     cell: ({ row }) => (
-      <div className="text-muted-foreground">{row.getValue("oneTimeBalanceAfter")}</div>
+      <div className="text-muted-foreground tabular-nums">
+        {formatNumber(row.original.subscriptionCreditsAfter, locale)}
+      </div>
     ),
   },
   {
-    accessorKey: "subscriptionBalanceAfter",
-    header: "Subscription Balance After",
+    accessorKey: "purchasedCreditsAfter",
+    header: t("header_balance_purchased"),
+    size: 180,
+    minSize: 160,
     cell: ({ row }) => (
-      <div className="text-muted-foreground">{row.getValue("subscriptionBalanceAfter")}</div>
+      <div className="text-muted-foreground tabular-nums">
+        {formatNumber(row.original.purchasedCreditsAfter, locale)}
+      </div>
     ),
   },
 ];

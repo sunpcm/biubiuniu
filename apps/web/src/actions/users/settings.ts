@@ -1,12 +1,26 @@
+/**
+ * [INPUT]: Depends on @/lib/auth/server for getSession, @/lib/db + schema's user
+ *          table, @/lib/cloudflare/r2 for serverUploadFile/deleteFile and
+ *          r2-utils' generateR2Key, @/config/common for userAvatarsPath (the
+ *          avatar prefix shared with lib/storage/account-purge), @/lib/validations
+ *          for the name/avatar constraints, next-intl/server for messages
+ * [OUTPUT]: Exports updateUserSettingsAction
+ * [POS]: The self-service profile mutation of actions/users — consumed by the
+ *        dashboard settings page; uploads the new avatar first, then deletes
+ *        the replaced one only when it lives under the user's own prefix
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
 "use server";
 
+import { userAvatarsPath } from "@/config/common";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { actionResponse } from "@/lib/action-response";
 import { getSession } from "@/lib/auth/server";
 import { deleteFile, serverUploadFile } from "@/lib/cloudflare/r2";
 import { generateR2Key } from "@/lib/cloudflare/r2-utils";
-import { db } from "@niu/db";
-import { user as userSchema } from "@niu/db/schema";
+import { db } from "@/lib/db";
+import { user as userSchema } from "@/lib/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import {
   AVATAR_ALLOWED_FILE_TYPES,
@@ -67,7 +81,7 @@ export async function updateUserSettingsAction({
       }
 
       try {
-        const filePath = `avatars/${authUser.id}`;
+        const filePath = userAvatarsPath(authUser.id);
         const key = generateR2Key({
           fileName: avatar.name,
           path: filePath,
@@ -86,7 +100,7 @@ export async function updateUserSettingsAction({
             const oldAvatarUrl = authUser.image as string;
             const oldPath = new URL(oldAvatarUrl).pathname.split("/").slice(-3).join("/");
 
-            if (oldPath.startsWith(`avatars/${authUser.id}/`)) {
+            if (oldPath.startsWith(`${filePath}/`)) {
               await deleteFile(oldPath);
             }
           } catch (error) {

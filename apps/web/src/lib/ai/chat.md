@@ -9,14 +9,14 @@
 ```ts
 // lib/ai/chat.ts
 interface ChatOptions {
-  provider: string; // e.g. "openai", "anthropic", "deepseek"
-  modelId: string; // e.g. "gpt-4o", "claude-3-5-sonnet", "deepseek-chat"
+  provider: string;   // e.g. "openai", "anthropic", "deepseek"
+  modelId: string;    // e.g. "gpt-4o", "claude-3-5-sonnet", "deepseek-chat"
   messages?: Array<{ role: "user" | "assistant" | "system"; content: string }>;
-  prompt?: string; // shorthand for single-turn: wraps into messages automatically
-  system?: string; // system prompt
+  prompt?: string;    // shorthand for single-turn: wraps into messages automatically
+  system?: string;    // system prompt
 }
 
-export function streamChat(options: ChatOptions): ReturnType<typeof streamText>;
+export function streamChat(options: ChatOptions): ReturnType<typeof streamText>
 ```
 
 - Pass either `messages` (multi-turn) **or** `prompt` (single-turn). If both are provided, `messages` takes precedence.
@@ -40,9 +40,9 @@ const result = streamChat({
   provider: "anthropic",
   modelId: "claude-3-5-sonnet-20241022",
   messages: [
-    { role: "user", content: "Hello!" },
+    { role: "user",      content: "Hello!" },
     { role: "assistant", content: "Hi! How can I help?" },
-    { role: "user", content: "What is the capital of France?" },
+    { role: "user",      content: "What is the capital of France?" },
   ],
 });
 
@@ -65,12 +65,12 @@ return streamText({
   messages,
   onFinish: async ({ usage, finishReason }) => {
     await db.insert(aiUsageLogs).values({
-      provider: options.provider,
-      modelId: options.modelId,
-      promptTokens: usage.promptTokens,
-      completionTokens: usage.completionTokens,
-      finishReason, // "stop" | "length" | "tool-calls" | ...
-      createdAt: new Date(),
+      provider:          options.provider,
+      modelId:           options.modelId,
+      promptTokens:      usage.promptTokens,
+      completionTokens:  usage.completionTokens,
+      finishReason,                          // "stop" | "length" | "tool-calls" | ...
+      createdAt:         new Date(),
     });
   },
 });
@@ -90,11 +90,11 @@ The example below uses [Upstash Ratelimit](https://github.com/upstash/ratelimit-
 ```ts
 // lib/ai/chat.ts
 import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { Redis }     from "@upstash/redis";
 
 const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(20, "1 m"), // 20 requests per minute
+  redis:     Redis.fromEnv(),
+  limiter:   Ratelimit.slidingWindow(20, "1 m"), // 20 requests per minute
   analytics: true,
 });
 
@@ -111,7 +111,7 @@ export async function streamChat(options: ChatOptions & { userId?: string }) {
     }
   }
 
-  const model = getLanguageModel(options.provider, options.modelId);
+  const model    = getLanguageModel(options.provider, options.modelId);
   const messages = options.messages ?? [{ role: "user" as const, content: options.prompt ?? "" }];
   return streamText({ model, system: options.system, messages });
 }
@@ -157,7 +157,7 @@ export function streamChat(options: ChatOptions) {
     throw Object.assign(new Error("Content policy violation"), { status: 400 });
   }
 
-  const model = getLanguageModel(options.provider, options.modelId);
+  const model    = getLanguageModel(options.provider, options.modelId);
   const messages = options.messages ?? [{ role: "user" as const, content: options.prompt ?? "" }];
   return streamText({ model, system: options.system, messages });
 }
@@ -172,7 +172,10 @@ For production, consider using the [OpenAI Moderation API](https://platform.open
 Automatically retry on transient provider errors (429, 502, 503) without touching `route.ts`.
 
 ```ts
-async function withRetry<T>(fn: () => T, { maxAttempts = 3, baseDelayMs = 500 } = {}): Promise<T> {
+async function withRetry<T>(
+  fn: () => T,
+  { maxAttempts = 3, baseDelayMs = 500 } = {}
+): Promise<T> {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return fn();
@@ -189,14 +192,14 @@ async function withRetry<T>(fn: () => T, { maxAttempts = 3, baseDelayMs = 500 } 
 }
 
 export function streamChat(options: ChatOptions) {
-  const model = getLanguageModel(options.provider, options.modelId);
+  const model    = getLanguageModel(options.provider, options.modelId);
   const messages = options.messages ?? [{ role: "user" as const, content: options.prompt ?? "" }];
 
   return withRetry(() => streamText({ model, system: options.system, messages }));
 }
 ```
 
-> **Important**: Retry only wraps the _initiation_ of the stream (the `streamText()` call). Once the client starts consuming the stream, retry is no longer possible — the HTTP response has already begun.
+> **Important**: Retry only wraps the *initiation* of the stream (the `streamText()` call). Once the client starts consuming the stream, retry is no longer possible — the HTTP response has already begun.
 
 ---
 
@@ -206,35 +209,31 @@ Emit structured JSON logs for observability tools (Datadog, Grafana Loki, etc.).
 
 ```ts
 export function streamChat(options: ChatOptions) {
-  const model = getLanguageModel(options.provider, options.modelId);
+  const model    = getLanguageModel(options.provider, options.modelId);
   const messages = options.messages ?? [{ role: "user" as const, content: options.prompt ?? "" }];
-  const startMs = Date.now();
+  const startMs  = Date.now();
 
-  console.log(
-    JSON.stringify({
-      event: "ai.chat.start",
-      provider: options.provider,
-      modelId: options.modelId,
-      turns: messages.length,
-    }),
-  );
+  console.log(JSON.stringify({
+    event:    "ai.chat.start",
+    provider: options.provider,
+    modelId:  options.modelId,
+    turns:    messages.length,
+  }));
 
   const result = streamText({
     model,
     system: options.system,
     messages,
     onFinish: ({ usage, finishReason }) => {
-      console.log(
-        JSON.stringify({
-          event: "ai.chat.finish",
-          provider: options.provider,
-          modelId: options.modelId,
-          durationMs: Date.now() - startMs,
-          promptTokens: usage.promptTokens,
-          completionTokens: usage.completionTokens,
-          finishReason,
-        }),
-      );
+      console.log(JSON.stringify({
+        event:            "ai.chat.finish",
+        provider:         options.provider,
+        modelId:          options.modelId,
+        durationMs:       Date.now() - startMs,
+        promptTokens:     usage.promptTokens,
+        completionTokens: usage.completionTokens,
+        finishReason,
+      }));
     },
   });
 
@@ -250,11 +249,11 @@ Many products need to store the full conversation history. There are **three dis
 
 #### Timing overview
 
-| When                    | What you can save           | Trade-off                              |
-| ----------------------- | --------------------------- | -------------------------------------- |
-| **Before** `streamText` | User message + metadata     | Earliest; AI reply not yet available   |
-| **`onFinish`**          | Full AI reply + token usage | Most common; atomic, after stream ends |
-| **`onChunk`**           | Each token as it arrives    | Real-time; higher write volume         |
+| When | What you can save | Trade-off |
+|---|---|---|
+| **Before** `streamText` | User message + metadata | Earliest; AI reply not yet available |
+| **`onFinish`** | Full AI reply + token usage | Most common; atomic, after stream ends |
+| **`onChunk`** | Each token as it arrives | Real-time; higher write volume |
 
 ---
 
@@ -264,7 +263,7 @@ This is the most common pattern. Save the user turn immediately so it's never lo
 
 ```ts
 export async function streamChat(options: ChatOptions & { conversationId?: string }) {
-  const model = getLanguageModel(options.provider, options.modelId);
+  const model    = getLanguageModel(options.provider, options.modelId);
   const messages = options.messages ?? [{ role: "user" as const, content: options.prompt ?? "" }];
 
   // 1. Persist the user message before calling the model
@@ -273,9 +272,9 @@ export async function streamChat(options: ChatOptions & { conversationId?: strin
     if (lastUserMsg?.role === "user") {
       await db.insert(chatMessages).values({
         conversationId: options.conversationId,
-        role: "user",
-        content: lastUserMsg.content,
-        createdAt: new Date(),
+        role:           "user",
+        content:        lastUserMsg.content,
+        createdAt:      new Date(),
       });
     }
   }
@@ -288,12 +287,12 @@ export async function streamChat(options: ChatOptions & { conversationId?: strin
     onFinish: async ({ text, usage }) => {
       if (options.conversationId) {
         await db.insert(chatMessages).values({
-          conversationId: options.conversationId,
-          role: "assistant",
-          content: text, // full reply text
-          promptTokens: usage.promptTokens,
+          conversationId:  options.conversationId,
+          role:            "assistant",
+          content:         text,             // full reply text
+          promptTokens:    usage.promptTokens,
           completionTokens: usage.completionTokens,
-          createdAt: new Date(),
+          createdAt:       new Date(),
         });
       }
     },
@@ -318,8 +317,8 @@ return streamText({
   onFinish: async ({ text, usage }) => {
     await db.insert(chatMessages).values([
       // Save both turns atomically in one insert
-      { role: "user", content: messages.at(-1)!.content, conversationId: options.conversationId },
-      { role: "assistant", content: text, conversationId: options.conversationId },
+      { role: "user",      content: messages.at(-1)!.content, conversationId: options.conversationId },
+      { role: "assistant", content: text,                      conversationId: options.conversationId },
     ]);
   },
 });
@@ -352,11 +351,7 @@ return streamText({
     // Finalize: mark as complete, save token counts
     await db
       .update(chatMessages)
-      .set({
-        status: "done",
-        promptTokens: usage.promptTokens,
-        completionTokens: usage.completionTokens,
-      })
+      .set({ status: "done", promptTokens: usage.promptTokens, completionTokens: usage.completionTokens })
       .where(eq(chatMessages.id, placeholderMessageId));
   },
 });
@@ -378,9 +373,9 @@ export async function streamChat(options: ChatOptions & { userId?: string }) {
   // 2. Content safety
   assertContentSafe(options);
 
-  const model = getLanguageModel(options.provider, options.modelId);
+  const model    = getLanguageModel(options.provider, options.modelId);
   const messages = options.messages ?? [{ role: "user" as const, content: options.prompt ?? "" }];
-  const startMs = Date.now();
+  const startMs  = Date.now();
 
   // 3. Persist user message before calling the model
   if (options.conversationId) await saveUserMessage(options);
@@ -399,7 +394,7 @@ export async function streamChat(options: ChatOptions & { userId?: string }) {
             : Promise.resolve(),
         ]);
       },
-    }),
+    })
   );
 }
 ```
@@ -410,12 +405,12 @@ export async function streamChat(options: ChatOptions & { userId?: string }) {
 
 ## Key AI SDK References
 
-| Feature          | API                                                                            |
-| ---------------- | ------------------------------------------------------------------------------ |
-| Streaming text   | [`streamText()`](https://sdk.vercel.ai/docs/reference/ai-sdk-core/stream-text) |
-| Post-stream hook | `streamText({ onFinish })`                                                     |
-| Per-chunk hook   | `streamText({ onChunk })`                                                      |
-| Full reply text  | `onFinish({ text })`                                                           |
-| Token usage      | `result.usage` (Promise) or `onFinish({ usage })`                              |
-| Finish reason    | `onFinish({ finishReason })` — `"stop"`, `"length"`, `"tool-calls"`, `"error"` |
-| HTTP response    | `result.toUIMessageStreamResponse()`                                           |
+| Feature | API |
+|---|---|
+| Streaming text | [`streamText()`](https://sdk.vercel.ai/docs/reference/ai-sdk-core/stream-text) |
+| Post-stream hook | `streamText({ onFinish })` |
+| Per-chunk hook | `streamText({ onChunk })` |
+| Full reply text | `onFinish({ text })` |
+| Token usage | `result.usage` (Promise) or `onFinish({ usage })` |
+| Finish reason | `onFinish({ finishReason })` — `"stop"`, `"length"`, `"tool-calls"`, `"error"` |
+| HTTP response | `result.toUIMessageStreamResponse()` |

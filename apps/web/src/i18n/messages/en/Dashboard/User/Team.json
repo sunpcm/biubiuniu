@@ -1,0 +1,145 @@
+{
+  "switcher": {
+    "label": "Workspace",
+    "personal": "Personal",
+    "createTeam": "Create a team",
+    "manageTeam": "Team settings",
+    "switchFailed": "Failed to switch workspace."
+  },
+  "invite": {
+    "metaTitle": "Team Invitation",
+    "metaDescription": "Accept your team invitation.",
+    "title": "Join {organizationName}",
+    "invitedBy": "{inviter} invited you to join the team and share its credit pool.",
+    "accept": "Accept invitation",
+    "decline": "Decline",
+    "accepting": "Joining…",
+    "accepted": "Welcome aboard! Switching to your team workspace…",
+    "declined": "Invitation declined.",
+    "invalid": "This invitation is invalid or has expired.",
+    "invalidHint": "Ask your team owner to send a new invitation.",
+    "wrongAccount": "This invitation was sent to a different email address. Sign in with the invited email to accept it.",
+    "switchAccount": "Sign in with another account",
+    "backHome": "Back to home",
+    "acceptFailed": "Could not accept the invitation. It may have expired or the team has no seats left."
+  },
+  "page": {
+    "metaTitle": "Team",
+    "metaDescription": "Manage your team workspace: shared credits, members, seats and subscription.",
+    "onboarding": {
+      "createTitle": "Create your team",
+      "createDescription": "A team shares one credit pool — everyone works from the same balance.",
+      "namePlaceholder": "Team name",
+      "createButton": "Create team",
+      "creating": "Creating…",
+      "createFailed": "Could not create the team. Please try again.",
+      "chooseTitle": "Choose a team",
+      "chooseDescription": "You are in your personal workspace. Pick a team to manage it.",
+      "createAnother": "Create a new team",
+      "back": "Back",
+      "switchFailed": "Failed to switch workspace."
+    },
+    "subscription": {
+      "title": "Team plan",
+      "noPlan": "No team subscription",
+      "noPlanDescription": "Subscribe to a team plan to unlock seats and a monthly shared credit pool.",
+      "viewPlans": "View plans",
+      "manage": "Manage subscription",
+      "manageFailed": "Could not open the billing portal. Please try again.",
+      "purchaserOnly": "Only the member who purchased the subscription can manage it.",
+      "monthlyCredits": "{credits} credits / month",
+      "renewsOn": "Renews on {date}",
+      "endsOn": "Ends on {date}",
+      "interval": {
+        "month": "Monthly",
+        "year": "Yearly"
+      },
+      "status": {
+        "active": "Active",
+        "trialing": "Trial",
+        "past_due": "Past due",
+        "unpaid": "Unpaid"
+      }
+    },
+    "pool": {
+      "title": "Shared credit pool",
+      "subscription": "Subscription credits",
+      "purchased": "Purchased credits"
+    },
+    "members": {
+      "title": "Members & seats",
+      "seats": "{used}/{total} seats",
+      "you": "(you)",
+      "role": {
+        "owner": "Owner",
+        "admin": "Admin",
+        "member": "Member"
+      },
+      "removeTitle": "Remove member",
+      "removeDescription": "Remove {name} from the team? They lose access to the shared credit pool immediately.",
+      "removeConfirm": "Remove",
+      "removeCancel": "Cancel",
+      "removeFailed": "Could not remove the member. Please try again.",
+      "roleUpdateFailed": "Could not update the role. Please try again.",
+      "invite": {
+        "emailPlaceholder": "teammate@example.com",
+        "button": "Invite",
+        "sent": "Invitation sent.",
+        "seatsFull": "No seats left. Upgrade your team plan or remove a member first.",
+        "requiresPlan": "Inviting members requires a team plan. Subscribe to unlock seats and a monthly shared credit pool.",
+        "failed": "Could not send the invitation. Please try again."
+      },
+      "pending": {
+        "title": "Pending invitations",
+        "expires": "Expires {date}",
+        "canceled": "Invitation canceled.",
+        "cancelFailed": "Could not cancel the invitation. Please try again.",
+        "copyLink": "Copy invite link",
+        "copyFailed": "Could not copy the link. Please copy it manually."
+      },
+      "leave": {
+        "title": "Leave team",
+        "description": "Leave this team? You lose access to the shared credit pool immediately.",
+        "confirm": "Leave",
+        "failed": "Could not leave the team. Please try again.",
+        "left": "You have left the team."
+      }
+    },
+    "activity": {
+      "title": "Team activity",
+      "empty": "No team activity yet.",
+      "deletedMember": "Deleted account",
+      "columns": {
+        "date": "Date",
+        "actor": "Member",
+        "type": "Type",
+        "amount": "Amount",
+        "balance": "Balance after"
+      },
+      "type": {
+        "purchase": "Purchase",
+        "subscription_grant": "Subscription grant",
+        "usage": "Usage",
+        "usage_refund": "Task refund",
+        "refund_revoke": "Refund clawback",
+        "subscription_end_revoke": "Subscription ended",
+        "admin_adjustment": "Adjustment",
+        "signup_bonus": "Welcome bonus"
+      },
+      "balanceBreakdown": "{subscription} sub · {purchased} purchased"
+    },
+    "checkout": {
+      "ownerOnly": "Only the team owner can purchase a team plan.",
+      "exists": "This team already has an active subscription.",
+      "failed": "Could not start checkout. Please try again."
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "range": "{from}-{to} of {total}"
+    },
+    "loadError": "Failed to load data. Please try again.",
+    "retry": "Retry",
+    "refresh": "Refresh"
+  }
+}

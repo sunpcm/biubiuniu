@@ -4,7 +4,7 @@ import type { VideoGenerationInput } from "../video";
 // fal.ai client authenticates automatically via the FAL_KEY env variable
 
 export async function generateVideoWithFal(
-  input: VideoGenerationInput,
+  input: VideoGenerationInput
 ): Promise<{ videoUrl: string; externalId: string }> {
   const falInput: Record<string, any> = {
     prompt: input.prompt,

@@ -1,12 +1,35 @@
 {
   "badge": {
-    "label": "定价",
-    "text": "一次付费，终生更新"
+    "label": "定价"
   },
-  "title": "几天而非几个月交付您的 SaaS",
-  "description": "使用我们经过实战验证的 SaaS 启动模板，跳过样板代码编写，专注于用户真正需要的功能。",
-  "annual": "年付",
-  "monthly": "月付",
-  "onetime": "一次性",
-  "saveTip": "节省 20%"
+  "title": "简单透明的定价，随创作自由伸缩",
+  "description": "订阅套餐以最优价格每月获得积分，也可以随时购买一次性积分包补充。生成图片和视频，只需消耗积分。",
+  "tabs": {
+    "monthly": "月付",
+    "yearly": "年付",
+    "packs": "积分包"
+  },
+  "saveTip": "省 17%",
+  "teamSection": {
+    "title": "团队方案",
+    "subtitle": "不收席位费——积分单价与个人档完全一致，积分池更大，整个团队共享。"
+  },
+  "popular": "最受欢迎",
+  "perMonth": "/月",
+  "perYear": "/年",
+  "creditsPerMonth": "每月 {credits} 积分",
+  "creditsOneTime": "{credits} 积分",
+  "packNote": "一次性购买，积分永不过期。",
+  "subscribe": "立即订阅",
+  "buy": "购买积分",
+  "processing": "处理中...",
+  "checkoutFailed": "无法发起支付，请稍后重试。",
+  "subscriptionExists": "你已有生效中的订阅——请在账单页管理或更换套餐。",
+  "teamOrgRequired": "订阅团队方案需要先有一个团队——创建后将自动继续结账。",
+  "creditPackPersonalOnly": "积分包属于个人购买——请切换到个人工作区后再购买。",
+  "paypalNotConfigured": "PayPal 未配置",
+  "loginRequired": "购买前请先登录。",
+  "paymentFailed": "支付失败，请稍后重试。",
+  "paymentPending": "你的支付正在处理中，请稍后查看。",
+  "purchaseDisabled": "购买功能暂时不可用。你现有的订阅、积分和支付记录不受影响。"
 }

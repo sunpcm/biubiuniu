@@ -18,18 +18,21 @@ export default function FeatureBadge({
   className = "",
 }: FeatureBadgeProps) {
   const content = (
-    <div className="hover:bg-muted hover:border-primary/20 group flex items-center gap-x-1 rounded-full border px-1 py-1 pr-1 text-center text-sm font-medium transition-all duration-300 ease-in-out sm:gap-x-2 sm:px-2 sm:pr-2">
+    <div className="rounded-full border px-1 py-1 pr-1 sm:px-2 sm:pr-2 text-center text-sm font-medium hover:bg-muted hover:border-primary/20 group items-center gap-x-1 sm:gap-x-2 flex transition-all duration-300 ease-in-out">
       {label && (
-        <div className="bg-primary rounded-2xl border px-1 py-0.5 text-[10px] font-semibold tracking-tight whitespace-nowrap text-white sm:px-1.5 sm:text-xs">
+        <div className="text-white bg-primary rounded-2xl border px-1 py-0.5 sm:px-1.5 text-[10px] sm:text-xs font-semibold tracking-tight whitespace-nowrap">
           {label}
         </div>
       )}
 
-      {text && <div className="px-1 text-xs sm:px-2 sm:text-sm">{text}</div>}
+      {text && <div className="px-1 sm:px-2 text-xs sm:text-sm">{text}</div>}
 
       {href && (
-        <div className="pr-1 transition-transform duration-300 group-hover:translate-x-1 sm:pr-3">
-          <ArrowRight name="ArrowRight" className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+        <div className="pr-1 sm:pr-3 transition-transform duration-300 group-hover:translate-x-1">
+          <ArrowRight
+            name="ArrowRight"
+            className="h-4 w-4 text-gray-400 dark:text-gray-500"
+          />
         </div>
       )}
     </div>

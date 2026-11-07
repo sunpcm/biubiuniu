@@ -5,7 +5,9 @@
  * - This root config mainly wires it up and adds Node-specific overrides for build/config files.
  */
 
-module.exports = [
+import eslintConfig from "@niu/eslint-config";
+
+export default [
   // Replaces legacy `.eslintignore` (deprecated in ESLint v9)
   {
     ignores: [
@@ -18,5 +20,5 @@ module.exports = [
   },
 
   // Base rules shared across apps/packages
-  ...require("@niu/eslint-config"),
+  ...eslintConfig,
 ];

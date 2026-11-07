@@ -1,0 +1,6 @@
+Nexty commerce extraction
+
+The rules in this package were moved from the private Nexty reference application.
+This manifest uses UNLICENSED on purpose. The historical ISC default from the
+template generator does not mean the migrated billing code may be redistributed.
+Product prices, brands, domains, and provider credentials stay with the caller.

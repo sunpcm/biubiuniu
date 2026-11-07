@@ -1,12 +1,67 @@
 {
   "title": "注文",
   "description": "すべての注文のリストです。",
-  "user": "ユーザー",
-  "orderId": "注文ID",
-  "amount": "金額",
-  "discount": "割引",
-  "type": "タイプ",
-  "status": "ステータス",
-  "createdAt": "作成日時",
-  "filterByEmail": "メールアドレスで絞り込み..."
+  "searchPlaceholder": "メールまたはプラン ID で検索...",
+  "columns": {
+    "createdAt": "作成日時",
+    "user": "ユーザー",
+    "planId": "プラン",
+    "orderType": "タイプ",
+    "provider": "決済プロバイダー",
+    "credits": "クレジット",
+    "amount": "金額",
+    "refunded": "返金済み",
+    "status": "ステータス",
+    "actions": "操作"
+  },
+  "filters": {
+    "allProviders": "すべてのプロバイダー",
+    "providerPlaceholder": "プロバイダー",
+    "allTypes": "すべてのタイプ",
+    "typePlaceholder": "注文タイプ",
+    "allStatuses": "すべてのステータス",
+    "statusPlaceholder": "ステータス"
+  },
+  "orderType": {
+    "one_time": "クレジットパック",
+    "subscription_initial": "サブスクリプション（初回）",
+    "subscription_renewal": "サブスクリプション（更新）",
+    "subscription_upgrade": "サブスクリプション（アップグレード）"
+  },
+  "status": {
+    "pending": "決済処理中",
+    "completed": "完了",
+    "partially_refunded": "一部返金",
+    "refunded": "返金済み",
+    "failed": "失敗"
+  },
+  "actions": {
+    "menuLabel": "操作",
+    "copyOrderId": "注文 ID をコピー",
+    "copyPaymentId": "支払い ID をコピー",
+    "refund": "返金…"
+  },
+  "refundDialog": {
+    "title": "注文の返金",
+    "description": "決済プロバイダー経由で返金を実行します。プロバイダーの webhook 確認後、クレジットは自動的に回収されます。",
+    "orderAmount": "注文金額",
+    "alreadyRefunded": "返金済み金額",
+    "refundable": "返金可能額",
+    "creemHint": "Creem の返金 API は取引の残額全額のみ返金できます。一部返金は Creem ダッシュボードから実行してください。ローカルの注文ステータスとクレジットは refund.created webhook で自動同期されます。",
+    "fullRefund": "残額を全額返金",
+    "partialRefund": "一部返金",
+    "amountLabel": "返金額（{currency}）",
+    "amountPlaceholder": "例: 5.00",
+    "invalidAmount": "0 より大きい有効な金額を入力してください。",
+    "exceedsRefundable": "金額が返金可能な残額（{max}）を超えています。",
+    "cancel": "キャンセル",
+    "confirm": "返金を確定",
+    "processing": "処理中..."
+  },
+  "toast": {
+    "fetchFailed": "注文の取得に失敗しました",
+    "refundInitiated": "返金を開始しました — プロバイダーの確認後にステータスが更新されます",
+    "refundFailed": "返金に失敗しました",
+    "copied": "クリップボードにコピーしました"
+  }
 }

@@ -1,4 +1,5 @@
 import withBundleAnalyzer from "@next/bundle-analyzer";
+import { withSentryConfig } from "@sentry/nextjs/config";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
@@ -26,11 +27,6 @@ const nextConfig = {
       destination: "/zh/dashboard/settings",
       permanent: true,
     },
-    {
-      source: "/ja/dashboard",
-      destination: "/ja/dashboard/settings",
-      permanent: true,
-    },
   ],
   images: {
     unoptimized: process.env.NEXT_PUBLIC_OPTIMIZED_IMAGES === "false",
@@ -45,15 +41,23 @@ const nextConfig = {
     ],
   },
   compiler: {
-    removeConsole:
-      process.env.NODE_ENV === "production"
-        ? { exclude: ["error"] }
-        : false,
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
   },
+  // Pino uses worker threads for transports — must be treated as external in Next.js
+  serverExternalPackages: ["pino", "pino-pretty", "pino-roll", "thread-stream"],
+  // Keep the incoming proxy origin so next-intl's absolute rewrites remain parseable.
+  skipProxyUrlNormalize: true,
 };
 
 const withBundleAnalyzerWrapper = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-export default withBundleAnalyzerWrapper(withNextIntl(nextConfig));
+const sentryConfig = {
+  silent: !process.env.CI,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+};
+
+export default withSentryConfig(withBundleAnalyzerWrapper(withNextIntl(nextConfig)), sentryConfig);

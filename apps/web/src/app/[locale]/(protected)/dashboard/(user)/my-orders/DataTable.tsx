@@ -1,268 +1,141 @@
+/**
+ * [INPUT]: Depends on getMyOrders/MyOrderItem of @/actions/orders/user,
+ *          useDataTable of @/hooks/use-data-table,
+ *          the data-table component family of @/components/shared, ./Columns
+ * [OUTPUT]: Exports the MyOrdersDataTable component
+ * [POS]: The table container of dashboard/(user)/my-orders — consumed by
+ *        page.tsx; the new order contract has no server-side filter params,
+ *        only pagination + refresh
+ * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
+ */
+
 "use client";
 
+import { getMyOrders, type MyOrderItem } from "@/actions/orders/user";
 import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  PaginationState,
-  SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
-
-import { getMyOrders, type GetMyOrdersResult } from "@/actions/orders/user";
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@niu/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@niu/ui/table";
-import { ALL_ORDER_TYPES, ORDER_PROVIDERS } from "@/lib/payments/provider-utils";
-import { Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+  DataTableContainer,
+  DataTableEmptyState,
+} from "@/components/shared/data-table-container";
+import { DataTableToolbar } from "@/components/shared/data-table-toolbar";
+import {
+  PinnedTableCell,
+  PinnedTableHead,
+} from "@/components/shared/pinned-column";
+import { TablePagination } from "@/components/shared/table-elements";
+import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
+import { useDataTable } from "@/hooks/use-data-table";
+import { useLocale, useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { toast } from "sonner";
-import { useDebounce } from "use-debounce";
+import { getColumns } from "./Columns";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  initialData: TData[];
-  initialPageCount: number;
+interface DataTableProps {
   pageSize: number;
-  totalCount: number;
 }
 
-const ORDER_TYPES = ALL_ORDER_TYPES;
-const ORDER_STATUSES = ["succeeded", "refunded", "partially_refunded", "canceled"];
+export function MyOrdersDataTable({ pageSize }: DataTableProps) {
+  const t = useTranslations("MyOrders");
+  const locale = useLocale();
 
-export function MyOrdersDataTable<TData, TValue>({
-  columns,
-  initialData,
-  initialPageCount,
-  pageSize,
-  totalCount,
-}: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [debouncedGlobalFilter] = useDebounce(globalFilter, 500);
-  const [provider, setProvider] = useState("");
-  const [orderType, setOrderType] = useState("");
-  const [status, setStatus] = useState("");
+  const columns = useMemo(() => getColumns(t, locale), [t, locale]);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: pageSize,
-  });
-  const [data, setData] = useState<TData[]>(initialData);
-  const [pageCount, setPageCount] = useState<number>(initialPageCount);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const initialLoad = useMemo(
-    () =>
-      !debouncedGlobalFilter && !provider && !orderType && !status && pagination.pageIndex === 0,
-    [debouncedGlobalFilter, provider, orderType, status, pagination.pageIndex],
-  );
-
-  useEffect(() => {
-    setPagination((prev) => (prev.pageIndex !== 0 ? { ...prev, pageIndex: 0 } : prev));
-  }, [debouncedGlobalFilter, provider, orderType, status]);
-
-  useEffect(() => {
-    if (initialLoad) {
-      if (data !== initialData) {
-        setData(initialData);
-        setPageCount(initialPageCount);
-      }
-      return;
-    }
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const result: GetMyOrdersResult = await getMyOrders({
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-          filter: debouncedGlobalFilter,
-          provider: provider || undefined,
-          orderType: orderType || undefined,
-          status: status || undefined,
-        });
-        if (result.success) {
-          setData(result.data?.orders as TData[]);
-          setPageCount(Math.ceil((result.data?.totalCount || 0) / pagination.pageSize));
-        } else {
-          toast.error("Failed to fetch data", {
-            description: result.error,
-          });
-          setData([]);
-          setPageCount(0);
-        }
-      } catch (error: any) {
-        toast.error("Failed to fetch data", {
-          description: error.message,
-        });
-        setData([]);
-        setPageCount(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [
-    debouncedGlobalFilter,
-    provider,
-    orderType,
-    status,
-    pagination.pageIndex,
-    pagination.pageSize,
-    initialData,
-    initialLoad,
-    initialPageCount,
-  ]);
-
-  const table = useReactTable({
+  const {
+    table,
     data,
+    isLoading,
+    isInitialLoading,
+    isFetching,
+    isPlaceholderData,
+    isError,
+    error,
+    pagination,
+    totalCount,
+    pageCount,
+    refetch,
+  } = useDataTable<MyOrderItem, Record<string, never>>({
     columns,
-    pageCount: pageCount,
-    state: {
-      sorting,
-      pagination,
+    queryKey: ["my-orders"],
+    pageSize,
+    fetchData: async ({ pageIndex, pageSize }) => {
+      const result = await getMyOrders({ pageIndex, pageSize });
+
+      if (result.success && result.data) {
+        return {
+          data: result.data.items,
+          totalCount: result.data.total,
+        };
+      }
+
+      if (!result.success) {
+        toast.error(t("load_error"), { description: result.error });
+      }
+
+      return null;
     },
-    onSortingChange: setSorting,
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    manualPagination: true,
-    manualFiltering: true,
-    manualSorting: true,
-    debugTable: process.env.NODE_ENV === "development",
   });
+
+  const hasData = data.length > 0;
 
   return (
-    <div>
-      <div className="flex items-center justify-between py-4">
-        <Input
-          placeholder="Search by Order ID..."
-          value={globalFilter ?? ""}
-          onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm"
-        />
-        <div className="flex items-center space-x-2">
-          <Select
-            value={provider || "all"}
-            onValueChange={(value) => setProvider(value === "all" ? "" : value)}
-          >
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Provider" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Providers</SelectItem>
-              {ORDER_PROVIDERS.map((p) => (
-                <SelectItem key={p} value={p} className="capitalize">
-                  {p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={orderType || "all"}
-            onValueChange={(value) => setOrderType(value === "all" ? "" : value)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Order Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {ORDER_TYPES.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={status || "all"}
-            onValueChange={(value) => setStatus(value === "all" ? "" : value)}
-          >
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              {ORDER_STATUSES.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="relative max-h-[calc(100vh-200px)] min-h-[200px] overflow-auto rounded-md border">
-        {isLoading && (
-          <div className="bg-background/50 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs">
-            <Loader2 className="text-primary h-8 w-8 animate-spin" />
-          </div>
-        )}
+    <div className="flex flex-col flex-1 min-h-0 gap-4">
+      <DataTableToolbar onRefresh={refetch} isRefreshing={isFetching} />
+
+      {isError && error && (
+        <div className="text-sm text-destructive">{error.message}</div>
+      )}
+
+      <DataTableContainer
+        isInitialLoading={isInitialLoading}
+        isFetching={isPlaceholderData}
+        hasData={hasData}
+        columnCount={columns.length}
+        fillAvailableSpace
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <PinnedTableHead key={header.id} header={header} />
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                    <PinnedTableCell key={cell.id} cell={cell} />
                   ))}
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {isLoading ? "" : "No results."}
-                </TableCell>
-              </TableRow>
+              <DataTableEmptyState
+                colSpan={columns.length}
+                message={t("no_records")}
+              />
             )}
           </TableBody>
         </Table>
-      </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="text-muted-foreground text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} ({totalCount}{" "}
-          Orders)
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage() || isLoading}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage() || isLoading}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      </DataTableContainer>
+
+      <TablePagination
+        pageIndex={pagination.pageIndex}
+        pageCount={pageCount}
+        totalItems={totalCount}
+        isLoading={isLoading}
+        onPrevious={() => table.previousPage()}
+        onNext={() => table.nextPage()}
+        pageSize={pagination.pageSize}
+        onPageSizeChange={(size) => table.setPageSize(size)}
+        onPageChange={(index) => table.setPageIndex(index)}
+        showFirstLast={pageCount > 5}
+        infoMode="range"
+      />
     </div>
   );
 }

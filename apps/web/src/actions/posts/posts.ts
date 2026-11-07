@@ -4,7 +4,7 @@ import { postActionSchema } from "@/components/cms/post-config";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { actionResponse } from "@/lib/action-response";
 import { getSession, isAdmin } from "@/lib/auth/server";
-import { db } from "@niu/db";
+import { db } from "@/lib/db";
 import {
   posts as postsSchema,
   PostStatus,
@@ -12,7 +12,7 @@ import {
   PostType,
   subscriptions as subscriptionsSchema,
   tags as tagsSchema,
-} from "@niu/db/schema";
+} from "@/lib/db/schema";
 import { getErrorMessage } from "@/lib/error-utils";
 import { PostWithTags, PublicPost, PublicPostWithContent } from "@/types/cms";
 import { and, count, desc, eq, getTableColumns, ilike, inArray, or, sql } from "drizzle-orm";
@@ -242,31 +242,34 @@ export async function createPostAction({
   const finalFeaturedImageUrl = postData.featuredImageUrl === "" ? null : postData.featuredImageUrl;
 
   try {
-    const newPost = await db
-      .insert(postsSchema)
-      .values({
-        ...postData,
-        postType: postType,
-        authorId: authorId,
-        featuredImageUrl: finalFeaturedImageUrl,
-        content: postData.content || null,
-        description: postData.description || null,
-        isPinned: postData.isPinned || false,
-      })
-      .returning({ id: postsSchema.id });
+    const postId = await db.transaction(async (tx) => {
+      const [newPost] = await tx
+        .insert(postsSchema)
+        .values({
+          ...postData,
+          postType: postType,
+          authorId: authorId,
+          featuredImageUrl: finalFeaturedImageUrl,
+          content: postData.content || null,
+          description: postData.description || null,
+          isPinned: postData.isPinned || false,
+        })
+        .returning({ id: postsSchema.id });
 
-    if (!newPost || newPost.length === 0 || !newPost[0].id) {
-      throw new Error("Failed to create post: No ID returned.");
-    }
-    const postId = newPost[0].id;
+      if (!newPost?.id) {
+        throw new Error("Failed to create post: No ID returned.");
+      }
 
-    if (inputTags && inputTags.length > 0) {
-      const tagAssociations = inputTags.map((tag) => ({
-        postId: postId,
-        tagId: tag.id,
-      }));
-      await db.insert(postTagsSchema).values(tagAssociations);
-    }
+      if (inputTags && inputTags.length > 0) {
+        const tagAssociations = inputTags.map((tag) => ({
+          postId: newPost.id,
+          tagId: tag.id,
+        }));
+        await tx.insert(postTagsSchema).values(tagAssociations);
+      }
+
+      return newPost.id;
+    });
 
     if (postData.status === "published") {
       revalidatePath(
@@ -314,46 +317,52 @@ export async function updatePostAction({ data }: UpdatePostParams): Promise<Acti
     postUpdateData.featuredImageUrl === "" ? null : postUpdateData.featuredImageUrl;
 
   try {
-    const currentPostData = await db
-      .select({
-        slug: postsSchema.slug,
-        language: postsSchema.language,
-        status: postsSchema.status,
-        postType: postsSchema.postType,
-      })
-      .from(postsSchema)
-      .where(eq(postsSchema.id, postId))
-      .limit(1);
+    const updateResult = await db.transaction(async (tx) => {
+      const [currentPost] = await tx
+        .select({
+          slug: postsSchema.slug,
+          language: postsSchema.language,
+          status: postsSchema.status,
+          postType: postsSchema.postType,
+        })
+        .from(postsSchema)
+        .where(eq(postsSchema.id, postId))
+        .limit(1);
 
-    if (!currentPostData || currentPostData.length === 0) {
+      if (!currentPost) {
+        return { kind: "not-found" as const };
+      }
+
+      await tx
+        .update(postsSchema)
+        .set({
+          ...postUpdateData,
+          postType: currentPost.postType,
+          featuredImageUrl: finalFeaturedImageUrl,
+          content: postUpdateData.content || null,
+          description: postUpdateData.description || null,
+          isPinned: postUpdateData.isPinned || false,
+        })
+        .where(eq(postsSchema.id, postId));
+
+      await tx.delete(postTagsSchema).where(eq(postTagsSchema.postId, postId));
+
+      if (inputTags && inputTags.length > 0) {
+        const newTagAssociations = inputTags.map((tag) => ({
+          postId,
+          tagId: tag.id,
+        }));
+        await tx.insert(postTagsSchema).values(newTagAssociations);
+      }
+
+      return { kind: "ok" as const, currentPost };
+    });
+
+    if (updateResult.kind === "not-found") {
       return actionResponse.notFound(`Post with ID ${postId} not found.`);
     }
-    const currentPost = currentPostData[0];
-
-    // Use provided postType or keep existing one
+    const currentPost = updateResult.currentPost;
     const finalPostType = currentPost.postType;
-
-    await db
-      .update(postsSchema)
-      .set({
-        ...postUpdateData,
-        postType: finalPostType,
-        featuredImageUrl: finalFeaturedImageUrl,
-        content: postUpdateData.content || null,
-        description: postUpdateData.description || null,
-        isPinned: postUpdateData.isPinned || false,
-      })
-      .where(eq(postsSchema.id, postId));
-
-    await db.delete(postTagsSchema).where(eq(postTagsSchema.postId, postId));
-
-    if (inputTags && inputTags.length > 0) {
-      const newTagAssociations = inputTags.map((tag) => ({
-        postId: postId,
-        tagId: tag.id,
-      }));
-      await db.insert(postTagsSchema).values(newTagAssociations);
-    }
 
     revalidatePath(
       `${currentPost.language === DEFAULT_LOCALE ? "" : "/" + currentPost.language}/${finalPostType}`,

@@ -1,7 +1,8 @@
- 
-module.exports = [
+import eslintConfig from "@niu/eslint-config";
+
+export default [
   {
     ignores: ["**/dist/**", "**/.turbo/**", "**/.next/**", "**/node_modules/**"],
   },
-  ...require("@niu/eslint-config"),
+  ...eslintConfig,
 ];

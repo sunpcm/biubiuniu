@@ -1,0 +1,43 @@
+{
+  "name": "@sunpcm/niu-contracts",
+  "version": "0.1.0-next.0",
+  "description": "Cross-boundary primitive types, identifiers, and error contracts shared by domain and persistence packages",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint src --report-unused-disable-directives",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@niu/tsconfig": "workspace:*",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpcm/biubiuniu.git",
+    "directory": "packages/contracts"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "keywords": [
+    "contracts",
+    "types",
+    "identifiers"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}

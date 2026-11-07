@@ -1,8 +1,8 @@
 {
   "Home": {
     "title": "BiuBiuNiu",
-    "tagLine": "多场景 Next.js 全栈 SaaS 开发模板",
-    "description": "Niu 是一个功能齐全的 Next.js SaaS 全栈模板，让你能够快速构建各种商业网站，无论是内容站、工具站还是集成 AI 能力的付费网站。"
+    "tagLine": "酷炫de工具合集 🧱",
+    "description": "小熏同学和他朋友们的酷炫工具合集，持续尝试 AI 创作、内容工具与实验项目。"
   },
   "Login": {
     "title": "欢迎回来",
@@ -63,57 +63,77 @@
         "icon": "ShoppingCart"
       },
       {
-        "name": "管理订阅",
-        "href": "/dashboard/subscription",
-        "icon": "WalletCards"
+        "name": "账单与积分",
+        "href": "/dashboard/billing",
+        "icon": "CreditCard"
+      },
+      {
+        "name": "团队",
+        "href": "/dashboard/team",
+        "icon": "Users"
       },
       {
         "name": "积分明细",
         "href": "/dashboard/credit-history",
         "icon": "Coins"
+      },
+      {
+        "name": "我的反馈",
+        "href": "/dashboard/my-feedbacks",
+        "icon": "MessageSquare"
       }
     ],
     "AdminMenus": [
       {
         "name": "概览",
-        "href": "/dashboard/overview",
+        "href": "/dashboard/admin/overview",
         "icon": "LayoutDashboard"
       },
       {
         "name": "用户管理",
-        "href": "/dashboard/users",
+        "href": "/dashboard/admin/users",
         "icon": "Users"
       },
       {
         "name": "订单管理",
-        "href": "/dashboard/orders",
+        "href": "/dashboard/admin/orders",
         "icon": "ShoppingCart"
       },
       {
-        "name": "定价管理",
-        "href": "/dashboard/prices",
-        "icon": "DollarSign"
+        "name": "优惠码",
+        "href": "/dashboard/admin/coupons",
+        "icon": "TicketPercent"
+      },
+      {
+        "name": "积分管理",
+        "href": "/dashboard/admin/credits",
+        "icon": "Coins"
       },
       {
         "name": "博客管理",
-        "href": "/dashboard/blogs",
+        "href": "/dashboard/admin/blogs",
         "icon": "Rss"
       },
       {
         "name": "术语表管理",
-        "href": "/dashboard/glossary",
+        "href": "/dashboard/admin/glossary",
         "icon": "BookOpen"
       },
       {
         "name": "R2资源管理",
-        "href": "/dashboard/r2-resources",
+        "href": "/dashboard/admin/r2-resources",
         "icon": "FileBox"
+      },
+      {
+        "name": "用户反馈",
+        "href": "/dashboard/admin/feedbacks",
+        "icon": "MessageSquareText"
       }
     ]
   },
   "Blogs": {
     "title": "博客列表",
-    "description": "分享 Next.js 生态圈和 BiuBiuNiu 模板动态。",
+    "description": "分享 Next.js 生态圈和 NEXTY.DEV 模板动态。",
     "emptyState": {
       "title": "暂无博客文章",
       "description": "我们正在创作精彩内容，敬请期待！"
@@ -144,6 +164,7 @@
     "title": "AI 能力展示",
     "description": "生产级 AI 组件，包含聊天、图像生成和视频生成功能。",
     "metaDescription": "探索 AI 能力，包括多提供商的聊天、图像生成和视频生成。",
+    "disabled": "AI 生成功能暂时不可用。",
     "hub": {
       "chatTitle": "AI 聊天",
       "chatDescription": "由 OpenAI、Anthropic、Google、DeepSeek、xAI 和 OpenRouter 的 18+ 语言模型驱动的单轮和多轮对话。",
@@ -327,6 +348,10 @@
   "Header": {
     "links": [
       {
+        "name": "Nano Banana",
+        "href": "/nano"
+      },
+      {
         "name": "功能特性",
         "href": "/#features"
       },
@@ -342,35 +367,9 @@
       {
         "name": "博客",
         "href": "/blog"
-      },
-      {
-        "name": "Demo",
-        "href": "#",
-        "items": [
-          {
-            "name": "Niu Demo",
-            "href": "https://demo.biubiuniu.com/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "Next.js SaaS Boilerplate"
-          },
-          {
-            "name": "AI Image Generator Demo",
-            "href": "https://flux-kontext.biubiuniu.com/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "AI Image Generator Demo Based on BiuBiuNiu"
-          },
-          {
-            "name": "Directory Boilerplate Demo",
-            "href": "https://dofollow.tools/",
-            "target": "_blank",
-            "rel": "noopener noreferrer nofollow",
-            "description": "Directory Boilerplate Demo Based on BiuBiuNiu"
-          }
-        ]
       }
-    ]
+    ],
+    "nanoClosed": "（新任务暂停）"
   },
   "Footer": {
     "Copyright": "版权所有 © {year} {name} 保留所有权利。",
@@ -389,9 +388,9 @@
       },
       "unsubscribe": {
         "title": "退订邮件通知",
-        "success": "您已成功退订 Niu 邮件通知。",
+        "success": "您已成功退订 Nexty 邮件通知。",
         "emailPrefix": "邮箱：",
-        "regretMessage": "您随时可以重新订阅邮件，获取 Niu 最新更新和教程。",
+        "regretMessage": "您随时可以重新订阅邮件，获取 Nexty 最新更新和教程。",
         "errorGeneric": "处理您的退订请求时发生错误",
         "errorNoToken": "未提供退订令牌",
         "errorMessage": "请确保您使用了正确的退订链接。如果问题持续存在，请联系我们的客服团队获取帮助。",
@@ -438,12 +437,12 @@
           "links": [
             {
               "name": "文档",
-              "href": "https://docs.biubiuniu.com/zh/docs",
+              "href": "https://docs.nexty.dev/zh/docs",
               "target": "_blank"
             },
             {
               "name": "功能路线图",
-              "href": "https://biubiuniu.com/zh/roadmap"
+              "href": "https://nexty.dev/zh/roadmap"
             }
           ]
         },
@@ -458,11 +457,6 @@
             {
               "href": "/zh",
               "name": "中文",
-              "useA": true
-            },
-            {
-              "href": "/ja",
-              "name": "日本語",
               "useA": true
             }
           ]

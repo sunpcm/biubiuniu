@@ -1,8 +1,8 @@
 "use client";
 
 import ProviderBadge from "@/components/ai-demo/shared/ProviderBadge";
-import { Button } from "@niu/ui/button";
-import { Card, CardContent } from "@niu/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Download, Film, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -91,7 +91,10 @@ export default function VideoResultArea({
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [taskId, pollInterval, onComplete, onError, t]);
+    // `t` is deliberately absent: next-intl rebuilds it whenever the layout
+    // re-renders, which would re-enter this effect on every RSC pass. Locale
+    // changes remount the tree, so the closure can never go stale.
+  }, [taskId, pollInterval, onComplete, onError]);
 
   // Reset elapsed when not loading
   useEffect(() => {
@@ -121,16 +124,18 @@ export default function VideoResultArea({
   if (loading) {
     return (
       <Card className="h-full">
-        <CardContent className="flex h-full min-h-[400px] flex-col items-center justify-center p-4">
-          <div className="flex flex-col items-center justify-center gap-4 text-center">
+        <CardContent className="p-4 h-full flex flex-col items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center justify-center text-center gap-4">
             <div className="relative">
-              <div className="bg-primary/10 flex h-16 w-16 animate-pulse items-center justify-center rounded-full">
-                <Loader2 className="text-primary h-8 w-8 animate-spin" />
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
               </div>
             </div>
             <div>
-              <p className="text-lg font-semibold">{t("generating")}</p>
-              <p className="text-muted-foreground mt-1 text-sm tabular-nums">{elapsed}s</p>
+              <p className="font-semibold text-lg">{t("generating")}</p>
+              <p className="text-sm text-muted-foreground mt-1 tabular-nums">
+                {elapsed}s
+              </p>
             </div>
           </div>
         </CardContent>
@@ -142,14 +147,16 @@ export default function VideoResultArea({
   if (!videoUrl) {
     return (
       <Card className="h-full">
-        <CardContent className="flex h-full min-h-[400px] flex-col items-center justify-center p-4">
-          <div className="flex flex-col items-center justify-center gap-3 text-center">
-            <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full">
-              <Film className="text-muted-foreground/50 h-8 w-8" />
+        <CardContent className="p-4 h-full flex flex-col items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center justify-center text-center gap-3">
+            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+              <Film className="h-8 w-8 text-muted-foreground/50" />
             </div>
             <div>
-              <p className="text-lg font-semibold">{t("emptyStateTitle")}</p>
-              <p className="text-muted-foreground mt-1 text-sm">{t("emptyState")}</p>
+              <p className="font-semibold text-lg">{t("emptyStateTitle")}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t("emptyState")}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -160,9 +167,9 @@ export default function VideoResultArea({
   // Result state
   return (
     <Card className="h-full">
-      <CardContent className="flex h-full flex-col p-4">
+      <CardContent className="p-4 h-full flex flex-col">
         {/* Video */}
-        <div className="relative flex min-h-[400px] flex-1 items-center justify-center overflow-hidden rounded-md bg-black">
+        <div className="relative flex-1 min-h-[400px] flex items-center justify-center bg-black rounded-md overflow-hidden">
           <video
             src={videoUrl}
             controls
@@ -173,8 +180,8 @@ export default function VideoResultArea({
         </div>
 
         {/* Metadata bar */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-          <div className="text-muted-foreground flex items-center gap-2 text-xs">
+        <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             {provider && <ProviderBadge provider={provider} />}
             {modelName && <span>{modelName}</span>}
             {generationTime !== undefined && (
@@ -186,8 +193,13 @@ export default function VideoResultArea({
             )}
           </div>
 
-          <Button size="sm" variant="outline" onClick={handleDownload} className="h-7 text-xs">
-            <Download className="mr-1 h-3.5 w-3.5" />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleDownload}
+            className="h-7 text-xs"
+          >
+            <Download className="h-3.5 w-3.5 mr-1" />
             {t("download")}
           </Button>
         </div>

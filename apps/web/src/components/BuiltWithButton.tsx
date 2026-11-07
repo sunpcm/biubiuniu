@@ -1,38 +1,38 @@
-import { buttonVariants } from "@niu/ui/button";
-import { cn } from "@niu/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-// BiuBiuNiu Affiliate Link: https://biubiuniu.com/
+// NEXTY.DEV Affiliate Link: https://affiliates.nexty.dev/
 // sign up and use your affiliate link on BuiltWithButton to earn money
 
 export default function BuiltWithButton() {
   return (
     <Link
-      href="https://biubiuniu.com"
-      title="Built with BiuBiuNiu"
+      href="https://nexty.dev"
+      title="Built with NEXTY.DEV"
       prefetch={false}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
-        "rounded-md border-gray-500 bg-transparent px-4 text-white hover:bg-gray-950 hover:text-gray-100",
+        "px-4 rounded-md bg-transparent border-gray-500 hover:bg-gray-950 text-white hover:text-gray-100"
       )}
     >
       <span>Built with</span>
       <span>
-        <LogoNiu className="size-4 rounded-full" />
+        <LogoNexty className="size-4 rounded-full" />
       </span>
-      <span className="text-base-content flex items-center gap-0.5 font-bold tracking-tight">
-        BiuBiuNiu
+      <span className="font-bold text-base-content flex gap-0.5 items-center tracking-tight">
+        NEXTY.DEV
       </span>
     </Link>
   );
 }
 
-function LogoNiu({ className }: { className?: string }) {
+function LogoNexty({ className }: { className?: string }) {
   return (
     <img
-      src="/logo.png"
+      src="/logo_nexty.png"
       alt="Logo"
       title="Logo"
       width={96}

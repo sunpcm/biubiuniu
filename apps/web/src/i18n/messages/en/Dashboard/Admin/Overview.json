@@ -1,21 +1,65 @@
 {
   "title": "Overview",
-  "users": "Users",
-  "oneTimePayments": "One-Time Payments",
-  "monthlySubscriptions": "Monthly Subscriptions",
-  "yearlySubscriptions": "Yearly Subscriptions",
-  "today": "Today",
-  "yesterday": "Yesterday",
-  "growthRate": "Growth Rate",
-  "newUsers": "New Users",
-  "totalUsers": "Total Users",
-  "orders": "Orders",
-  "revenue": "Revenue",
-  "count": "Count",
-  "growthTrend": "Growth Trend",
-  "totalOrders": "Total Orders",
-  "newOrders": "New Orders",
-  "last7Days": "Last 7 Days",
-  "last30Days": "Last 30 Days",
-  "last90Days": "Last 90 Days"
+  "description": "Revenue, growth and usage at a glance.",
+  "subtitle": "Last {days} days vs. the previous {days} days · UTC",
+  "range": {
+    "label": "Time range",
+    "7d": "7 days",
+    "30d": "30 days",
+    "90d": "90 days"
+  },
+  "kpi": {
+    "revenue": "Net revenue",
+    "revenueFootnote": "{orders} orders · {refunds} refunded",
+    "mrr": "MRR",
+    "mrrMovement": "New / churned subscriptions in this period",
+    "mrrFootnote": "{subscribers} active subscribers · {trialing} trialing",
+    "signups": "New signups",
+    "signupsFootnote": "{total} users in total",
+    "credits": "Credits consumed",
+    "creditsFootnote": "{users} active users"
+  },
+  "delta": {
+    "vsPrevious": "vs. previous period",
+    "noBaseline": "No prior data"
+  },
+  "trend": {
+    "title": "Trend",
+    "total": "{metric}: {value} in this period",
+    "empty": "No {metric} in this period"
+  },
+  "metric": {
+    "revenue": "Revenue",
+    "signups": "Signups",
+    "orders": "Orders",
+    "creditsConsumed": "Credits"
+  },
+  "breakdown": {
+    "revenueByPlan": "Revenue by plan",
+    "revenueByProvider": "Revenue by provider",
+    "signupsBySource": "Signups by source",
+    "other": "Other",
+    "direct": "Direct / unknown",
+    "empty": "No data in this period"
+  },
+  "attention": {
+    "title": "Needs attention",
+    "allClear": "All clear",
+    "pastDueSubscriptions": "Past-due subscriptions",
+    "pendingOrders": "Pending orders (in flight)",
+    "cancelScheduled": "Cancelling at period end",
+    "openFeedback": "Open feedback",
+    "failedOrders": "Failed orders",
+    "foreignCurrencyOrders": "Orders in other currencies"
+  },
+  "recent": {
+    "title": "Recent orders",
+    "viewAll": "View all",
+    "empty": "No orders yet",
+    "deletedUser": "Deleted user"
+  },
+  "error": {
+    "load": "Failed to load this section.",
+    "empty": "No data available."
+  }
 }

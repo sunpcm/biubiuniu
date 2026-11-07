@@ -3,14 +3,18 @@
     "badge": {
       "label": "NEW",
       "text": "Next.js SaaS フルスタックテンプレート",
-      "href": "https://biubiuniu.com/#pricing"
+      "href": "https://nexty.dev/#pricing"
     },
-    "title": "モダンな Next.js フルスタック SaaS テンプレート",
-    "description": "認証、Stripe決済、AI統合、CMSなど、すぐに収益化を始めるために必要なすべてを含む、包括的な Next.js テンプレートです。",
+    "title": "小熏同学とお友達のクールなツールコレクション",
+    "description": "ここには確かに多くのクールなツールがありますが、Nano Bananaのトレンドに合わせるために、他のものは権限設定が間に合わず一時的に隠されています。後で時間があるときに一つずつ公開していきます。純粋に自慢のためです",
     "getStarted": "今すぐ開始",
-    "getStartedLink": "https://biubiuniu.com/#pricing",
+    "getStartedLink": "https://nexty.dev/#pricing",
     "viewDocs": "ドキュメントを見る",
-    "viewDocsLink": "https://biubiuniu.com/docs"
+    "viewDocsLink": "https://nexty.dev/docs",
+    "nanoBananaButton": "🦙.🍌 Nano Banana",
+    "discordButton": "Discord参加",
+    "nanoPaused": "Nano Banana の新規生成は一時停止中です",
+    "nanoHistoryButton": "タスク履歴を見る"
   },
   "Features": {
     "badge": {
@@ -25,17 +29,17 @@
         "description": "一度の購入で、3つの強力なテンプレートを取得できます。",
         "details": [
           {
-            "title": "テンプレート1：Niu",
+            "title": "テンプレート1：Nexty",
             "description": "必要なすべての機能を備えた汎用 SaaS テンプレート。",
-            "href": "https://demo.biubiuniu.com"
+            "href": "https://demo.nexty.dev"
           },
           {
-            "title": "テンプレート2：niu-flux-kontext",
+            "title": "テンプレート2：nexty-flux-kontext",
             "description": "AI 画像生成 SaaS テンプレート。",
-            "href": "https://flux-kontext.biubiuniu.com"
+            "href": "https://flux-kontext.nexty.dev"
           },
           {
-            "title": "テンプレート3：niu-directory",
+            "title": "テンプレート3：nexty-directory",
             "description": "ディレクトリ・リスティングサイトテンプレート。",
             "href": "https://dofollow.tools"
           }
@@ -63,7 +67,9 @@
             "description": "Cloudflare Turnstile でアプリをボットから保護。"
           }
         ],
-        "images": ["/images/features/login.png"]
+        "images": [
+          "/images/features/login.png"
+        ]
       },
       {
         "title": "データベース",
@@ -82,7 +88,10 @@
             "description": "Supabase、Neon、セルフホスト PostgreSQL。"
           }
         ],
-        "images": ["/images/features/database-config.webp", "/images/features/database-tables.webp"]
+        "images": [
+          "/images/features/database-config.webp",
+          "/images/features/database-tables.webp"
+        ]
       },
       {
         "title": "決済システム",
@@ -90,18 +99,21 @@
         "details": [
           {
             "title": "すべての決済方法",
-            "description": "Niu は月額・年額サブスクリプションと一回限りの支払いをサポート。"
+            "description": "Nexty は月額・年額サブスクリプションと一回限りの支払いをサポート。"
           },
           {
             "title": "使用量ベース課金",
-            "description": "Niu は使用量に基づく課金をサポートし、使用量に応じてユーザーに課金する必要があるアプリに対応。"
+            "description": "Nexty は使用量に基づく課金をサポートし、使用量に応じてユーザーに課金する必要があるアプリに対応。"
           },
           {
             "title": "スマート管理者管理",
-            "description": "Niu の料金プランは管理ダッシュボードで管理され、Stripe Price ID と連携してインテリジェントで安全、リアルタイムプレビュー機能を提供。"
+            "description": "Nexty の料金プランは管理ダッシュボードで管理され、Stripe Price ID と連携してインテリジェントで安全、リアルタイムプレビュー機能を提供。"
           }
         ],
-        "images": ["/images/features/payment-1.png", "/images/features/payment-2.png"]
+        "images": [
+          "/images/features/payment-1.png",
+          "/images/features/payment-2.png"
+        ]
       },
       {
         "title": "AI 機能",
@@ -109,18 +121,21 @@
         "details": [
           {
             "title": "AI デモハブ",
-            "description": "Niu にはチャット、text-to-image、image-to-image、動画生成のデモが組み込まれており、開発者が AI ワークフローを学び、モデルを素早くテストできます。"
+            "description": "Nexty にはチャット、text-to-image、image-to-image、動画生成のデモが組み込まれており、開発者が AI ワークフローを学び、モデルを素早くテストできます。"
           },
           {
             "title": "ユニバーサル AI プロバイダーサポート",
-            "description": "Niu は GPT、Claude、Gemini、DeepSeek、Grok、OpenRouter、Replicate を最大限の柔軟性でサポートする AI SDK 統合を提供。"
+            "description": "Nexty は GPT、Claude、Gemini、DeepSeek、Grok、OpenRouter、Replicate を最大限の柔軟性でサポートする AI SDK 統合を提供。"
           },
           {
             "title": "ボーナス：AI 画像生成ウェブサイト",
-            "description": "Niu 有料ユーザーは、AI アートプラットフォームの迅速なデプロイメント用の完全な Flux Kontext AI 画像生成ウェブサイトテンプレートを取得。"
+            "description": "Nexty 有料ユーザーは、AI アートプラットフォームの迅速なデプロイメント用の完全な Flux Kontext AI 画像生成ウェブサイトテンプレートを取得。"
           }
         ],
-        "images": ["/images/features/ai-1.png", "/images/features/ai-2.png"]
+        "images": [
+          "/images/features/ai-1.png",
+          "/images/features/ai-2.png"
+        ]
       },
       {
         "title": "CMS",
@@ -128,15 +143,15 @@
         "details": [
           {
             "title": "コンテンツアクセス制御",
-            "description": "Niu の CMS は、収益化されたコンテンツサイト用のペイウォール保護を備えた、パブリック、ログインユーザー、購読者専用コンテンツをサポート。"
+            "description": "Nexty の CMS は、収益化されたコンテンツサイト用のペイウォール保護を備えた、パブリック、ログインユーザー、購読者専用コンテンツをサポート。"
           },
           {
             "title": "AI パワード翻訳",
-            "description": "Niu の CMS には多言語コンテンツ作成用の組み込み AI 翻訳と、効率的なコンテンツ制作ワークフロー用の複製機能が含まれています。"
+            "description": "Nexty の CMS には多言語コンテンツ作成用の組み込み AI 翻訳と、効率的なコンテンツ制作ワークフロー用の複製機能が含まれています。"
           },
           {
             "title": "多目的公開",
-            "description": "Niu の CMS は、高度なステータス管理（下書き、公開、アーカイブ）で無料ブログサイトと有料コンテンツプラットフォームの両方を実現。"
+            "description": "Nexty の CMS は、高度なステータス管理（下書き、公開、アーカイブ）で無料ブログサイトと有料コンテンツプラットフォームの両方を実現。"
           }
         ],
         "images": [
@@ -153,34 +168,36 @@
         "details": [
           {
             "title": "管理ファイル管理",
-            "description": "Niu は、アップロード、削除、整理機能を備えた包括的なファイル管理用の専用管理ダッシュボードを提供。"
+            "description": "Nexty は、アップロード、削除、整理機能を備えた包括的なファイル管理用の専用管理ダッシュボードを提供。"
           },
           {
             "title": "Cloudflare R2 統合",
-            "description": "Niu は Cloudflare R2 を活用してコスト効率が高く高性能なファイルストレージと世界中への自動 CDN 配信を実現。"
+            "description": "Nexty は Cloudflare R2 を活用してコスト効率が高く高性能なファイルストレージと世界中への自動 CDN 配信を実現。"
           },
           {
             "title": "最適化されたアップロード体験",
-            "description": "Niu はドラッグ&ドロップアップロード、プレビュー機能、自動ファイル処理でシームレスなユーザー体験を提供。"
+            "description": "Nexty はドラッグ&ドロップアップロード、プレビュー機能、自動ファイル処理でシームレスなユーザー体験を提供。"
           }
         ],
-        "images": ["/images/features/admin-4.png"]
+        "images": [
+          "/images/features/admin-4.png"
+        ]
       },
       {
         "title": "ビジュアル価格管理",
-        "description": "Niu のダッシュボード価格管理は安全で便利、コードを触ることなく価格を更新できます。",
+        "description": "Nexty のダッシュボード価格管理は安全で便利、コードを触ることなく価格を更新できます。",
         "details": [
           {
             "title": "リアルタイムプレビュー",
-            "description": "Niu の価格カードエディターにはリアルタイムプレビューが含まれており、保存前に価格カードの表示を確認できます。"
+            "description": "Nexty の価格カードエディターにはリアルタイムプレビューが含まれており、保存前に価格カードの表示を確認できます。"
           },
           {
             "title": "Stripe 統合",
-            "description": "Niu は正確な請求設定のために Stripe から価格データをワンクリック検証で取得。"
+            "description": "Nexty は正確な請求設定のために Stripe から価格データをワンクリック検証で取得。"
           },
           {
             "title": "多言語サポート",
-            "description": "Niu は価格カード用の AI 駆動翻訳をサポートし、多言語価格コンテンツの簡単な管理を実現。"
+            "description": "Nexty は価格カード用の AI 駆動翻訳をサポートし、多言語価格コンテンツの簡単な管理を実現。"
           }
         ],
         "images": [
@@ -198,18 +215,21 @@
         "details": [
           {
             "title": "プロフェッショナルドメインメール",
-            "description": "Niu は Cloudflare を通じてドメインメールを実装し、ブランドをより専門的に見せ、ユーザーとの信頼構築を支援。"
+            "description": "Nexty は Cloudflare を通じてドメインメールを実装し、ブランドをより専門的に見せ、ユーザーとの信頼構築を支援。"
           },
           {
             "title": "高度なメールマーケティング",
-            "description": "Niu には購読者管理とメールキャンペーン用の Resend 統合、フッターに組み込まれたニュースレター購読モジュールが含まれています。"
+            "description": "Nexty には購読者管理とメールキャンペーン用の Resend 統合、フッターに組み込まれたニュースレター購読モジュールが含まれています。"
           },
           {
             "title": "組み込みメール自動化",
-            "description": "Niu にはニュースレター購読と支払い失敗通知メール、重要なユーザーコミュニケーション用の事前構築テンプレートが含まれています。"
+            "description": "Nexty にはニュースレター購読と支払い失敗通知メール、重要なユーザーコミュニケーション用の事前構築テンプレートが含まれています。"
           }
         ],
-        "images": ["/images/features/email-2.png", "/images/features/email-1.png"]
+        "images": [
+          "/images/features/email-2.png",
+          "/images/features/email-1.png"
+        ]
       },
       {
         "title": "ユーザーダッシュボード",
@@ -217,15 +237,15 @@
         "details": [
           {
             "title": "プロフィール管理",
-            "description": "Niu には包括的なプロフィール設定が含まれています。"
+            "description": "Nexty には包括的なプロフィール設定が含まれています。"
           },
           {
             "title": "サブスクリプション管理",
-            "description": "Niu は Stripe 統合を通じて請求履歴とプランアップグレードを備えたサブスクリプション管理を提供。"
+            "description": "Nexty は Stripe 統合を通じて請求履歴とプランアップグレードを備えたサブスクリプション管理を提供。"
           },
           {
             "title": "クレジット履歴・使用状況",
-            "description": "Niu はクレジット付与と使用状況を詳細な履歴で追跡し、一回限りとサブスクリプションベースのクレジットシステムの両方をサポート。"
+            "description": "Nexty はクレジット付与と使用状況を詳細な履歴で追跡し、一回限りとサブスクリプションベースのクレジットシステムの両方をサポート。"
           }
         ],
         "images": [
@@ -240,15 +260,15 @@
         "details": [
           {
             "title": "ユーザー管理",
-            "description": "Niu はロール制御、Stripe 顧客統合、アカウント管理を備えた完全なユーザー管理を提供。"
+            "description": "Nexty はロール制御、Stripe 顧客統合、アカウント管理を備えた完全なユーザー管理を提供。"
           },
           {
             "title": "価格管理",
-            "description": "Niu は環境分離、Stripe 統合、リアルタイムプレビューを備えたビジュアル価格プラン管理を提供。"
+            "description": "Nexty は環境分離、Stripe 統合、リアルタイムプレビューを備えたビジュアル価格プラン管理を提供。"
           },
           {
             "title": "CMS・ファイル管理",
-            "description": "Niu には多言語サポート、アクセス制御を備えたブログ管理と、プレビュー機能付きの R2 ファイル管理が含まれています。"
+            "description": "Nexty には多言語サポート、アクセス制御を備えたブログ管理と、プレビュー機能付きの R2 ファイル管理が含まれています。"
           }
         ],
         "images": [
@@ -264,15 +284,15 @@
         "details": [
           {
             "title": "i18n",
-            "description": "Niu は世界市場へのリーチのために、すぐに使える複数言語をサポートし、簡単な拡張が可能。"
+            "description": "Nexty は世界市場へのリーチのために、すぐに使える複数言語をサポートし、簡単な拡張が可能。"
           },
           {
             "title": "分析・AdSense",
-            "description": "Niu には洞察と収益生成のための Google Analytics、Plausible トラッキング、AdSense 統合が含まれています。"
+            "description": "Nexty には洞察と収益生成のための Google Analytics、Plausible トラッキング、AdSense 統合が含まれています。"
           },
           {
             "title": "SEO 最適化",
-            "description": "Niu はより良いランキングのためのメタタグとサイトマップによる包括的な SEO 最適化を提供。"
+            "description": "Nexty はより良いランキングのためのメタタグとサイトマップによる包括的な SEO 最適化を提供。"
           }
         ],
         "images": [
@@ -330,11 +350,11 @@
     "items": [
       {
         "question": "非技術者でもこのテンプレートを使用できますか？",
-        "answer": "絶対に！Niu は AI アシスタントとシームレスに動作するように特別に設計されており、プログラミング経験がゼロの人でも AI 支援開発を通じて製品を開発できます。コード構造とドキュメントは AI フレンドリーで、AI がコードを理解し変更することが容易になります。技術チームはさらに大きな開発効率の恩恵を受けます。"
+        "answer": "絶対に！Nexty は AI アシスタントとシームレスに動作するように特別に設計されており、プログラミング経験がゼロの人でも AI 支援開発を通じて製品を開発できます。コード構造とドキュメントは AI フレンドリーで、AI がコードを理解し変更することが容易になります。技術チームはさらに大きな開発効率の恩恵を受けます。"
       },
       {
         "question": "これが最高の Next.js SaaS テンプレートである理由は？",
-        "answer": "Niu は利用可能な最も包括的な Next.js SaaS スターターキットです。基本的なコンポーネントのみを提供する他のテンプレートとは異なり、完全なビジネスワークフローを含んでいます：認証、支払い、AI 統合、コンテンツ管理、収益化機能。すべてが本格運用可能で、実際のアプリケーションで実証済みです。"
+        "answer": "Nexty は利用可能な最も包括的な Next.js SaaS スターターキットです。基本的なコンポーネントのみを提供する他のテンプレートとは異なり、完全なビジネスワークフローを含んでいます：認証、支払い、AI 統合、コンテンツ管理、収益化機能。すべてが本格運用可能で、実際のアプリケーションで実証済みです。"
       },
       {
         "question": "このテンプレートでどのくらい早く SaaS を立ち上げられますか？",
@@ -362,27 +382,13 @@
       },
       {
         "question": "価格カードはどのように管理しますか？",
-        "answer": "これは Niu の重要なセールスポイントです。ダッシュボードで価格カードを管理でき、AI 多言語翻訳サポートで価格カードの追加、編集、削除ができ、複雑な多言語ファイル設定を排除します。"
+        "answer": "これは Nexty の重要なセールスポイントです。ダッシュボードで価格カードを管理でき、AI 多言語翻訳サポートで価格カードの追加、編集、削除ができ、複雑な多言語ファイル設定を排除します。"
       }
     ]
   },
-  "TempHero": {
-    "title": "小熏同学とお友達のクールなツールコレクション",
-    "description": "ここには確かに多くのクールなツールがありますが、Nano Bananaのトレンドに合わせるために、他のものは権限設定が間に合わず一時的に隠されています。後で時間があるときに一つずつ公開していきます。純粋に自慢のためです",
-    "nanoBananaButton": "🦙.🍌 Nano Banana",
-    "discordButton": "Discord参加"
-  },
-  "TempDonation": {
-    "title": "小熏同学にWeChat投げ銭",
-    "warning": "注意：投げ銭後は返金不可です。ただし、私に焼き羊1頭をご馳走してくれるなら話は別です",
-    "button": "私たちのプロジェクトを応援"
-  },
-  "TempFooter": {
-    "description": "クールなツールコレクション 🧱"
-  },
   "CTA": {
     "title": "製品を素早く立ち上げ、素早く収益化",
-    "description": "ゼロから始めるのはやめましょう！Niu テンプレートを使ってコアアイデアに集中し、迅速に構築・検証して収益化を開始しましょう。",
+    "description": "ゼロから始めるのはやめましょう！Nexty テンプレートを使ってコアアイデアに集中し、迅速に構築・検証して収益化を開始しましょう。",
     "button": "今すぐテンプレートを取得",
     "trustText": "世界中の開発者に信頼されています",
     "features": {
@@ -390,6 +396,133 @@
       "production": "🔧 本格運用対応",
       "updates": "💎 生涯アップデート",
       "i18n": "🌍 国際化"
+    }
+  },
+  "Donation": {
+    "title": "小熏同学にWeChat投げ銭",
+    "description": "WeChat 投げ銭は独立した任意の支援手段です。正式な決済ではなく、クレジットや注文も発生しません。",
+    "warning": "注意：投げ銭後は返金不可です。ただし、私に焼き羊1頭をご馳走してくれるなら話は別です",
+    "button": "私たちのプロジェクトを応援",
+    "imageAlt": "WeChat 投げ銭 QR コード"
+  },
+  "LegacyPricing": {
+    "notice": "以下は過去のテストプランの表示用マッピングです。新規購入は停止中で、これらは本番決済の参照ではありません。"
+  },
+  "Nano": {
+    "title": "Nano Banana",
+    "metaDescription": "参照画像とプロンプトで永続 Nano タスクを作成します。",
+    "description": "参照画像を 1 枚アップロードし、変換内容を入力して結果まで追跡できます。新規生成停止中も既存タスクと履歴を確認できます。",
+    "ui": {
+      "status": {
+        "closedTitle": "新規生成は停止中",
+        "closedBody": "新規 Nano タスクは一時停止中です。既存タスク、結果、キャンセル、履歴は利用できます。",
+        "loginTitle": "ログインが必要です",
+        "loginBody": "タスク作成と個人履歴の閲覧にはログインしてください。",
+        "unknownBody": "このタスクは手動確認が必要です。最新のサーバー状態を手動更新してください。自動再送信は行いません。",
+        "queued": "待機中",
+        "leased": "リース済み",
+        "dispatching": "ディスパッチ中",
+        "running": "実行中",
+        "unknown": "確認が必要",
+        "succeeded": "成功",
+        "failed": "失敗",
+        "canceled": "キャンセル済み"
+      },
+      "errors": {
+        "AUTH_REQUIRED": "先にログインしてください。",
+        "FORBIDDEN": "このタスクへの権限がありません。",
+        "NANO_DISABLED": "Nano の新規生成は現在停止中です。",
+        "INVALID_INPUT": "プロンプト、画像形式、画像サイズを確認してください。",
+        "UNKNOWN_CASE": "このケースは製品カタログにありません。",
+        "INSUFFICIENT_CREDITS": "利用可能なクレジットが不足しています。",
+        "IDEMPOTENCY_CONFLICT": "同じリクエストキーに異なる内容が指定されました。新しいリクエストを作成してください。",
+        "NOT_FOUND": "タスクが見つかりません。",
+        "INVALID_STATE": "この状態のタスクはキャンセルできません。",
+        "INTERNAL": "サービスを完了できませんでした。後で更新してください。",
+        "NETWORK_ERROR": "ネットワーク要求に失敗しました。更新して再試行してください。",
+        "ABORTED": "要求が停止しました。結果が必要なら更新してください。",
+        "UNKNOWN": "要求を完了できませんでした。"
+      },
+      "composer": {
+        "title": "画像作成",
+        "description": "参照画像 1 枚とプロンプトが必要です。費用と上限はサーバーが決定します。",
+        "image": "参照画像",
+        "limits": "最大 {size} MB · {types} · 1 回 {cost} クレジット",
+        "previewAlt": "選択した参照画像",
+        "prompt": "プロンプト",
+        "promptPlaceholder": "画像に加えたい変更を入力……",
+        "chars": "{count} / {max} 文字",
+        "selectedCase": "選択中: {id}",
+        "submit": "タスク作成",
+        "replay": "同じ要求を再送",
+        "refresh": "タスク更新",
+        "manualConfirm": "再確認",
+        "cancel": "待機タスクをキャンセル",
+        "working": "処理中……",
+        "polling": "タスクを受け付けました。サーバー状態を待機中……",
+        "admitted": "タスクを受け付けました。結果を待っています。",
+        "idempotentReplay": "既存タスクを冪等返却しました。追加課金はありません。",
+        "canceled": "待機タスクをキャンセルしました。",
+        "caseLoaded": "ケースと参照画像を読み込みました。",
+        "caseNoImage": "ケースのプロンプトを読み込みました。参照画像をアップロードしてください。",
+        "statsSkipped": "新規生成停止中はケース統計も停止します。",
+        "errorTitle": "Nano 要求に失敗しました"
+      },
+      "cases": {
+        "title": "ケース一覧",
+        "description": "元の順序で {count} 件のケースを保持。人気ケースはサーバーの 30 日集計です。",
+        "searchPlaceholder": "ケース検索",
+        "noAsset": "プレビュー素材なし",
+        "hot": "人気",
+        "inputs": "入力 {count} 件",
+        "outputs": "出力 {count} 件",
+        "select": "使用",
+        "selected": "選択中",
+        "noMatch": "一致するケースがありません。"
+      },
+      "result": {
+        "title": "タスク結果",
+        "empty": "タスクを選択または作成すると結果が表示されます。",
+        "taskId": "タスク {id}",
+        "cost": "消費 {cost}",
+        "updatedAt": "更新 {time}",
+        "unknown": "プロバイダー結果が不明です。手動更新してください。自動再送信は行いません。",
+        "failed": "タスクは失敗しました。元の課金はサーバーの返金処理が扱います。",
+        "canceled": "タスクはキャンセルされました。",
+        "noImages": "結果画像はまだありません。",
+        "text": "結果テキスト",
+        "unsafeResultUrl": "結果 URL はクライアントが拒否しました。",
+        "status": {
+          "queued": "待機中",
+          "leased": "リース済み",
+          "dispatching": "ディスパッチ中",
+          "running": "実行中",
+          "unknown": "確認が必要",
+          "succeeded": "成功",
+          "failed": "失敗",
+          "canceled": "キャンセル済み"
+        }
+      },
+      "history": {
+        "title": "タスク履歴",
+        "refresh": "更新",
+        "loading": "読み込み中……",
+        "empty": "タスクはありません。",
+        "open": "開く",
+        "cancel": "キャンセル",
+        "loadMore": "さらに読み込む",
+        "status": {
+          "queued": "待機中",
+          "leased": "リース済み",
+          "dispatching": "ディスパッチ中",
+          "running": "実行中",
+          "unknown": "確認が必要",
+          "succeeded": "成功",
+          "failed": "失敗",
+          "canceled": "キャンセル済み"
+        },
+        "createdAt": "作成 {time}"
+      }
     }
   }
 }

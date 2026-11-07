@@ -11,8 +11,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@niu/ui/alert-dialog";
-import { Button } from "@niu/ui/button";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@niu/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { Link as I18nLink } from "@/i18n/routing";
-import { PostType } from "@niu/db/schema";
+import { PostType } from "@/lib/db/schema";
 import { PostWithTags } from "@/types/cms";
 import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -106,10 +106,12 @@ export function PostListActions({ post, config }: PostListActionsProps) {
 
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you want to delete this post?</AlertDialogTitle>
+          <AlertDialogTitle>
+            Are you sure you want to delete this post?
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the titled &quot;{post.title}
-            &quot;.
+            This action cannot be undone. This will permanently delete the{" "}
+            titled &quot;{post.title}&quot;.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

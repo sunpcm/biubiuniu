@@ -1,5 +1,5 @@
-import { Button } from "@niu/ui/button";
-import { Card } from "@niu/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Link as I18nLink, Locale, routing } from "@/i18n/routing";
 import { constructMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
@@ -11,7 +11,9 @@ type MetadataProps = {
   params: Params;
 };
 
-export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "ErrorPage.403" });
 
@@ -30,11 +32,11 @@ export default async function ForbiddenPage({ params }: { params: Params }) {
   const t = await getTranslations({ locale, namespace: "ErrorPage.403" });
 
   return (
-    <Card className="m-4 flex flex-col items-center justify-center md:m-12 lg:m-24">
-      <div className="p-4 text-center md:p-8">
-        <h1 className="mb-4 text-2xl font-bold text-red-600">{t("title")}</h1>
+    <Card className="flex flex-col items-center justify-center m-4 md:m-12 lg:m-24">
+      <div className="p-4 md:p-8 text-center">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">{t("title")}</h1>
         <p className="mb-6">{t("description")}</p>
-        <div className="flex flex-col justify-center gap-4 sm:flex-row">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild className="px-4 py-2">
             <I18nLink href={t("button.href")} title={t("button.name")}>
               {t("button.name")}

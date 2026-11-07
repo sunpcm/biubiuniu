@@ -1,9 +1,16 @@
 {
   "extends": "@niu/tsconfig/base.json",
   "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": false,
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": "./src",
+    "noEmitOnError": true,
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts", "drizzle.config.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/index.ts", "src/config.ts", "src/factory.ts"],
+  "exclude": ["node_modules", "dist", "src/schema.ts", "src/migrations", "src/seed"]
 }

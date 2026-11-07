@@ -24,13 +24,19 @@ function verifyKieSignature(
   taskId: string,
   timestamp: string,
   receivedSignature: string,
-  secret: string,
+  secret: string
 ): boolean {
   const dataToSign = `${taskId}.${timestamp}`;
-  const expected = crypto.createHmac("sha256", secret).update(dataToSign).digest("base64");
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(dataToSign)
+    .digest("base64");
 
   if (expected.length !== receivedSignature.length) return false;
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(receivedSignature));
+  return crypto.timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(receivedSignature)
+  );
 }
 
 /**
@@ -55,11 +61,15 @@ export async function POST(req: Request) {
       const receivedSignature = req.headers.get("x-webhook-signature");
 
       if (!timestamp || !receivedSignature) {
-        return Response.json({ error: "Missing signature headers" }, { status: 401 });
+        return Response.json(
+          { error: "Missing signature headers" },
+          { status: 401 }
+        );
       }
 
       // doc uses data.task_id (snake_case) for the signature
-      const sigTaskId: string | undefined = body?.data?.task_id ?? body?.data?.taskId;
+      const sigTaskId: string | undefined =
+        body?.data?.task_id ?? body?.data?.taskId;
       if (!sigTaskId) {
         return Response.json({ error: "Missing task_id" }, { status: 400 });
       }
@@ -68,7 +78,7 @@ export async function POST(req: Request) {
         sigTaskId,
         timestamp,
         receivedSignature,
-        KIE_WEBHOOK_HMAC_KEY,
+        KIE_WEBHOOK_HMAC_KEY
       );
       if (!isValid) {
         console.warn("[KIE Callback] Invalid signature");

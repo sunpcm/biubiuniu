@@ -1,13 +1,20 @@
 "use client";
 
-import { Button } from "@niu/ui/button";
-import { Input } from "@niu/ui/input";
-import { Label } from "@niu/ui/label";
-import { Slider } from "@niu/ui/slider";
-import { Textarea } from "@niu/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 import { type VideoModelCapabilities } from "@/config/ai-models";
-import { cn } from "@niu/utils";
-import { Camera, Dices, Monitor, Proportions, Type, Volume2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  Camera,
+  Dices,
+  Monitor,
+  Proportions,
+  Type,
+  Volume2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export interface VideoAdvancedValues {
@@ -34,7 +41,12 @@ function AspectRatioIcon({ ratio }: { ratio: string }) {
   const width = Math.max(Math.round(w * scale), 6);
   const height = Math.max(Math.round(h * scale), 6);
 
-  return <div className="bg-muted-foreground/30 rounded-sm" style={{ width, height }} />;
+  return (
+    <div
+      className="rounded-sm bg-muted-foreground/30"
+      style={{ width, height }}
+    />
+  );
 }
 
 function SectionLabel({
@@ -45,7 +57,7 @@ function SectionLabel({
   children: React.ReactNode;
 }) {
   return (
-    <Label className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
+    <Label className="text-xs text-muted-foreground flex items-center gap-1.5 mb-2">
       <Icon className="h-3.5 w-3.5" />
       {children}
     </Label>
@@ -91,20 +103,23 @@ export default function VideoAdvancedSettings({
                 disabled={disabled}
                 onClick={() =>
                   update({
-                    aspectRatio: values.aspectRatio === ratio ? undefined : ratio,
+                    aspectRatio:
+                      values.aspectRatio === ratio ? undefined : ratio,
                   })
                 }
                 className={cn(
                   "flex flex-col items-center justify-center gap-1.5 rounded-lg border p-2.5 transition-all",
                   "hover:border-primary/50",
-                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
                   values.aspectRatio === ratio
                     ? "border-primary bg-primary/10"
-                    : "border-border bg-background",
+                    : "border-border bg-background"
                 )}
               >
                 <AspectRatioIcon ratio={ratio} />
-                <span className="text-muted-foreground text-[11px]">{ratio}</span>
+                <span className="text-[11px] text-muted-foreground">
+                  {ratio}
+                </span>
               </button>
             ))}
           </div>
@@ -127,12 +142,12 @@ export default function VideoAdvancedSettings({
                   })
                 }
                 className={cn(
-                  "h-10 min-w-[72px] rounded-lg border px-4 text-sm font-medium transition-all",
+                  "h-10 min-w-[72px] px-4 rounded-lg border text-sm font-medium transition-all",
                   "hover:border-primary/50",
-                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
                   values.resolution === res
                     ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-background text-foreground",
+                    : "border-border bg-background text-foreground"
                 )}
               >
                 {res}
@@ -154,12 +169,12 @@ export default function VideoAdvancedSettings({
                 disabled={disabled}
                 onClick={() => update({ generateAudio: val })}
                 className={cn(
-                  "h-10 min-w-[72px] rounded-lg border px-4 text-sm font-medium transition-all",
+                  "h-10 min-w-[72px] px-4 rounded-lg border text-sm font-medium transition-all",
                   "hover:border-primary/50",
-                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
                   values.generateAudio === val
                     ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-background text-foreground",
+                    : "border-border bg-background text-foreground"
                 )}
               >
                 {val ? "ON" : "OFF"}
@@ -181,12 +196,12 @@ export default function VideoAdvancedSettings({
                 disabled={disabled}
                 onClick={() => update({ cameraFixed: val })}
                 className={cn(
-                  "h-10 min-w-[72px] rounded-lg border px-4 text-sm font-medium transition-all",
+                  "h-10 min-w-[72px] px-4 rounded-lg border text-sm font-medium transition-all",
                   "hover:border-primary/50",
-                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
                   values.cameraFixed === val
                     ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-background text-foreground",
+                    : "border-border bg-background text-foreground"
                 )}
               >
                 {val ? "ON" : "OFF"}
@@ -201,10 +216,12 @@ export default function VideoAdvancedSettings({
         <div>
           <SectionLabel icon={Type}>{t("negativePrompt")}</SectionLabel>
           <Textarea
-            className="min-h-[60px] resize-none text-sm"
+            className="resize-none text-sm min-h-[60px]"
             placeholder={t("negativePromptPlaceholder")}
             value={values.negativePrompt || ""}
-            onChange={(e) => update({ negativePrompt: e.target.value || undefined })}
+            onChange={(e) =>
+              update({ negativePrompt: e.target.value || undefined })
+            }
             disabled={disabled}
           />
         </div>
@@ -213,8 +230,10 @@ export default function VideoAdvancedSettings({
       {/* CFG Scale */}
       {capabilities.cfgScale && (
         <div>
-          <div className="mb-2 flex items-center justify-between">
-            <Label className="text-muted-foreground text-xs">{t("cfgScale")}</Label>
+          <div className="flex items-center justify-between mb-2">
+            <Label className="text-xs text-muted-foreground">
+              {t("cfgScale")}
+            </Label>
             <span className="text-xs font-medium tabular-nums">
               {(values.cfgScale ?? capabilities.cfgScale[2]).toFixed(2)}
             </span>
@@ -237,7 +256,7 @@ export default function VideoAdvancedSettings({
           <div className="flex items-center gap-2">
             <Input
               type="number"
-              className="h-9 flex-1 text-sm"
+              className="h-9 text-sm flex-1"
               placeholder={t("seed")}
               value={values.seed ?? ""}
               onChange={(e) =>
@@ -251,7 +270,9 @@ export default function VideoAdvancedSettings({
               variant="outline"
               size="icon"
               className="h-9 w-9 shrink-0"
-              onClick={() => update({ seed: Math.floor(Math.random() * 2147483647) })}
+              onClick={() =>
+                update({ seed: Math.floor(Math.random() * 2147483647) })
+              }
               disabled={disabled}
               title={t("randomSeed")}
             >

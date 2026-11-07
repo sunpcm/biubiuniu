@@ -30,10 +30,18 @@ export interface ImageGenerationResult {
 /**
  * Build provider-specific options from the unified input fields.
  */
-type JSONValue = string | number | boolean | null | JSONValue[] | { [key: string]: JSONValue };
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JSONValue[]
+  | { [key: string]: JSONValue };
 type JSONObject = Record<string, JSONValue | undefined>;
 
-function buildProviderOptions(input: ImageGenerationInput): Record<string, JSONObject> | undefined {
+function buildProviderOptions(
+  input: ImageGenerationInput
+): Record<string, JSONObject> | undefined {
   const opts: Record<string, JSONObject> = {};
 
   if (input.provider === "openai") {
@@ -46,20 +54,27 @@ function buildProviderOptions(input: ImageGenerationInput): Record<string, JSONO
 
   if (input.provider === "replicate") {
     const repOpts: JSONObject = {};
-    if (input.negativePrompt) repOpts.negative_prompt = input.negativePrompt;
-    if (input.guidanceScale !== undefined) repOpts.guidance = input.guidanceScale;
-    if (input.inferenceSteps !== undefined) repOpts.num_inference_steps = input.inferenceSteps;
+    if (input.negativePrompt)
+      repOpts.negative_prompt = input.negativePrompt;
+    if (input.guidanceScale !== undefined)
+      repOpts.guidance = input.guidanceScale;
+    if (input.inferenceSteps !== undefined)
+      repOpts.num_inference_steps = input.inferenceSteps;
     if (input.outputFormat) repOpts.output_format = input.outputFormat;
-    if (input.strength !== undefined) repOpts.prompt_strength = input.strength;
+    if (input.strength !== undefined)
+      repOpts.prompt_strength = input.strength;
     if (input.sourceImage) repOpts.image = input.sourceImage;
     if (Object.keys(repOpts).length > 0) opts.replicate = repOpts;
   }
 
   if (input.provider === "fal") {
     const falOpts: JSONObject = {};
-    if (input.negativePrompt) falOpts.negative_prompt = input.negativePrompt;
-    if (input.guidanceScale !== undefined) falOpts.guidance_scale = input.guidanceScale;
-    if (input.inferenceSteps !== undefined) falOpts.num_inference_steps = input.inferenceSteps;
+    if (input.negativePrompt)
+      falOpts.negative_prompt = input.negativePrompt;
+    if (input.guidanceScale !== undefined)
+      falOpts.guidance_scale = input.guidanceScale;
+    if (input.inferenceSteps !== undefined)
+      falOpts.num_inference_steps = input.inferenceSteps;
     if (input.outputFormat) falOpts.output_format = input.outputFormat;
     if (input.strength !== undefined) falOpts.strength = input.strength;
     if (input.sourceImage) falOpts.image_url = input.sourceImage;
@@ -89,7 +104,7 @@ function extractBase64(dataUri: string): string {
  * Automatically routes between standard (generateImage), gemini (generateText), and kie (custom adapter) paths.
  */
 export async function generateImageUnified(
-  input: ImageGenerationInput,
+  input: ImageGenerationInput
 ): Promise<ImageGenerationResult> {
   const keyCheck = validateProviderKey(input.provider);
   if (!keyCheck.valid) throw new Error(keyCheck.error);
@@ -125,7 +140,10 @@ export async function generateImageUnified(
   // Build prompt — for OpenAI/xAI I2I, use the object form { images, text }
   // so the SDK auto-routes to /images/edits
   let prompt: string | { images: Array<DataContent>; text?: string } = input.prompt;
-  if (input.sourceImage && (input.provider === "openai" || input.provider === "xai")) {
+  if (
+    input.sourceImage &&
+    (input.provider === "openai" || input.provider === "xai")
+  ) {
     prompt = {
       images: [extractBase64(input.sourceImage)],
       text: input.prompt,
@@ -158,7 +176,7 @@ export async function generateImageUnified(
  * Supports I2I: pass the reference image as an image part in messages content.
  */
 async function generateImageWithGemini(
-  input: ImageGenerationInput,
+  input: ImageGenerationInput
 ): Promise<ImageGenerationResult> {
   const googleOpts: JSONObject = {
     responseModalities: ["TEXT", "IMAGE"],

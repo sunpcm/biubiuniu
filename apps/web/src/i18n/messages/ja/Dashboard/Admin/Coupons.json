@@ -1,0 +1,144 @@
+{
+  "title": "クーポン",
+  "description": "決済画面で入力する Stripe プロモーションコードを作成・管理します。",
+  "searchPlaceholder": "コードまたは名称で検索…",
+  "createButton": "クーポンを作成",
+  "stripeDisabled": "Stripe が未設定のためクーポンは利用できません。STRIPE_SECRET_KEY と STRIPE_WEBHOOK_SECRET を設定してください。",
+  "truncatedWarning": "ここで検索できるのは直近 {count} 件のみです。それ以前のコードは Stripe ダッシュボードで確認してください。",
+  "empty": "条件に一致するクーポンはありません。",
+  "emptyCreate": "最初のクーポンを作成すると、すぐにここに表示されます。",
+  "columns": {
+    "code": "コード",
+    "discount": "割引",
+    "appliesTo": "対象",
+    "duration": "適用期間",
+    "redemptions": "利用回数",
+    "expiresAt": "有効期限",
+    "status": "ステータス",
+    "actions": "操作"
+  },
+  "filters": {
+    "allStatuses": "すべてのステータス",
+    "statusPlaceholder": "ステータス",
+    "allProducts": "すべてのプラン",
+    "productPlaceholder": "対象",
+    "unrestricted": "プラン指定なし"
+  },
+  "status": {
+    "active": "有効",
+    "disabled": "停止中",
+    "expired": "期限切れ",
+    "exhausted": "上限到達"
+  },
+  "statusHint": {
+    "active": "顧客は今すぐこのコードを利用できます。",
+    "disabled": "手動で停止中です。いつでも再開できます。",
+    "expired": "有効期限切れです。Stripe では再開できないため、複製して作り直してください。",
+    "exhausted": "利用回数が上限に達しました。Stripe では再開できないため、複製して作り直してください。"
+  },
+  "discountValue": {
+    "percent": "{value}% 割引",
+    "amount": "{value} 割引"
+  },
+  "durationValue": {
+    "once": "初回の支払いのみ",
+    "repeating": "最初の {months} か月",
+    "forever": "毎回の支払い"
+  },
+  "allProducts": "すべてのプラン",
+  "unknownProducts": "config/pricing にない商品 {count} 件",
+  "autoApplied": "自動",
+  "autoAppliedHint": "config/pricing により決済時に自動適用されるコードです。停止するとすべての訪問者から割引が消えます。",
+  "restrictionFirstTime": "新規顧客限定",
+  "restrictionMinimum": "{amount} 以上の注文",
+  "unlimited": "無制限",
+  "expiresNever": "無期限",
+  "expiresRelative": "{days, plural, =0 {本日} other {# 日後}}",
+  "actions": {
+    "menuLabel": "操作",
+    "copyCode": "コードをコピー",
+    "duplicate": "複製…",
+    "openInStripe": "Stripe で開く",
+    "enabledLabel": "有効"
+  },
+  "toasts": {
+    "fetchFailed": "クーポンの取得に失敗しました",
+    "copied": "{code} をコピーしました",
+    "created": "クーポン {code} を公開しました",
+    "createFailed": "クーポンを作成できませんでした",
+    "updateFailed": "クーポンを更新できませんでした",
+    "activated": "クーポンを有効にしました",
+    "deactivated": "クーポンを停止しました"
+  },
+  "form": {
+    "title": "クーポンを作成",
+    "duplicateTitle": "クーポンを複製",
+    "description": "作成と同時に Stripe で有効になります。",
+    "duplicateDescription": "元の設定を引き継いでいます。新しいコードを決めてください。",
+    "code": "コード",
+    "codePlaceholder": "空欄なら自動生成",
+    "generate": "自動生成",
+    "codeChecking": "確認中…",
+    "codeAvailable": "利用できます",
+    "codeTaken": "使用済み",
+    "name": "管理用の名称",
+    "namePlaceholder": "例：春のキャンペーン",
+    "discountType": "割引タイプ",
+    "percent": "割合",
+    "amount": "固定金額",
+    "percentValue": "割引率",
+    "amountValue": "割引額（{currency}）",
+    "appliesTo": "対象プラン",
+    "allProducts": "すべてのプラン",
+    "plansSelected": "{count} プランを選択",
+    "planSearchPlaceholder": "プランを検索…",
+    "planNoResults": "該当するプランがありません。",
+    "noStripePlans": "config/pricing に Stripe 決済のプランがありません。",
+    "duration": "適用期間",
+    "durationDisabledHint": "選択中のプランは買い切りのため、割引は 1 回のみ適用されます。",
+    "durationOption": {
+      "once": "1回のみ",
+      "repeating": "数か月",
+      "forever": "ずっと"
+    },
+    "durationInMonths": "か月数",
+    "maxRedemptions": "利用回数の上限",
+    "maxRedemptionsPlaceholder": "無制限",
+    "minimumAmount": "最低注文金額（{currency}）",
+    "minimumAmountPlaceholder": "下限なし",
+    "firstTimeOnly": "新規顧客限定",
+    "firstTimeOnlyHint": "過去に決済が成立していない顧客。",
+    "expiresAt": "有効期限",
+    "expiryCustom": "カスタム",
+    "expiryPreset": {
+      "never": "無期限",
+      "days7": "7 日",
+      "days30": "30 日",
+      "days90": "90 日"
+    },
+    "cancel": "キャンセル",
+    "create": "クーポンを作成",
+    "creating": "作成中…"
+  },
+  "formErrors": {
+    "codeFormat": "3〜30 文字で入力してください（A-Z、0-9、ハイフン、アンダースコア）。",
+    "percentRange": "0 〜 100 の割合を入力してください。",
+    "amountPositive": "0 より大きい金額を入力してください。",
+    "monthsRange": "1 〜 36 か月で入力してください。",
+    "positiveInteger": "1 以上の整数を入力してください。",
+    "expiryFuture": "未来の日時を選択してください。"
+  },
+  "summary": {
+    "title": "顧客が受け取る内容",
+    "headline": "{code} を入力した顧客は、{scope}で {discount} を受けられます。",
+    "autoCode": "自動生成されるコード",
+    "scopeAll": "すべてのプラン",
+    "discountPending": "未設定の割引",
+    "redemptionsUnlimited": "利用回数は無制限",
+    "redemptionsLimited": "合計 {count} 回まで利用可能",
+    "expiryNever": "無期限",
+    "expiryUntil": "{date} まで有効",
+    "firstTimeOnly": "新規顧客限定",
+    "minimum": "{amount} 以上の注文"
+  }
+}

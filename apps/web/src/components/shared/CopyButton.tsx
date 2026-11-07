@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@niu/utils";
+import { cn } from "@/lib/utils";
 import { Check, Copy, CopyCheck } from "lucide-react";
 import { useCallback, useState } from "react";
 
@@ -48,10 +48,10 @@ const CopyButton = ({
       <button
         onClick={copy}
         className={cn(
-          "inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs",
+          "inline-flex items-center gap-1 h-7 px-2 text-xs rounded-md",
           "hover:bg-accent transition-colors",
           isCopied ? "text-green-500" : "text-muted-foreground",
-          className,
+          className
         )}
       >
         {isCopied ? (
@@ -74,14 +74,14 @@ const CopyButton = ({
       <button
         onClick={copy}
         className={cn(
-          "bg-background hover:bg-muted rounded-md border p-1 shadow-sm transition-colors",
-          className,
+          "bg-background border rounded-md p-1 shadow-sm hover:bg-muted transition-colors",
+          className
         )}
       >
         {isCopied ? (
           <Check className="h-3 w-3 text-green-500" />
         ) : (
-          <Copy className="text-muted-foreground h-3 w-3" />
+          <Copy className="h-3 w-3 text-muted-foreground" />
         )}
       </button>
     );
@@ -91,9 +91,9 @@ const CopyButton = ({
   return (
     <button className={className} onClick={copy}>
       {isCopied ? (
-        <CopyCheck className="text-muted-foreground h-4 w-4" />
+        <CopyCheck className="w-4 h-4 text-muted-foreground" />
       ) : (
-        <Copy className="text-muted-foreground h-4 w-4" />
+        <Copy className="w-4 h-4 text-muted-foreground" />
       )}
     </button>
   );

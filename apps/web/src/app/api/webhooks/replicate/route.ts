@@ -21,7 +21,7 @@ import { taskStore } from "@/lib/ai/task-store";
 //     .where(eq(aiVideoTasks.taskId, taskId));
 
 // TODO [Notify User]: Optionally send an email or push notification when the video
-//   is ready. Use Resend (lib/resend.ts or niu-email skill) for email notifications.
+//   is ready. Use sendEmail from lib/mail for email notifications.
 
 export async function POST(request: Request) {
   try {
@@ -29,7 +29,10 @@ export async function POST(request: Request) {
     if (secret) {
       const isValid = await validateWebhook(request.clone(), secret);
       if (!isValid) {
-        return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 });
+        return NextResponse.json(
+          { error: "Invalid webhook signature" },
+          { status: 401 }
+        );
       }
     }
 
@@ -56,7 +59,10 @@ export async function POST(request: Request) {
         videoUrl: videoUrl || undefined,
         externalId: prediction.id,
       });
-    } else if (prediction.status === "failed" || prediction.status === "canceled") {
+    } else if (
+      prediction.status === "failed" ||
+      prediction.status === "canceled"
+    ) {
       await taskStore.update(taskId, {
         status: "failed",
         error:
@@ -70,6 +76,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error("[Replicate Webhook] Error:", error);
-    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Webhook processing failed" },
+      { status: 500 }
+    );
   }
 }
