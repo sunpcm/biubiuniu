@@ -253,6 +253,62 @@ test("private package roots and environment file boundaries are enforced", async
     }
   }
 
+  const releaseManifest = await readJson(path.join(root, "release/packages.json"));
+  assert.equal(releaseManifest.schemaVersion, 1);
+  assert.equal(releaseManifest.scope, "@sunpcm");
+  assert.ok(Array.isArray(releaseManifest.packages));
+  const allowlistedPaths = new Set();
+  const allowlistedNames = new Set();
+  for (const entry of releaseManifest.packages) {
+    const resolvedDir = path.resolve(root, entry.path);
+    const relativeDir = path.relative(root, resolvedDir).split(path.sep).join("/");
+    assert.equal(
+      relativeDir,
+      entry.path,
+      `${entry.path} must be a normalized repo-relative directory`,
+    );
+    assert.ok(
+      relativeDir.startsWith("packages/") &&
+        !relativeDir.includes("/../") &&
+        !relativeDir.endsWith("/.."),
+      `${entry.path} must stay under packages/ and cannot exempt root or apps`,
+    );
+    allowlistedPaths.add(relativeDir);
+    allowlistedNames.add(entry.name);
+    const filePath = path.join(resolvedDir, "package.json");
+    assert.equal(existsSync(filePath), true, `${entry.path} must have a package.json`);
+    const manifest = await readJson(filePath);
+    assert.equal(manifest.name, entry.name, `${entry.path} manifest name must match allowlist`);
+    assert.notEqual(manifest.private, true, `${entry.path} is allowlisted and must remain publishable`);
+  }
+  assert.equal(
+    allowlistedPaths.size,
+    releaseManifest.packages.length,
+    "release allowlist must not contain duplicate paths",
+  );
+  assert.equal(
+    allowlistedNames.size,
+    releaseManifest.packages.length,
+    "release allowlist must not contain duplicate names",
+  );
+
+  const workspacePackageFiles = new Set([path.join(root, "package.json")]);
+  for (const workspaceRoot of ["apps", "fixtures", "templates", "packages"]) {
+    for (const filePath of await collectPackageJsonFiles(path.join(root, workspaceRoot))) {
+      workspacePackageFiles.add(filePath);
+    }
+  }
+  for (const filePath of workspacePackageFiles) {
+    const relativeDir = path.relative(root, path.dirname(filePath)).split(path.sep).join("/");
+    const normalizedDir = relativeDir === "." ? "" : relativeDir;
+    if (allowlistedPaths.has(normalizedDir)) continue;
+    assert.equal(
+      (await readJson(filePath)).private,
+      true,
+      `${path.relative(root, filePath)} is outside the release allowlist and must be private`,
+    );
+  }
+
   const workspace = await fs.readFile(path.join(root, "pnpm-workspace.yaml"), "utf8");
   assert.match(workspace, /^\s+- fixtures\/\*$/m);
   assert.match(workspace, /^\s+- templates\/\*$/m);

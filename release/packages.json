@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "scope": "@sunpcm",
+  "packages": [
+    {
+      "name": "@sunpcm/niu-auth",
+      "path": "packages/auth"
+    },
+    {
+      "name": "@sunpcm/niu-commerce",
+      "path": "packages/commerce"
+    },
+    {
+      "name": "@sunpcm/niu-contracts",
+      "path": "packages/contracts"
+    },
+    {
+      "name": "@sunpcm/niu-db",
+      "path": "packages/db"
+    },
+    {
+      "name": "@sunpcm/niu-feature-nano",
+      "path": "packages/feature-nano"
+    },
+    {
+      "name": "@sunpcm/niu-next",
+      "path": "packages/next"
+    },
+    {
+      "name": "@sunpcm/niu-persistence-pg",
+      "path": "packages/persistence-pg"
+    },
+    {
+      "name": "@sunpcm/niu-prettier-config",
+      "path": "packages/configs/prettier-config"
+    },
+    {
+      "name": "@sunpcm/niu-ui",
+      "path": "packages/ui"
+    },
+    {
+      "name": "@sunpcm/niu-utils",
+      "path": "packages/utils"
+    }
+  ]
+}

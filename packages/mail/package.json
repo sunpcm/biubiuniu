@@ -1,6 +1,7 @@
 {
   "name": "@niu/mail",
   "version": "0.1.0",
+  "private": true,
   "description": "Email templates for the @niu monorepo",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
