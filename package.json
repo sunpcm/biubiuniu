@@ -69,6 +69,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "rimraf": "^6.1.2",
+    "semver": "7.8.6",
     "stripe": "^18.0.0",
     "tsx": "catalog:",
     "turbo": "^2.7.2"
