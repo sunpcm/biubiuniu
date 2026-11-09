@@ -514,7 +514,7 @@
         "status": {
           "queued": "排队中",
           "leased": "已领取",
-          "dispatching": "Dispatching",
+          "dispatching": "派发中",
           "running": "执行中",
           "unknown": "需确认",
           "succeeded": "已完成",

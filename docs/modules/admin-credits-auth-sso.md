@@ -74,3 +74,35 @@ URL bearer；verify 只验签名不重核会话/封禁/角色，refresh 再发�
 
 结论：身份/积分由当前 Auth（Better Auth）+ Commerce（PG 账本）替代；案例选择统计与 Nano
 由另 owner 负责，C13 不在本卡整项提前完成。
+
+## 真实 OAuth/OIDC：待实施澄清（未验收）
+
+本文件的 C09 只证明旧入口安全关闭，不证明跨应用 SSO 已恢复。真实实现必须优先使用受维护
+的 OAuth/OIDC 能力；当前固定 `better-auth@1.4.7`，实施前应按该精确版本核对公开能力与
+生命周期，不自行定义“一次性 code + JWT 转发”协议，也不能把旧 410 路径改成自制授权流。
+
+真实消费者合同至少提供并确认：
+
+- issuer/discovery、client ID 的 secret 名称、允许的 scopes、claims 和账号关联规则；
+- 精确 authorization callback URI、允许的登录后 URI 与 post-logout URI，不允许通配符、
+  动态 host 或任意 `redirect` 参数；
+- OAuth authorization code + PKCE `S256`。PKCE 同样适用于 public client；本产品推荐 BFF/
+  机密 Web 客户端在服务端临时保存 verifier，其他客户端类型按正式消费者合同处理，不能把
+  服务端保存写成所有 OAuth 客户端的协议前提。见 RFC 7636：
+  <https://www.rfc-editor.org/rfc/rfc7636>；
+- code 单次、短期有效；state/nonce 必须随机、一次性、有过期时间并绑定当前浏览器会话与
+  原始目标；
+- token 的 issuer、audience、nonce、签名算法、过期时间和服务端时钟偏差校验；
+- token/session 撤销方式，以及消费者是否支持 backchannel/frontchannel logout；
+- 角色与组织成员关系的权威来源和刷新时机。敏感请求继续读取 fresh session 与 live
+  membership，不长期信任令牌声明的角色；
+- 主动退出和消费者退出回调的行为：本地 session 失效、撤销可撤销令牌、关闭消费者会话并
+  只跳转到精确允许的 post-logout URI。
+
+真实实现的最小负向验收必须覆盖恶意 redirect、PKCE/state/nonce 不匹配、authorization code
+重放、过期或错误 audience 的 token、封禁/降权/成员移除后的即时拒绝，以及 logout 后会话和
+消费者访问同时失效。access/refresh token 不得出现在浏览器页面、RSC payload、URL、日志或
+postMessage 中，也不得交付给不可信消费者。受控服务端 OAuth token 端点按协议在响应中返回
+token 属于正常行为，见 RFC 6749 §5.1：
+<https://www.rfc-editor.org/rfc/rfc6749#section-5.1>。没有真实消费者合同和联调授权时，
+真实 SSO 保持“待实施、未验收”。

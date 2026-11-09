@@ -53,10 +53,16 @@ stale in-flight 恢复；stale `dispatching`/`running` 进入 `unknown`，不自
 
 - `NANO_PROVIDER_TIMEOUT_MS`：单次 provider 请求超时，默认 `120000`，合法范围
   `1000..600000`；通过 SDK `httpOptions.timeout` 生效。
+- `NANO_LEASE_MS`：已认领任务的 lease 生命周期，默认 `180000`，合法范围
+  `30000..3600000`。
 - `NANO_MAX_CONCURRENT_DISPATCHES`：进程内 dispatch sweeper 并发上限，默认 `4`，
   合法范围 `1..64`。
 - 上述并发是**单实例（单进程）**上限，不是跨进程全局限制。若未来需要跨进程全局上限，
   必须在 PG 侧用协调 lease 实现并验证；当前不冒称全局限制。
+- `getNanoServerConfig` 在归一化后校验 `NANO_LEASE_MS > NANO_PROVIDER_TIMEOUT_MS`：
+  违反时抛出含变量名与归一化数字、但不含密钥的明确诊断。修复方式是显式把
+  `NANO_LEASE_MS` 调大或把 `NANO_PROVIDER_TIMEOUT_MS` 调小，不会自动延长 timeout/lease，
+  也不静默改变语义。
 - 这些配置只存在于服务端配置，不进普通产品 UI，不提供 test-mode 权限绕过。
 
 ## 授权与删除并发

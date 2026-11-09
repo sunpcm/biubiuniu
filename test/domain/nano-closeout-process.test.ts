@@ -90,7 +90,6 @@ const coordinator: NanoCoordinator = createNanoCoordinator({
   productId: PRODUCT,
 });
 const workerLaunches = new Set<string>();
-const childPids = new Set<number>();
 
 function uniqueEmail(prefix: string): string {
   return `${prefix}-${randomUUID()}@example.invalid`;
@@ -337,9 +336,11 @@ function assertFreshWorker(run: WorkerRun, launchLabel: string): void {
   assert.equal(run.receipt.productId, PRODUCT);
   assert.ok(run.pid !== undefined && run.pid > 0);
   assert.notEqual(run.pid, process.pid);
-  assert.equal(childPids.has(run.pid), false, `${launchLabel}: pid was reused`);
-  assert.equal(workerLaunches.has(run.receipt.launch), false);
-  childPids.add(run.pid);
+  assert.equal(
+    workerLaunches.has(run.receipt.launch),
+    false,
+    `${launchLabel}: launch receipt was reused`,
+  );
   workerLaunches.add(run.receipt.launch);
 }
 

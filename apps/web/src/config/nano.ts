@@ -77,18 +77,32 @@ function boundedInt(
 }
 
 export function getNanoServerConfig(): NanoServerConfig {
+  const providerTimeoutMs = boundedInt(
+    process.env.NANO_PROVIDER_TIMEOUT_MS,
+    DEFAULT_PROVIDER_TIMEOUT_MS,
+    MIN_PROVIDER_TIMEOUT_MS,
+    MAX_PROVIDER_TIMEOUT_MS,
+  );
+  const leaseMs = boundedInt(
+    process.env.NANO_LEASE_MS,
+    DEFAULT_LEASE_MS,
+    MIN_LEASE_MS,
+    MAX_LEASE_MS,
+  );
+  if (leaseMs <= providerTimeoutMs) {
+    throw new Error(
+      `Nano server config invalid: NANO_LEASE_MS (${leaseMs}) must exceed ` +
+        `NANO_PROVIDER_TIMEOUT_MS (${providerTimeoutMs})`,
+    );
+  }
+
   return {
     model: process.env.NANO_MODEL || "gemini-2.5-flash-image-preview",
     cost: 1,
     maxImageBytes: 5 * 1024 * 1024,
     allowedMimeTypes: DEFAULT_ALLOWED_MIME_TYPES,
     maxPromptLength: 4000,
-    providerTimeoutMs: boundedInt(
-      process.env.NANO_PROVIDER_TIMEOUT_MS,
-      DEFAULT_PROVIDER_TIMEOUT_MS,
-      MIN_PROVIDER_TIMEOUT_MS,
-      MAX_PROVIDER_TIMEOUT_MS,
-    ),
+    providerTimeoutMs,
     maxConcurrentDispatches: boundedInt(
       process.env.NANO_MAX_CONCURRENT_DISPATCHES,
       DEFAULT_CONCURRENCY,
@@ -101,12 +115,7 @@ export function getNanoServerConfig(): NanoServerConfig {
       MIN_BATCH_SIZE,
       MAX_BATCH_SIZE,
     ),
-    leaseMs: boundedInt(
-      process.env.NANO_LEASE_MS,
-      DEFAULT_LEASE_MS,
-      MIN_LEASE_MS,
-      MAX_LEASE_MS,
-    ),
+    leaseMs,
     pollIntervalMs: boundedInt(
       process.env.NANO_POLL_INTERVAL_MS,
       DEFAULT_POLL_INTERVAL_MS,

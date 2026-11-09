@@ -217,3 +217,36 @@ manifest 包必须等于其 `payloadHash`。六项必需 check 均须为 `result
 此工具当前仅用于本地模拟发布与本地记账，不能代替真实 private-registry 权限、
 provider、SSO 或 D1b 外部门槛；许可与再分发范围也须另行确认。本文不记录当前
 阶段是否通过，不把外部待验项目写成已通过。
+
+## 真实私有 registry 门槛（待授权）
+
+当前 CLI 的 `--registry` 只允许 loopback HTTP，不能直接用于
+`https://npm.pkg.github.com` 或其他真实私有仓库。本段不是实现授权，也不表示目标仓库、
+scope 所有者、可见性或凭据已经确认。
+
+开始真实流程前，执行人必须取得：
+
+- 精确 registry URL、scope/owner、包的可见性，以及 publish、read、dist-tag 权限矩阵；
+- 本次十项包的精确版本与发布 tag；`latest` 不得先行，稳定 tag 只在独立消费通过后提升；
+- 凭据注入引用和最小权限；token、cookie、npmrc 内容不得写入仓库、argv 或证据文件；
+- 已审源码 commit、真实 tarball、release manifest、每包 integrity、数据库合同和
+  `sourceCommit`；
+- 独立消费者仓库/目录及升级、回退目标；消费者不得挂载平台源码或使用
+  workspace/link/symlink/跨仓库 alias。
+
+最小外部门槛为：
+
+1. 先完成本地 Gate：已审 tarball、manifest、六项必需检查和 loopback profile 消费绑定同一
+   payload。这是真实预览发布输入，不是真实 registry 通过证据。
+2. 获得精确版本的上传授权后，按依赖拓扑向真实冷目标发布预览版本；部分成功时只补缺失版本，
+   不覆盖既有产物，不推进 `latest` 或稳定渠道。
+3. 从真实 registry 逐包回读名称、版本、tag、integrity 和依赖闭包。
+4. 在无平台源码挂载、无 workspace/link/symlink/跨仓库 alias 的独立消费者中，从真实 registry
+   按精确版本安装 `minimal`、`auth_credits`、`nano_payments` 三个 profile。
+5. 在隔离消费者运行 Node、Vite、Next 入口及已获授权的测试 provider；不因源码目录或
+   workspace install 成功而判定通过。
+6. 以上全部通过后才提升稳定 tag，验证从上一 release manifest/lockfile 升级并回退；数据库
+   合同不兼容时同时恢复兼容的应用产物，不能只回退 npm 包。
+
+未取得“允许向该 registry 上传这些精确版本”的明确授权时，不上传，真实 registry 与 P5
+验收均保持未通过。
