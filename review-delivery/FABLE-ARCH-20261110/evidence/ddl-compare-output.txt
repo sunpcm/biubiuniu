@@ -1,0 +1,37 @@
+app stmts 114 unique 114 | module stmts 82 unique 82
+only in app chain:
+   ALTER TABLE "feedback" ADD CONSTRAINT "feedback_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action
+   ALTER TABLE "feedback_replies" ADD CONSTRAINT "feedback_replies_author_id_user_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action
+   ALTER TABLE "feedback_replies" ADD CONSTRAINT "feedback_replies_feedback_id_feedback_id_fk" FOREIGN KEY ("feedback_id") REFERENCES "public"."feedback"("id") ON DELETE cascade ON UPDATE no action
+   ALTER TABLE "post_tags" ADD CONSTRAINT "post_tags_post_id_posts_id_fk" FOREIGN KEY ("post_id") REFERENCES "public"."posts"("id") ON DELETE cascade ON UPDATE no action
+   ALTER TABLE "post_tags" ADD CONSTRAINT "post_tags_tag_id_tags_id_fk" FOREIGN KEY ("tag_id") REFERENCES "public"."tags"("id") ON DELETE cascade ON UPDATE no action
+   ALTER TABLE "posts" ADD CONSTRAINT "posts_author_id_user_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action
+   ALTER TABLE "session" ADD COLUMN "impersonated_by" uuid
+   CREATE INDEX "idx_feedback_created_at" ON "feedback" USING btree ("created_at")
+   CREATE INDEX "idx_feedback_replies_feedback_created_at" ON "feedback_replies" USING btree ("feedback_id","created_at")
+   CREATE INDEX "idx_feedback_status" ON "feedback" USING btree ("status")
+   CREATE INDEX "idx_feedback_type" ON "feedback" USING btree ("type")
+   CREATE INDEX "idx_feedback_user_created_at" ON "feedback" USING btree ("user_id","created_at")
+   CREATE INDEX "idx_post_tags_post_id" ON "post_tags" USING btree ("post_id")
+   CREATE INDEX "idx_post_tags_tag_id" ON "post_tags" USING btree ("tag_id")
+   CREATE INDEX "idx_posts_author_id" ON "posts" USING btree ("author_id")
+   CREATE INDEX "idx_posts_language_post_type_status" ON "posts" USING btree ("language","post_type","status")
+   CREATE INDEX "idx_posts_language_status" ON "posts" USING btree ("language","status")
+   CREATE INDEX "idx_posts_post_type" ON "posts" USING btree ("post_type")
+   CREATE INDEX "idx_posts_status" ON "posts" USING btree ("status")
+   CREATE INDEX "idx_posts_visibility" ON "posts" USING btree ("visibility")
+   CREATE INDEX "idx_tags_name" ON "tags" USING btree ("name")
+   CREATE TABLE "feedback" ("created_at" timestamp with time zone DEFAULT now() NOT NULL | "description" text NOT NULL | "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL | "priority" "feedback_priority" DEFAULT 'med
+   CREATE TABLE "feedback_replies" ("author_email" text NOT NULL | "author_id" uuid | "author_name" text | "content" text NOT NULL | "created_at" timestamp with time zone DEFAULT now() NOT NULL | "feedback_id" uuid NOT NULL
+   CREATE TABLE "post_tags" ("post_id" uuid NOT NULL | "tag_id" uuid NOT NULL | CONSTRAINT "post_tags_post_id_tag_id_pk" PRIMARY KEY("post_id","tag_id"))
+   CREATE TABLE "posts" ("author_id" uuid NOT NULL | "content" text | "created_at" timestamp with time zone DEFAULT now() NOT NULL | "description" text | "featured_image_url" text | "id" uuid PRIMARY KEY DEFAULT gen_random_
+   CREATE TABLE "session" ("active_organization_id" uuid | "created_at" timestamp with time zone DEFAULT now() NOT NULL | "expires_at" timestamp with time zone NOT NULL | "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT 
+   CREATE TABLE "tags" ("created_at" timestamp with time zone DEFAULT now() NOT NULL | "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL | "name" text NOT NULL | "post_type" "post_type" DEFAULT 'blog' | CONSTRAINT "t
+   CREATE TYPE "public"."feedback_priority" AS ENUM('low', 'medium', 'high')
+   CREATE TYPE "public"."feedback_status" AS ENUM('submitted', 'under_review', 'planned', 'in_progress', 'completed', 'declined')
+   CREATE TYPE "public"."feedback_type" AS ENUM('feature_request', 'bug_report', 'improvement', 'other')
+   CREATE TYPE "public"."post_status" AS ENUM('draft', 'published', 'archived')
+   CREATE TYPE "public"."post_type" AS ENUM('blog', 'glossary')
+   CREATE TYPE "public"."post_visibility" AS ENUM('public', 'logged_in', 'subscribers')
+only in modules:
+   CREATE TABLE "session" ("active_organization_id" uuid | "created_at" timestamp with time zone DEFAULT now() NOT NULL | "expires_at" timestamp with time zone NOT NULL | "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT 
