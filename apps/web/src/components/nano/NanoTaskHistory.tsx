@@ -28,6 +28,8 @@ interface NanoTaskHistoryProps {
   api: NanoHistoryApi;
   selectedTaskId: string | null;
   disabled?: boolean;
+  canRead: boolean;
+  sessionUserId: string | null;
   onSelect: (task: NanoTaskSummary) => void;
   onCancel: (taskId: string) => void;
   onRefresh: () => void;
@@ -40,6 +42,8 @@ export function NanoTaskHistory({
   api,
   selectedTaskId,
   disabled = false,
+  canRead,
+  sessionUserId,
   onSelect,
   onCancel,
   onRefresh,
@@ -52,6 +56,7 @@ export function NanoTaskHistory({
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const requestRef = useRef<AbortController | null>(null);
+  const sessionUserRef = useRef<string | null>(sessionUserId);
 
   const load = useCallback(
     async (cursor?: string) => {
@@ -93,9 +98,19 @@ export function NanoTaskHistory({
   );
 
   useEffect(() => {
+    if (sessionUserRef.current !== sessionUserId) {
+      sessionUserRef.current = sessionUserId;
+      requestRef.current?.abort();
+      requestRef.current = null;
+      setTasks([]);
+      setNextCursor(null);
+      setLoading(false);
+      setLoadingMore(false);
+    }
+    if (!canRead) return;
     void load();
     return () => requestRef.current?.abort();
-  }, [load, refreshToken]);
+  }, [canRead, load, refreshToken, sessionUserId]);
 
   return (
     <Card>
@@ -105,8 +120,9 @@ export function NanoTaskHistory({
           type="button"
           variant="ghost"
           size="sm"
-          disabled={loading}
+          disabled={!canRead || loading}
           onClick={() => {
+            if (!canRead) return;
             onRefresh();
             void load();
           }}
@@ -174,8 +190,11 @@ export function NanoTaskHistory({
             type="button"
             variant="outline"
             className="w-full"
-            disabled={loadingMore}
-            onClick={() => void load(nextCursor)}
+            disabled={!canRead || loadingMore}
+            onClick={() => {
+              if (!canRead || !nextCursor) return;
+              void load(nextCursor);
+            }}
           >
             {loadingMore ? t("loading") : t("loadMore")}
           </Button>

@@ -165,6 +165,7 @@ export function NanoStudio({ config }: NanoStudioProps) {
   const t = useTranslations("Landing.Nano.ui");
   const { data: session, isPending: sessionPending } = authClient.useSession();
   const isSignedIn = !!session?.user;
+  const sessionUserId = session?.user?.id ?? null;
   const { admit, get, list, cancel, poll } = useNanoTask(NANO_API_BASE);
 
   const [prompt, setPrompt] = useState("");
@@ -187,7 +188,9 @@ export function NanoStudio({ config }: NanoStudioProps) {
     fingerprint: string;
   } | null>(null);
   const pollControllerRef = useRef<AbortController | null>(null);
+  const getControllerRef = useRef<AbortController | null>(null);
   const objectUrlRef = useRef<string | null>(null);
+  const restoredForUserRef = useRef<string | null>(null);
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -195,6 +198,7 @@ export function NanoStudio({ config }: NanoStudioProps) {
     return () => {
       mountedRef.current = false;
       pollControllerRef.current?.abort();
+      getControllerRef.current?.abort();
       if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
     };
   }, []);
@@ -219,10 +223,18 @@ export function NanoStudio({ config }: NanoStudioProps) {
 
   const refreshTask = useCallback(
     async (taskId: string): Promise<UiNanoTask | null> => {
+      getControllerRef.current?.abort();
       const controller = new AbortController();
+      getControllerRef.current = controller;
       setRefreshing(true);
       try {
         const nextTask = await get(taskId, { signal: controller.signal });
+        if (
+          controller.signal.aborted ||
+          getControllerRef.current !== controller
+        ) {
+          return null;
+        }
         if (!isNanoTask(nextTask)) throw nanoCodeError("INTERNAL");
         const uiTask = toUiTask(nextTask);
         if (mountedRef.current) {
@@ -231,11 +243,18 @@ export function NanoStudio({ config }: NanoStudioProps) {
         }
         return uiTask;
       } catch (caught) {
-        if (!controller.signal.aborted) showError(caught);
+        if (
+          !controller.signal.aborted &&
+          getControllerRef.current === controller
+        ) {
+          showError(caught);
+        }
         return null;
       } finally {
-        if (mountedRef.current) setRefreshing(false);
-        controller.abort();
+        if (getControllerRef.current === controller) {
+          getControllerRef.current = null;
+          if (mountedRef.current) setRefreshing(false);
+        }
       }
     },
     [get, showError],
@@ -249,18 +268,27 @@ export function NanoStudio({ config }: NanoStudioProps) {
       setPolling(true);
       try {
         const latest = await poll(taskId, { signal: controller.signal });
-        if (!mountedRef.current || controller.signal.aborted) return;
+        if (
+          !mountedRef.current ||
+          controller.signal.aborted ||
+          pollControllerRef.current !== controller
+        ) {
+          return;
+        }
         if (!isNanoTask(latest)) throw nanoCodeError("INTERNAL");
         setTask(toUiTask(latest));
         setError(null);
       } catch (caught) {
-        if (!controller.signal.aborted) showError(caught);
+        if (
+          !controller.signal.aborted &&
+          pollControllerRef.current === controller
+        ) {
+          showError(caught);
+        }
       } finally {
         if (pollControllerRef.current === controller) {
           pollControllerRef.current = null;
-        }
-        if (mountedRef.current && !controller.signal.aborted) {
-          setPolling(false);
+          if (mountedRef.current) setPolling(false);
         }
       }
     },
@@ -280,6 +308,16 @@ export function NanoStudio({ config }: NanoStudioProps) {
   }, []);
 
   useEffect(() => {
+    if (sessionPending || restoredForUserRef.current === sessionUserId) return;
+    restoredForUserRef.current = sessionUserId;
+    getControllerRef.current?.abort();
+    pollControllerRef.current?.abort();
+    setTask(null);
+    setSelectedTaskId(null);
+    setLastSubmission(null);
+    setError(null);
+    setNotice(null);
+    if (!isSignedIn) return;
     const lastTaskId = readLocalValue(NANO_LOCAL_TASK_KEY);
     if (!lastTaskId) return;
     setSelectedTaskId(lastTaskId);
@@ -291,7 +329,13 @@ export function NanoStudio({ config }: NanoStudioProps) {
         void watch(restored.taskId);
       }
     });
-  }, [refreshTask, watch]);
+  }, [
+    isSignedIn,
+    refreshTask,
+    sessionPending,
+    sessionUserId,
+    watch,
+  ]);
 
   const loadExampleImage = useCallback(
     async (sourceUrl: string) => {
@@ -722,6 +766,8 @@ export function NanoStudio({ config }: NanoStudioProps) {
           api={stableApi}
           selectedTaskId={selectedTaskId}
           disabled={!isSignedIn || submitting}
+          canRead={!sessionPending && isSignedIn}
+          sessionUserId={sessionUserId}
           onSelect={selectHistoryTask}
           onCancel={(taskId) => void cancelTask(taskId)}
           onRefresh={() => {
