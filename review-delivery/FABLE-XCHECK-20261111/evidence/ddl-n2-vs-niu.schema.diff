@@ -1,0 +1,364 @@
+38,74d37
+< -- Name: feedback_priority; Type: TYPE; Schema: public; Owner: -
+< --
+< 
+< CREATE TYPE public.feedback_priority AS ENUM (
+<     'low',
+<     'medium',
+<     'high'
+< );
+< 
+< 
+< --
+< -- Name: feedback_status; Type: TYPE; Schema: public; Owner: -
+< --
+< 
+< CREATE TYPE public.feedback_status AS ENUM (
+<     'submitted',
+<     'under_review',
+<     'planned',
+<     'in_progress',
+<     'completed',
+<     'declined'
+< );
+< 
+< 
+< --
+< -- Name: feedback_type; Type: TYPE; Schema: public; Owner: -
+< --
+< 
+< CREATE TYPE public.feedback_type AS ENUM (
+<     'feature_request',
+<     'bug_report',
+<     'improvement',
+<     'other'
+< );
+< 
+< 
+< --
+137,168d99
+< -- Name: post_status; Type: TYPE; Schema: public; Owner: -
+< --
+< 
+< CREATE TYPE public.post_status AS ENUM (
+<     'draft',
+<     'published',
+<     'archived'
+< );
+< 
+< 
+< --
+< -- Name: post_type; Type: TYPE; Schema: public; Owner: -
+< --
+< 
+< CREATE TYPE public.post_type AS ENUM (
+<     'blog',
+<     'glossary'
+< );
+< 
+< 
+< --
+< -- Name: post_visibility; Type: TYPE; Schema: public; Owner: -
+< --
+< 
+< CREATE TYPE public.post_visibility AS ENUM (
+<     'public',
+<     'logged_in',
+<     'subscribers'
+< );
+< 
+< 
+< --
+254,288d184
+< -- Name: feedback; Type: TABLE; Schema: public; Owner: -
+< --
+< 
+< CREATE TABLE public.feedback (
+<     id uuid DEFAULT gen_random_uuid() NOT NULL,
+<     user_id uuid,
+<     submitter_email text NOT NULL,
+<     submitter_name text,
+<     type public.feedback_type NOT NULL,
+<     title character varying(120) NOT NULL,
+<     description text NOT NULL,
+<     priority public.feedback_priority DEFAULT 'medium'::public.feedback_priority NOT NULL,
+<     status public.feedback_status DEFAULT 'submitted'::public.feedback_status NOT NULL,
+<     created_at timestamp with time zone DEFAULT now() NOT NULL,
+<     updated_at timestamp with time zone DEFAULT now() NOT NULL
+< );
+< 
+< 
+< --
+< -- Name: feedback_replies; Type: TABLE; Schema: public; Owner: -
+< --
+< 
+< CREATE TABLE public.feedback_replies (
+<     id uuid DEFAULT gen_random_uuid() NOT NULL,
+<     feedback_id uuid NOT NULL,
+<     author_id uuid,
+<     author_email text NOT NULL,
+<     author_name text,
+<     is_admin boolean DEFAULT false NOT NULL,
+<     content text NOT NULL,
+<     created_at timestamp with time zone DEFAULT now() NOT NULL
+< );
+< 
+< 
+< --
+429,461d324
+< -- Name: post_tags; Type: TABLE; Schema: public; Owner: -
+< --
+< 
+< CREATE TABLE public.post_tags (
+<     post_id uuid NOT NULL,
+<     tag_id uuid NOT NULL
+< );
+< 
+< 
+< --
+< -- Name: posts; Type: TABLE; Schema: public; Owner: -
+< --
+< 
+< CREATE TABLE public.posts (
+<     id uuid DEFAULT gen_random_uuid() NOT NULL,
+<     language character varying(10) NOT NULL,
+<     post_type public.post_type DEFAULT 'blog'::public.post_type,
+<     author_id uuid NOT NULL,
+<     title text NOT NULL,
+<     slug text NOT NULL,
+<     content text,
+<     description text,
+<     featured_image_url text,
+<     is_pinned boolean DEFAULT false NOT NULL,
+<     status public.post_status DEFAULT 'draft'::public.post_status NOT NULL,
+<     visibility public.post_visibility DEFAULT 'public'::public.post_visibility NOT NULL,
+<     published_at timestamp with time zone DEFAULT now() NOT NULL,
+<     created_at timestamp with time zone DEFAULT now() NOT NULL,
+<     updated_at timestamp with time zone DEFAULT now() NOT NULL
+< );
+< 
+< 
+< --
+509,520d371
+< -- Name: tags; Type: TABLE; Schema: public; Owner: -
+< --
+< 
+< CREATE TABLE public.tags (
+<     id uuid DEFAULT gen_random_uuid() NOT NULL,
+<     name text NOT NULL,
+<     post_type public.post_type DEFAULT 'blog'::public.post_type,
+<     created_at timestamp with time zone DEFAULT now() NOT NULL
+< );
+< 
+< 
+< --
+625,640d475
+< -- Name: feedback feedback_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.feedback
+<     ADD CONSTRAINT feedback_pkey PRIMARY KEY (id);
+< 
+< 
+< --
+< -- Name: feedback_replies feedback_replies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.feedback_replies
+<     ADD CONSTRAINT feedback_replies_pkey PRIMARY KEY (id);
+< 
+< 
+< --
+713,736d547
+< -- Name: post_tags post_tags_post_id_tag_id_pk; Type: CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.post_tags
+<     ADD CONSTRAINT post_tags_post_id_tag_id_pk PRIMARY KEY (post_id, tag_id);
+< 
+< 
+< --
+< -- Name: posts posts_language_slug_post_type_unique; Type: CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.posts
+<     ADD CONSTRAINT posts_language_slug_post_type_unique UNIQUE (language, slug, post_type);
+< 
+< 
+< --
+< -- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.posts
+<     ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+< 
+< 
+< --
+761,776d571
+< -- Name: tags tags_name_post_type_unique; Type: CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.tags
+<     ADD CONSTRAINT tags_name_post_type_unique UNIQUE (name, post_type);
+< 
+< 
+< --
+< -- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.tags
+<     ADD CONSTRAINT tags_pkey PRIMARY KEY (id);
+< 
+< 
+< --
+869,903d663
+< -- Name: idx_feedback_created_at; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_feedback_created_at ON public.feedback USING btree (created_at);
+< 
+< 
+< --
+< -- Name: idx_feedback_replies_feedback_created_at; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_feedback_replies_feedback_created_at ON public.feedback_replies USING btree (feedback_id, created_at);
+< 
+< 
+< --
+< -- Name: idx_feedback_status; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_feedback_status ON public.feedback USING btree (status);
+< 
+< 
+< --
+< -- Name: idx_feedback_type; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_feedback_type ON public.feedback USING btree (type);
+< 
+< 
+< --
+< -- Name: idx_feedback_user_created_at; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_feedback_user_created_at ON public.feedback USING btree (user_id, created_at);
+< 
+< 
+< --
+1016,1071d775
+< -- Name: idx_post_tags_post_id; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_post_tags_post_id ON public.post_tags USING btree (post_id);
+< 
+< 
+< --
+< -- Name: idx_post_tags_tag_id; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_post_tags_tag_id ON public.post_tags USING btree (tag_id);
+< 
+< 
+< --
+< -- Name: idx_posts_author_id; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_posts_author_id ON public.posts USING btree (author_id);
+< 
+< 
+< --
+< -- Name: idx_posts_language_post_type_status; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_posts_language_post_type_status ON public.posts USING btree (language, post_type, status);
+< 
+< 
+< --
+< -- Name: idx_posts_language_status; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_posts_language_status ON public.posts USING btree (language, status);
+< 
+< 
+< --
+< -- Name: idx_posts_post_type; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_posts_post_type ON public.posts USING btree (post_type);
+< 
+< 
+< --
+< -- Name: idx_posts_status; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_posts_status ON public.posts USING btree (status);
+< 
+< 
+< --
+< -- Name: idx_posts_visibility; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_posts_visibility ON public.posts USING btree (visibility);
+< 
+< 
+< --
+1114,1120d817
+< -- Name: idx_tags_name; Type: INDEX; Schema: public; Owner: -
+< --
+< 
+< CREATE INDEX idx_tags_name ON public.tags USING btree (name);
+< 
+< 
+< --
+1232,1255d928
+< -- Name: feedback_replies feedback_replies_author_id_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.feedback_replies
+<     ADD CONSTRAINT feedback_replies_author_id_user_id_fk FOREIGN KEY (author_id) REFERENCES public."user"(id) ON DELETE SET NULL;
+< 
+< 
+< --
+< -- Name: feedback_replies feedback_replies_feedback_id_feedback_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.feedback_replies
+<     ADD CONSTRAINT feedback_replies_feedback_id_feedback_id_fk FOREIGN KEY (feedback_id) REFERENCES public.feedback(id) ON DELETE CASCADE;
+< 
+< 
+< --
+< -- Name: feedback feedback_user_id_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.feedback
+<     ADD CONSTRAINT feedback_user_id_user_id_fk FOREIGN KEY (user_id) REFERENCES public."user"(id) ON DELETE SET NULL;
+< 
+< 
+< --
+1365,1388d1037
+< 
+< 
+< --
+< -- Name: post_tags post_tags_post_id_posts_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.post_tags
+<     ADD CONSTRAINT post_tags_post_id_posts_id_fk FOREIGN KEY (post_id) REFERENCES public.posts(id) ON DELETE CASCADE;
+< 
+< 
+< --
+< -- Name: post_tags post_tags_tag_id_tags_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.post_tags
+<     ADD CONSTRAINT post_tags_tag_id_tags_id_fk FOREIGN KEY (tag_id) REFERENCES public.tags(id) ON DELETE CASCADE;
+< 
+< 
+< --
+< -- Name: posts posts_author_id_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+< --
+< 
+< ALTER TABLE ONLY public.posts
+<     ADD CONSTRAINT posts_author_id_user_id_fk FOREIGN KEY (author_id) REFERENCES public."user"(id) ON DELETE SET NULL;
