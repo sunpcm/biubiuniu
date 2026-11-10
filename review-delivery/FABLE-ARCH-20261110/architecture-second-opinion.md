@@ -71,7 +71,7 @@
 
 **推断**：进程丢失（C2）或 provider 返回 5xx、网络错误、超时（见 §2.3 M1）之后，unknown 在应用层是永久状态，用户或组织的删除会一直被 RESTRICT 拦住。
 
-**复现草案**：`evidence/probe-c1-c2-unknown.mjs`（**未执行**，原因见 §7.2）。覆盖四个场景：C1-a 进程丢失后 unknown 保留 active job、余额 2→1、`DELETE user` 报 23503、无 claim 的 fail/complete/cancel 全部被拒；C1-b 同一 claim 的迟到结果走到 succeeded；C1-c 同一 claim 的 fail 走到 failed 并退款；C2 见下一条。脚本有身份 guard，要求连接的库名以 `fable_probe_` 开头且为空库，否则直接退出。已通过 `node --check` 语法检查。
+**复现（已执行，补充证据）**：`evidence/probe-c1-c2-unknown.mjs`。经用户授权，在本容器自建的临时 PG 16.15 集群上执行，退出码 0，输出见 `evidence/probe-c1-c2-output.md`。该库不是宿主注入的标准隔离库，所以只算补充证据，正式 PG 验收仍由主控代跑（见 §7.2）。覆盖四个场景：C1-a 进程丢失后 unknown 保留 active job、余额 2→1、`DELETE user` 报 23503、无 claim 的 fail/complete/cancel 全部被拒；C1-b 同一 claim 的迟到结果走到 succeeded；C1-c 同一 claim 的 fail 走到 failed 并退款；C2 见下一条。脚本有身份 guard，要求连接的库名以 `fable_probe_` 开头且为空库，否则直接退出。四个场景首次运行全部通过，代码事实与断言一致。
 
 #### C2 SIGTERM 与优雅停机
 
@@ -90,7 +90,7 @@
 
 若要由应用接管停机顺序，需要设置 `NEXT_MANUAL_SIG_HANDLE`，否则 Next 的 `process.exit` 会先执行。
 
-**复现草案**：`probe-c1-c2-unknown.mjs` 的 C2 段。子进程按 `dispatch.ts:154-167` 的顺序推进到 `dispatching`，然后挂起 provider；父进程发送 SIGTERM。子进程复用 Next 的 `exit(143)` 语义，退出后断言行停在 `dispatching`；lease 到期后被扫成 unknown，积分未退。（**未执行**）
+**复现（已执行）**：`probe-c1-c2-unknown.mjs` 的 C2 段。子进程按 `dispatch.ts:154-167` 的顺序推进到 `dispatching`，然后挂起 provider；父进程发送 SIGTERM。子进程复用 Next 的 `exit(143)` 语义，退出后断言行停在 `dispatching`；lease 到期后被扫成 unknown，积分未退。实测子进程退出码 143，行停在 `dispatching`，随后被扫成 `unknown`，余额 2→1 未退。
 
 #### C3 两条迁移链
 
@@ -186,6 +186,7 @@
 | M6 | P2 | 代码事实，需业务决策 | 组织工作区内，Nano 任务的 subject 是组织，**任何成员都能看到并取消其他成员的任务**，包括提示词，以及成功后的输入和结果图片 | `identity.ts:105-111`；`api/nano/tasks/[taskId]/route.ts:18-22`；`cancel/route.ts:49-60` |
 | M7 | P2 | 代码事实 | `markRunning` 在应用中没有调用方，`running` 状态实际不会出现，但 UI、文案和文档都把它列为一个状态 | `grep markRunning apps/web/src` 结果为空；`dispatch.ts:157-167` 从 dispatching 直接调用 provider |
 | M8 | P2 | 执行事实 | `docs/agent-review-loop.md` 说“未注入连接变量时 PG 用例只 skip”，但 `test:domain` 在缺少变量时是 **fail**（119 项失败全部是 `DATABASE_URL is not set` 或 `MIGRATION_*`），不是 skip。fail-closed 本身合理，文档口径需要修正 | `evidence/test-log-summary.md`；`docs/agent-review-loop.md` “隔离身份与 guard” 一段 |
+| M10 | P2 | 执行事实 | `credits` 模块的外键名 `credit_transactions_refunded_transaction_id_credit_transactions_id_fk` 共 68 字符，超过 PG 的 63 字符上限，执行迁移时 PG 发出 NOTICE 42622，实际名称被截断为 `credit_transactions_refunded_transaction_id_credit_transactions`。两条链都用同一份 DDL，所以都会截断。任何按声明名称核对、删除或重建约束的操作（例如 drizzle-kit 比对、未来的 `DROP CONSTRAINT`、只读兼容检查）都会对不上 | `packages/persistence-pg/src/migrations/modules/credits.ts:64`；`apps/web/src/lib/db/migrations/0000_narrow_morbius.sql:278`；`evidence/probe-c1-c2-output.md`；`pg_constraint` 实查 |
 | M9 | P2 | 代码事实 | 兼容路由 `gemini-image` 从内容派生 requestKey，同一用户提交完全相同的输入时只会拿回旧任务，不会新建、也不扣费。这是有意的幂等语义，但用户看不到“为什么没有生成新图” | `apps/web/src/lib/nano/admit.ts:37-44`；`api/nano/gemini-image/route.ts:4-10` |
 
 ### 2.4 排序与建议的意见
@@ -204,7 +205,7 @@
 
 - **P0**：无。本轮没有发现会立即导致资金错误或越权的问题。CAS、退款唯一约束（`credit_transactions_refunded_transaction_id_unique`，`migrations/modules/credits.ts:51`）和 claim 校验都能防止重复退款或重复交付。
 - **P1**：C1（unknown 没有可运维的出口）、C2（每次发布都可能制造 unknown）、M1（provider 常规故障产生 unknown）。三者叠加的结果是“已扣费、无法退款、账号无法删除”。
-- **P2**：C3、C4、C5、C6、C7、C8，以及 M2–M9。
+- **P2**：C3、C4、C5、C6、C7、C8，以及 M2–M10。
 
 ---
 
@@ -547,7 +548,7 @@ export function seatPolicyFromBilling(billing: AuthBillingPort): AuthSeatPolicy;
 | D4 | 组织工作区内成员能否互相查看任务（M6） | 保持共享 / 只看自己发起的（需要在任务中记录 `actor_user_id`，**schema 变更**）/ 只有管理员能看全部 | 共享有隐私风险；改造需要动 schema | 待定 |
 | D5 | 第二消费者是否需要“有组织、无计费”，以及席位语义 | 不需要（形态一即可）/ 固定上限 / 无限 | 需要时实施 §3.2.2 | 先按形态一交付样板，等真实需求出现再做形态二 |
 | D6 | unknown 处置的审计落点 | A1 只用 ledger note（无 schema 变更，“不退款”无法留痕）/ A2 新表（增量 schema，两条链都要追加） | 见 §3.1.5 | 如果 D1 包含“不退款”选项，则需要 A2 |
-| D7 | 是否允许在本容器自建临时 PG16 集群运行 `evidence/probe-c1-c2-unknown.mjs` | a 允许：容器里有 `/usr/bin/psql` 和 `/usr/lib/postgresql/16`，可以在 scratchpad 里 `initdb` 一个只属于本会话的空库 / b 不允许，交给主控用标准隔离库代跑 / c 两者都做 | a 不符合 `docs/agent-review-loop.md` 规定的库名、角色和变量（探针用的是 `fable_probe_*` guard），所以只能算补充证据 | b（与仓库规则一致）；a 可以作为快速佐证 |
+| D7（**已决定：允许**，探针已执行，见 §7.1 第 19–20 条） | 是否允许在本容器自建临时 PG16 集群运行 `evidence/probe-c1-c2-unknown.mjs` | a 允许：容器里有 `/usr/bin/psql` 和 `/usr/lib/postgresql/16`，可以在 scratchpad 里 `initdb` 一个只属于本会话的空库 / b 不允许，交给主控用标准隔离库代跑 / c 两者都做 | a 不符合 `docs/agent-review-loop.md` 规定的库名、角色和变量（探针用的是 `fable_probe_*` guard），所以只能算补充证据 | b（与仓库规则一致）；a 可以作为快速佐证 |
 
 ---
 
@@ -577,6 +578,8 @@ export function seatPolicyFromBilling(billing: AuthBillingPort): AuthSeatPolicy;
 | 16 | `python3 -I evidence/ddl-compare.py <repo>` | 0 | 结果见 `evidence/ddl-compare-output.txt` |
 | 17 | `sha256sum` 两组迁移文件 | 0 | 见 C3 |
 | 18 | `node --check evidence/probe-c1-c2-unknown.mjs` | 0 | 只做了语法检查 |
+| 19 | 经用户授权，在 scratchpad 中 `initdb` 一个临时 PG 16.15 集群（只监听 127.0.0.1:55432，trust 认证），新建角色 `fable_probe_role` 和空库 `fable_probe_c1c2` | 0 | 集群只属于本会话，用完已 `pg_ctl stop`；没有连接其他任何库 |
+| 20 | `FABLE_PROBE_PG_URL=… FABLE_PROBE_EXPECTED_DB=fable_probe_c1c2 node evidence/probe-c1-c2-unknown.mjs` | 0 | C1a、C1b、C1c、C2 四个场景全部通过，输出见 `evidence/probe-c1-c2-output.md`；同时观察到 M10 |
 
 各次运行后用 `git status --short` 复核，工作树都保持干净；本交付目录是唯一新增的内容。
 
@@ -584,8 +587,7 @@ export function seatPolicyFromBilling(billing: AuthBillingPort): AuthSeatPolicy;
 
 | 项 | 原因 |
 | --- | --- |
-| `evidence/probe-c1-c2-unknown.mjs` 实际执行 | 宿主没有注入隔离合成 PG 变量。容器里虽然有 PG16 二进制，但自建集群不属于“宿主提供”，按 §4 只交草案，**未执行**（见 D7） |
-| 所有 PG 用例（`auth-pg`、`commerce-pg`、`pg-profiles-pg`、domain 中的 PG 用例、migration C01/fault） | 同上，记为未验证 |
+| 所有仓库 PG 用例（`auth-pg`、`commerce-pg`、`pg-profiles-pg`、domain 中的 PG 用例、migration C01/fault） | 这些用例要求 `docs/agent-review-loop.md` 规定的库名、角色和变量；本轮的自建集群只用来跑探针，没有伪造这些身份，所以仍记为未验证，交主控在标准隔离库代跑 |
 | Web lint / build / `build:turbopack` | 与本轮结论无关；默认构建内存问题属于 TODO #3，不在本轮范围内 |
 | 浏览器 / 截图 / 登录态 | 不具备这项能力，任务 3 只做了逻辑层评审 |
 | 真实 AI、支付、SSO、registry | 被禁止 |
@@ -597,7 +599,7 @@ export function seatPolicyFromBilling(billing: AuthBillingPort): AuthSeatPolicy;
 | npm registry（经宿主代理） | 可达；主安装使用冻结锁文件 |
 | nodejs.org | 可达，只用于下载 Node 24.15.0 |
 | 真实 Google GenAI / Stripe / Creem / PayPal / SSO / 私有 registry | 没有调用 |
-| PostgreSQL | 宿主没有注入；没有连接任何库 |
+| PostgreSQL | 宿主没有注入；只连接过本会话自建的临时库 `fable_probe_c1c2`，用完已停止 |
 | 真实 `.env` 或凭据 | 没有读取 |
 
 ### 7.4 提交
