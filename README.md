@@ -1,5 +1,10 @@
 # Modern React Monorepo Template
 
+这是 Nexty 平台改造所基于的 Monorepo。当前平台开发请先阅读
+[远端开发交接](HANDOFF.md)、[架构说明](docs/platform-architecture.md) 和 [当前 TODO](TODO.md)。
+下文关于模板、`vite-app`、`packages/configs` 等示例保留为历史来源说明，不代表当前 Nexty
+平台的应用结构或开发入口。
+
 🚀 **Monorepo 模板** | 基于 Turborepo + pnpm Workspaces 构建
 
 这是一个集成了前端生态最新标准的高性能 Monorepo 模板。是一套关于**配置管理**、**依赖治理**和**架构分层**的实践集合。
@@ -40,29 +45,29 @@
 
 ### 前置要求
 
-- Node.js >= 18
-- pnpm >= 9.x
+- Node.js `>=24.15.0 <25`
+- pnpm `10.26.0`
 
 ### 安装依赖
 
 ```bash
-pnpm install
+HUSKY=0 pnpm install --frozen-lockfile
 
 ```
 
 ### 启动开发环境
 
-同时启动所有应用（利用 Turbo 并行执行）：
+先构建可发布包：
 
 ```bash
-pnpm dev
+pnpm build:packages
 
 ```
 
-或者只启动特定应用：
+随后启动 Nexty 参考 Web 应用：
 
 ```bash
-pnpm dev --filter=vite-app
+pnpm dev:web
 
 ```
 
