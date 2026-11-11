@@ -33,6 +33,16 @@ pnpm --version
 已有 WIP 和任务声明的 untracked 证据应保留。不要用 `git clean`、`git stash` 或
 `git reset` 清理工作树。
 
+## 2026-11-11 更新
+
+产品开发已由用户恢复，下文“状态口径”和“恢复顺序”两节描述的是 2026-11-10 的暂停状态，仅作历史参考。
+当前事项以 [`TODO.md`](TODO.md) 为准，方向以
+[`docs/plans/2026-11-11-platform-roadmap.md`](docs/plans/2026-11-11-platform-roadmap.md) 为准，
+可直接领取的任务卡在
+[`docs/plans/2026-11-11-nano-followups.md`](docs/plans/2026-11-11-nano-followups.md)。
+
+`ae5ae2c..9d5f3f8` 的改动已合并进开发分支，但没有经过独立 Review，其中的页面改动没有做过浏览器验证。
+
 ## 状态口径
 
 截至 2026-11-10，历史产品实测候选为

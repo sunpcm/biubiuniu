@@ -4,10 +4,12 @@
 
 ## 起点
 
-- 分支：`claude/nano-unknown-auto-refund-20261111`，HEAD `261b274`，基于 `ae5ae2c`。尚未合并，等主控 Review。
+- 分支：开发分支 `codex/nexty-platform-overnight-20261105`。下列改动已于 2026-11-11 快进合并进来
+  （`ae5ae2c..9d5f3f8`），合并时 T1、T2 两项验证尚未完成，独立 Review 也尚未进行。
+- 长期方向见 [`2026-11-11-platform-roadmap.md`](2026-11-11-platform-roadmap.md)；本文对应其中的阶段 0。
 - 背景与证据：分支 `claude/fable-cross-check-20261111` 的
   `review-delivery/FABLE-XCHECK-20261111/cross-check.md`。
-- 该分支已经完成：unknown 超时自动退款、停机停止领取、sweeper 各步隔离与日志、稳定 `PRODUCT_ID`、
+- 已经完成：unknown 超时自动退款、停机停止领取、sweeper 各步隔离与日志、稳定 `PRODUCT_ID`、
   读取列投影、前端按 subject 隔离、无计费组织的静态 billing 端口、typecheck 依赖上游 build。
   **不要重做这些。**
 

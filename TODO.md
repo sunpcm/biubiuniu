@@ -1,16 +1,47 @@
-# Nexty 平台迁移 · 当前 TODO（2026-11-10）
+# Nexty 平台 · 当前 TODO（2026-11-11）
 
-状态：文档收尾完成后暂停，停在 Review。PUSH 由主控执行，本文不记录 push 结果。
+状态：产品开发已由用户恢复。开发分支为 `codex/nexty-platform-overnight-20261105`，实际 HEAD 以
+`git rev-parse HEAD` 为准。
 
-- worktree：`/Users/sunpcm/code/nexty_monorepo/.worktrees/platform-overnight-20261105`，分支 `codex/nexty-platform-overnight-20261105`，实施基线 HEAD `709dbb70`。
-- 已批准状态：N1–N3、N5 本地批准；N4 本地登录态合成浏览器批准，整体真实外部门槛未批准。
-- 根回归基线：448/448 零 skip；force 静态 22/22 与临时 8GB 默认 Webpack 通过（106 个既有 warnings）。所有服务、浏览器与 14 个任务容器均已停止，会话 0，数据库卷与样本保留。
+- 长期方向和阶段划分：[docs/plans/2026-11-11-platform-roadmap.md](docs/plans/2026-11-11-platform-roadmap.md)
+- 当前阶段（阶段 0）的任务卡 T1–T7：[docs/plans/2026-11-11-nano-followups.md](docs/plans/2026-11-11-nano-followups.md)
 
-## 本地待办（低风险优先，均未开始，本轮不实施）
+## 2026-11-11 已合并（未经独立 Review，T1、T2 验证未完成）
 
-1. **NANO_LOCAL_TASK_KEY 按 userId 隔离**：换号旧键会触发 404，服务端拒绝且无旧历史泄露；需明确旧键迁移/退出清理语义，并回归 pending→ready、退出、换号、晚响应。
-2. **管理员 credit ledger query key 统一**：两处同字面量统一复用；不改财务计算契约。
-3. **构建警告与默认内存**：既有 manifest/preload 警告、Google 字体构建下载依赖、默认 4GB 历史 OOM，按证据评估必要性；临时 8GB 通过不等于默认 OOM 修复，不盲加设施。
+- Nano `unknown` 超时自动退款（默认 15 分钟，`NANO_UNKNOWN_REFUND_AFTER_MS`），停机后停止领取新任务，
+  sweeper 各步隔离并记录 unknown 与退款日志。
+- 稳定产品 ID 常量 `PRODUCT_ID`，取值保持 `"BiuBiuNiu"`。
+- Nano 状态轮询、列表和 lease 转换不再读取输入图。
+- Nano 页面的本地任务键和表单状态按 subject（团队工作区或个人）隔离。原“按 userId 隔离”一项以此完成，
+  但**没有做过浏览器验证**，见任务卡 T2。
+- 无计费组织可用的静态 billing 端口；`turbo run typecheck` 不再需要先手动 build。
+
+当时的本地证据：typecheck、lint（106 个既有 warning）、`test:packages` 176 通过 / 8 项因缺 PG 变量
+skip、`test:routing` 4/4、`test:engineering` 4/4（离线模式）、Nano 相关 PG 用例 55/55（自建的本地合成库，
+不是主控的标准隔离库）。全量 `test:domain` 没有得到全绿结果，原因见任务卡 T1。这些是历史证据，
+不代表当前 HEAD 通过。
+
+## 接下来按顺序做
+
+1. **T1**：确认 `auth-http.test.ts` 两项 403 失败是环境问题还是回归（只读）。
+2. **T2**：浏览器验证 Nano 页面改动（需要登录态合成环境；没有浏览器能力就留空，不要用读代码代替）。
+3. **一键本地 PG 测试脚本**：起临时合成库、注入测试变量、跑 PG 用例、停库。阶段 0 的退出条件是
+   一条命令跑完全部 PG 用例且零 skip。
+4. **T3–T5、T7**：release gate 加 `auth` profile、DDL 等价守护测试、`legacy-reference` README、
+   连接建立前的网络失败改判。
+5. **T6**：文档口径修正。
+6. 阶段 0 完成后，进入路线图阶段 1（参考应用改用包内迁移链）。**阶段 1 先出一页设计说明并经用户确认，
+   再拆卡实施。**
+
+仍待评估、未排期：管理员 credit ledger 的 query key 统一；构建默认 4 GiB 内存不足（临时 8 GiB 通过
+不等于修复）；Google 字体的构建期下载依赖。
+
+## 等用户决定，暂时不做
+
+- provider 返回 5xx 时是否立即退款（取决于 provider 计费口径）。
+- 输入图和结果图的保留期；结果图迁出 PG 行。
+- 团队工作区内成员能否互相查看、取消任务。
+- 第二个产品先要哪些能力（决定路线图阶段 2、3 的范围）。
 
 ## 外部待验（四组全部未验，P6 不推进）
 
@@ -21,15 +52,4 @@
 | 真实 registry | 精确版本/tag、权限、独立消费者、上传授权；本地 Verdaccio 不等于真实发布 |
 | D1b 数据 | 授权脱敏快照、最终映射、旧 Schema 和包版本、升级回退演练范围 |
 
-不臆造日期或外部授权。
-
-## 恢复顺序
-
-用户明确恢复后：只读核对 HEAD/dirty/index 与实际资源归属 → 沿用四模型池（workbuddy/deepseek-v4-pro、workbuddy/deepseek-v4.1-flash、zcode/GLM-5.3、zcode/GLM-5.3-Flash；四路实际皆有问题才内置 GPT，自主检测恢复切换）→ 选一项本地 P2 轻量实施并独立 Review → 外部组在具体合同输入/授权满足后按依赖推进。
-
-禁止把已完成本地验证重跑当作进度；不合并、不部署、不生产迁移、不真实 provider/registry 写入；恢复后 push 按当次具体授权，本轮 PUSH 不构成永久发布授权。
-
-## 链接
-
-- [实施计划（含 2026-11-10 实施状态）](docs/plans/2026-11-04-nexty-platform-migration.md)
-- [外部验收入口](docs/external-acceptance.md)
+不臆造日期或外部授权。不合并到 `main`、不部署、不做生产迁移、不调用真实 provider 或 registry。
