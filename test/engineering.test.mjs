@@ -26,6 +26,7 @@ const stableBuildEnvironment = Object.freeze({
   NANO_MODEL: "gemini-2.5-flash-image-preview",
   NANO_POLL_INTERVAL_MS: "5000",
   NANO_PROVIDER_TIMEOUT_MS: "120000",
+  NANO_UNKNOWN_REFUND_AFTER_MS: "900000",
   NEXT_PUBLIC_SITE_URL: "https://engineering.n1.invalid",
   RESEND_API_KEY: ["queue", "secret", "stable"].join("-"),
 });
