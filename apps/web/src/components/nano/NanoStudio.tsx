@@ -686,6 +686,7 @@ export function NanoStudio({ config }: NanoStudioProps) {
             <div className="space-y-2">
               <Label htmlFor="nano-image">{t("composer.image")}</Label>
               <Input
+                key={subjectKey ?? "signed-out"}
                 id="nano-image"
                 type="file"
                 accept={config.allowedMimeTypes.join(",")}
