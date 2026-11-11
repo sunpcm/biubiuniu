@@ -38,8 +38,10 @@ import {
   isNanoTask,
   NANO_API_BASE,
   NANO_ERROR_CODES,
-  NANO_LOCAL_TASK_KEY,
+  NANO_LEGACY_LOCAL_TASK_KEY,
+  nanoClientSubjectKey,
   nanoInputFingerprint,
+  nanoLocalTaskKey,
   toNanoClientError,
   validateNanoInput,
 } from "./contract";
@@ -150,6 +152,14 @@ function writeLocalValue(key: string, value: string): void {
   }
 }
 
+function removeLocalValue(key: string): void {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Storage unavailable: nothing to clean up.
+  }
+}
+
 async function fileToBase64(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
   let binary = "";
@@ -165,7 +175,18 @@ export function NanoStudio({ config }: NanoStudioProps) {
   const t = useTranslations("Landing.Nano.ui");
   const { data: session, isPending: sessionPending } = authClient.useSession();
   const isSignedIn = !!session?.user;
-  const sessionUserId = session?.user?.id ?? null;
+  // The server scopes every task by the balance-owning subject (team workspace
+  // or personal). All per-identity client state follows the same key, so a
+  // sign-out, account switch, or workspace switch resets it.
+  const subjectKey = nanoClientSubjectKey(
+    session?.user?.id,
+    (session?.session as { activeOrganizationId?: string | null } | undefined)
+      ?.activeOrganizationId,
+  );
+  const subjectKeyRef = useRef<string | null>(subjectKey);
+  useEffect(() => {
+    if (!sessionPending) subjectKeyRef.current = subjectKey;
+  }, [sessionPending, subjectKey]);
   const { admit, get, list, cancel, poll } = useNanoTask(NANO_API_BASE);
 
   const [prompt, setPrompt] = useState("");
@@ -190,7 +211,7 @@ export function NanoStudio({ config }: NanoStudioProps) {
   const pollControllerRef = useRef<AbortController | null>(null);
   const getControllerRef = useRef<AbortController | null>(null);
   const objectUrlRef = useRef<string | null>(null);
-  const restoredForUserRef = useRef<string | null>(null);
+  const restoredForSubjectRef = useRef<string | null | undefined>(undefined);
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -308,8 +329,9 @@ export function NanoStudio({ config }: NanoStudioProps) {
   }, []);
 
   useEffect(() => {
-    if (sessionPending || restoredForUserRef.current === sessionUserId) return;
-    restoredForUserRef.current = sessionUserId;
+    if (sessionPending || restoredForSubjectRef.current === subjectKey) return;
+    const previousSubject = restoredForSubjectRef.current;
+    restoredForSubjectRef.current = subjectKey;
     getControllerRef.current?.abort();
     pollControllerRef.current?.abort();
     setTask(null);
@@ -317,25 +339,55 @@ export function NanoStudio({ config }: NanoStudioProps) {
     setLastSubmission(null);
     setError(null);
     setNotice(null);
-    if (!isSignedIn) return;
-    const lastTaskId = readLocalValue(NANO_LOCAL_TASK_KEY);
-    if (!lastTaskId) return;
-    setSelectedTaskId(lastTaskId);
-    void refreshTask(lastTaskId).then((restored) => {
-      if (
-        restored &&
-        ["queued", "leased", "dispatching", "running"].includes(restored.status)
-      ) {
-        void watch(restored.taskId);
+    // The v1 key was shared by every account on this device; drop it.
+    removeLocalValue(NANO_LEGACY_LOCAL_TASK_KEY);
+    if (previousSubject) {
+      // A different identity now owns this tab (sign-out, account switch, or
+      // workspace switch): the previous one's draft must not stay on screen.
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
       }
-    });
-  }, [
-    isSignedIn,
-    refreshTask,
-    sessionPending,
-    sessionUserId,
-    watch,
-  ]);
+      setPrompt("");
+      setUpload(EMPTY_UPLOAD);
+      setSelectedCaseId(undefined);
+    }
+    if (!subjectKey) return;
+    const storageKey = nanoLocalTaskKey(subjectKey);
+    const lastTaskId = readLocalValue(storageKey);
+    if (!lastTaskId) return;
+    const controller = new AbortController();
+    getControllerRef.current = controller;
+    const isCurrent = () =>
+      mountedRef.current &&
+      !controller.signal.aborted &&
+      getControllerRef.current === controller;
+    void get(lastTaskId, { signal: controller.signal })
+      .then((restored) => {
+        if (!isCurrent()) return;
+        getControllerRef.current = null;
+        if (!isNanoTask(restored)) return;
+        const uiTask = toUiTask(restored);
+        setSelectedTaskId(uiTask.taskId);
+        setTask(uiTask);
+        if (
+          ["queued", "leased", "dispatching", "running"].includes(uiTask.status)
+        ) {
+          void watch(uiTask.taskId);
+        }
+      })
+      .catch((caught) => {
+        if (!isCurrent()) return;
+        getControllerRef.current = null;
+        // A remembered task this subject can no longer read is stale local
+        // state, not a user-facing error.
+        if (toNanoClientError(caught).code === "NOT_FOUND") {
+          removeLocalValue(storageKey);
+          return;
+        }
+        showError(caught);
+      });
+  }, [get, sessionPending, showError, subjectKey, watch]);
 
   const loadExampleImage = useCallback(
     async (sourceUrl: string) => {
@@ -496,6 +548,7 @@ export function NanoStudio({ config }: NanoStudioProps) {
       const requestKey = replay && lastSubmission
         ? lastSubmission.requestKey
         : createRequestKey();
+      const subjectAtSubmit = subjectKeyRef.current;
       setSubmitting(true);
       try {
         const payload: NanoAdmitPayload = {
@@ -504,9 +557,12 @@ export function NanoStudio({ config }: NanoStudioProps) {
         };
         const admitted: NanoAdmitResult = await admit(payload);
         if (!admitted?.taskId) throw nanoCodeError("INTERNAL");
+        // Late response after the identity changed: the task belongs to the
+        // subject that submitted it. Do not show it or remember it here.
+        if (!subjectAtSubmit || subjectKeyRef.current !== subjectAtSubmit) return;
         setLastSubmission({ requestKey, fingerprint });
         setSelectedTaskId(admitted.taskId);
-        writeLocalValue(NANO_LOCAL_TASK_KEY, admitted.taskId);
+        writeLocalValue(nanoLocalTaskKey(subjectAtSubmit), admitted.taskId);
         setHistoryRefreshToken((token) => token + 1);
         setNotice(
           admitted.created
@@ -540,7 +596,9 @@ export function NanoStudio({ config }: NanoStudioProps) {
   const selectHistoryTask = useCallback(
     (item: NanoTaskSummary) => {
       setSelectedTaskId(item.taskId);
-      writeLocalValue(NANO_LOCAL_TASK_KEY, item.taskId);
+      if (subjectKeyRef.current) {
+        writeLocalValue(nanoLocalTaskKey(subjectKeyRef.current), item.taskId);
+      }
       void refreshTask(item.taskId);
     },
     [refreshTask],
@@ -767,7 +825,7 @@ export function NanoStudio({ config }: NanoStudioProps) {
           selectedTaskId={selectedTaskId}
           disabled={!isSignedIn || submitting}
           canRead={!sessionPending && isSignedIn}
-          sessionUserId={sessionUserId}
+          identityKey={subjectKey}
           onSelect={selectHistoryTask}
           onCancel={(taskId) => void cancelTask(taskId)}
           onRefresh={() => {

@@ -29,7 +29,7 @@ interface NanoTaskHistoryProps {
   selectedTaskId: string | null;
   disabled?: boolean;
   canRead: boolean;
-  sessionUserId: string | null;
+  identityKey: string | null;
   onSelect: (task: NanoTaskSummary) => void;
   onCancel: (taskId: string) => void;
   onRefresh: () => void;
@@ -43,7 +43,7 @@ export function NanoTaskHistory({
   selectedTaskId,
   disabled = false,
   canRead,
-  sessionUserId,
+  identityKey,
   onSelect,
   onCancel,
   onRefresh,
@@ -56,7 +56,7 @@ export function NanoTaskHistory({
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const requestRef = useRef<AbortController | null>(null);
-  const sessionUserRef = useRef<string | null>(sessionUserId);
+  const identityRef = useRef<string | null>(identityKey);
 
   const load = useCallback(
     async (cursor?: string) => {
@@ -98,8 +98,8 @@ export function NanoTaskHistory({
   );
 
   useEffect(() => {
-    if (sessionUserRef.current !== sessionUserId) {
-      sessionUserRef.current = sessionUserId;
+    if (identityRef.current !== identityKey) {
+      identityRef.current = identityKey;
       requestRef.current?.abort();
       requestRef.current = null;
       setTasks([]);
@@ -110,7 +110,7 @@ export function NanoTaskHistory({
     if (!canRead) return;
     void load();
     return () => requestRef.current?.abort();
-  }, [canRead, load, refreshToken, sessionUserId]);
+  }, [canRead, load, refreshToken, identityKey]);
 
   return (
     <Card>

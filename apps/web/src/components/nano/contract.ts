@@ -7,7 +7,31 @@ import type {
 /** Canonical prefix consumed by `useNanoTask`; the hook appends `/tasks`. */
 export const NANO_API_BASE = "/api/nano";
 export const NANO_LIST_PAGE_SIZE = 20;
-export const NANO_LOCAL_TASK_KEY = "nexty:nano:last-task-id:v1";
+/**
+ * Legacy global "last task" key. It was shared by every account on the device,
+ * so its value cannot be attributed to anyone: it is deleted, never migrated.
+ */
+export const NANO_LEGACY_LOCAL_TASK_KEY = "nexty:nano:last-task-id:v1";
+const NANO_LOCAL_TASK_KEY_PREFIX = "nexty:nano:last-task-id:v2:";
+
+/**
+ * Client mirror of the server's balance-owning subject (`org:<id>` in a team
+ * workspace, otherwise `user:<id>`). The server authorizes every task read by
+ * this subject, so client state must be scoped by it too: the same user in a
+ * different workspace is a different subject.
+ */
+export function nanoClientSubjectKey(
+  userId: string | null | undefined,
+  activeOrganizationId: string | null | undefined,
+): string | null {
+  if (!userId) return null;
+  return activeOrganizationId ? `org:${activeOrganizationId}` : `user:${userId}`;
+}
+
+/** Per-subject "last task" localStorage key. */
+export function nanoLocalTaskKey(subjectKey: string): string {
+  return `${NANO_LOCAL_TASK_KEY_PREFIX}${subjectKey}`;
+}
 
 export const NANO_ERROR_CODES = [
   "AUTH_REQUIRED",
