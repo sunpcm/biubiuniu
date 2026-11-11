@@ -20,6 +20,7 @@ import {
   asc,
   desc,
   eq,
+  getTableColumns,
   gte,
   inArray,
   isNotNull,
@@ -35,6 +36,7 @@ import {
   admitTask,
   cancelTask,
   completeTask,
+  expireUnknownTask,
   failTask,
   markUnknown,
   nanoSubjectKey,
@@ -46,6 +48,7 @@ import {
   type NanoTaskRepository,
   type NanoTaskStatus,
   type NanoAdmitResult,
+  type NanoExpireUnknownResult,
 } from "@sunpcm/niu-feature-nano";
 import type { Commerce } from "@sunpcm/niu-commerce";
 import { coordinatePgCommerce, type PgCommerceStore } from "../commerce/index.js";
@@ -65,7 +68,21 @@ const IN_FLIGHT_STATUSES = ["dispatching", "running"] as const;
 const TERMINAL_FROM_STATUSES = ["queued", "leased", "dispatching", "running", "unknown"] as const;
 const STAGEABLE_STATUSES = ["dispatching", "running", "unknown"] as const;
 
-function mapTask(row: NanoTaskRow): NanoTask {
+/**
+ * Column projections. `input_ref` carries the uploaded image (base64, up to
+ * several MB) and `result_ref` the generated images, so reads that do not need
+ * them must not pull them across the wire:
+ * - `TASK_WITHOUT_INPUT` — status/result reads and lease transitions;
+ * - `TASK_SUMMARY` — listings and scans that need neither payload.
+ * `mapTask` reports an unselected payload column as `null`.
+ */
+const { inputRef: _inputRefColumn, ...TASK_WITHOUT_INPUT } = getTableColumns(nanoTasks);
+const { resultRef: _resultRefColumn, ...TASK_SUMMARY } = TASK_WITHOUT_INPUT;
+
+type NanoTaskProjection = Omit<NanoTaskRow, "inputRef" | "resultRef"> &
+  Partial<Pick<NanoTaskRow, "inputRef" | "resultRef">>;
+
+function mapTask(row: NanoTaskProjection): NanoTask {
   return {
     id: row.id,
     productId: row.productId,
@@ -80,7 +97,7 @@ function mapTask(row: NanoTaskRow): NanoTask {
     spendTxId: row.spendTxId,
     providerRequestKey: row.providerRequestKey,
     providerTaskId: row.providerTaskId,
-    resultRef: row.resultRef,
+    resultRef: row.resultRef ?? null,
     resultSummary: row.resultSummary,
     leaseOwner: row.leaseOwner,
     leaseToken: row.leaseToken,
@@ -231,8 +248,44 @@ export function createNanoRepository(db: NanoDb, productId: string): NanoTaskRep
         .update(nanoTasks)
         .set({ status: "unknown", updatedAt: new Date() })
         .where(and(base, scope))
-        .returning();
+        .returning(TASK_WITHOUT_INPUT);
       return row ? mapTask(row) : null;
+    },
+
+    async expireUnknown(id, enteredBefore) {
+      const [row] = await db
+        .update(nanoTasks)
+        .set({ status: "failed", leaseOwner: null, leaseToken: null, updatedAt: new Date() })
+        .where(
+          and(
+            eq(nanoTasks.id, id),
+            product(),
+            eq(nanoTasks.status, "unknown"),
+            isNull(nanoTasks.resultRef),
+            lte(nanoTasks.updatedAt, enteredBefore),
+          ),
+        )
+        .returning(TASK_WITHOUT_INPUT);
+      if (!row) return null;
+      await deleteActiveJob(id);
+      return mapTask(row);
+    },
+
+    async listExpiredUnknown(enteredBefore, limit) {
+      const rows = await db
+        .select({ id: nanoTasks.id })
+        .from(nanoTasks)
+        .where(
+          and(
+            product(),
+            eq(nanoTasks.status, "unknown"),
+            isNull(nanoTasks.resultRef),
+            lte(nanoTasks.updatedAt, enteredBefore),
+          ),
+        )
+        .orderBy(asc(nanoTasks.updatedAt))
+        .limit(limit);
+      return rows.map((row) => row.id);
     },
 
     async stageResult(id, resultRef, resultSummary, claim) {
@@ -274,7 +327,7 @@ export function createNanoRepository(db: NanoDb, productId: string): NanoTaskRep
 
     async listStaleInFlight(now, limit) {
       const rows = await db
-        .select()
+        .select(TASK_SUMMARY)
         .from(nanoTasks)
         .where(
           and(
@@ -309,7 +362,7 @@ export function createNanoRepository(db: NanoDb, productId: string): NanoTaskRep
     async listBySubject(subjectKey, input) {
       const { cursor, limit } = input;
       const rows = await db
-        .select()
+        .select(TASK_SUMMARY)
         .from(nanoTasks)
         .where(
           and(
@@ -362,7 +415,7 @@ export function createNanoRepository(db: NanoDb, productId: string): NanoTaskRep
             ),
           ),
         )
-        .returning();
+        .returning(TASK_WITHOUT_INPUT);
       return row ? mapTask(row) : null;
     },
 
@@ -378,7 +431,7 @@ export function createNanoRepository(db: NanoDb, productId: string): NanoTaskRep
             claimPredicate(claim),
           ),
         )
-        .returning();
+        .returning(TASK_WITHOUT_INPUT);
       return row ? mapTask(row) : null;
     },
 
@@ -394,7 +447,7 @@ export function createNanoRepository(db: NanoDb, productId: string): NanoTaskRep
             claimPredicate(claim),
           ),
         )
-        .returning();
+        .returning(TASK_WITHOUT_INPUT);
       return row ? mapTask(row) : null;
     },
 
@@ -457,10 +510,25 @@ export interface NanoCoordinator {
   ): Promise<NanoTask>;
   fail(taskId: string, claim?: NanoClaim | null): Promise<NanoTask>;
   cancel(taskId: string): Promise<NanoTask>;
+  /**
+   * Status/result read for routes and polling. The uploaded input is not
+   * loaded (`inputRef` is always null here); dispatch reads it through
+   * `listDispatchable`.
+   */
   get(taskId: string): Promise<NanoTask | null>;
   listDispatchable(now: Date, limit: number): Promise<NanoTask[]>;
   listStaged(now: Date, limit: number): Promise<NanoTask[]>;
+  /** Summary rows: `inputRef` and `resultRef` are not loaded. */
   listStaleInFlight(now: Date, limit: number): Promise<NanoTask[]>;
+  /** Ids of `unknown` tasks without a result that entered `unknown` at or before the cutoff. */
+  listExpiredUnknown(enteredBefore: Date, limit: number): Promise<string[]>;
+  /**
+   * Unknown-expiry policy: settle an old `unknown` task as `failed` and refund
+   * its spend in one transaction. Idempotent; `refunded` is true only for the
+   * call that won the transition.
+   */
+  expireUnknown(taskId: string, enteredBefore: Date): Promise<NanoExpireUnknownResult>;
+  /** Summary rows: `inputRef` and `resultRef` are not loaded. */
   listBySubject(
     subjectKey: string,
     input: { cursor: { createdAt: Date; id: string } | null; limit: number },
@@ -532,10 +600,27 @@ export function createNanoCoordinator<TSchema extends Record<string, unknown>>(
         ),
       );
     },
-    get: (taskId) => repo.loadById(taskId),
+    async get(taskId) {
+      const [row] = await (db as NanoDb)
+        .select(TASK_WITHOUT_INPUT)
+        .from(nanoTasks)
+        .where(and(eq(nanoTasks.id, taskId), eq(nanoTasks.productId, productId)))
+        .limit(1);
+      return row ? mapTask(row) : null;
+    },
     listDispatchable: (now, limit) => repo.listDispatchable(now, limit),
     listStaged: (now, limit) => repo.listStaged(now, limit),
     listStaleInFlight: (now, limit) => repo.listStaleInFlight(now, limit),
+    listExpiredUnknown: (enteredBefore, limit) => repo.listExpiredUnknown(enteredBefore, limit),
+    expireUnknown(taskId, enteredBefore) {
+      return coordinatePgCommerce(store, commerce, ({ handle, unit }) =>
+        expireUnknownTask(
+          { tasks: createNanoRepository(handle, productId), commerce: commerce.join(unit) },
+          taskId,
+          enteredBefore,
+        ),
+      );
+    },
     listBySubject: (subjectKey, input) => repo.listBySubject(subjectKey, input),
     markLeased: (id, claim, leaseUntil) => repo.markLeased(id, claim, leaseUntil),
     markDispatching: (id, providerRequestKey, claim) =>

@@ -32,6 +32,7 @@
         "NANO_MODEL",
         "NANO_POLL_INTERVAL_MS",
         "NANO_PROVIDER_TIMEOUT_MS",
+        "NANO_UNKNOWN_REFUND_AFTER_MS",
         "NEXT_PUBLIC_*",
         "NODE_ENV",
         "R2_PUBLIC_URL",

@@ -18,6 +18,7 @@ const NANO_ENV_KEYS = [
   "NANO_MAX_CONCURRENT_DISPATCHES",
   "NANO_DISPATCH_BATCH_SIZE",
   "NANO_POLL_INTERVAL_MS",
+  "NANO_UNKNOWN_REFUND_AFTER_MS",
 ] as const;
 
 function withNanoEnv(
@@ -87,6 +88,7 @@ test("defaults keep the safe 120000/180000 lease-above-timeout relationship", ()
     assert.equal(config.maxConcurrentDispatches, 4);
     assert.equal(config.dispatchBatchSize, 10);
     assert.equal(config.pollIntervalMs, 5_000);
+    assert.equal(config.unknownRefundAfterMs, 900_000);
   });
 });
 
@@ -179,4 +181,19 @@ test("clamping can still surface a reversed relationship instead of hiding it", 
       assertLeaseTimeoutError(() => getNanoServerConfig(), 30_000, 600_000);
     },
   );
+});
+
+test("unknown refund threshold is configurable, clamped, and falls back safely", () => {
+  withNanoEnv({ NANO_UNKNOWN_REFUND_AFTER_MS: "300000" }, () => {
+    assert.equal(getNanoServerConfig().unknownRefundAfterMs, 300_000);
+  });
+  withNanoEnv({ NANO_UNKNOWN_REFUND_AFTER_MS: "1" }, () => {
+    assert.equal(getNanoServerConfig().unknownRefundAfterMs, 60_000);
+  });
+  withNanoEnv({ NANO_UNKNOWN_REFUND_AFTER_MS: "999999999999" }, () => {
+    assert.equal(getNanoServerConfig().unknownRefundAfterMs, 86_400_000);
+  });
+  withNanoEnv({ NANO_UNKNOWN_REFUND_AFTER_MS: "soon" }, () => {
+    assert.equal(getNanoServerConfig().unknownRefundAfterMs, 900_000);
+  });
 });

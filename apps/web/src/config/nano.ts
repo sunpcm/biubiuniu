@@ -27,6 +27,13 @@ export interface NanoServerConfig {
   leaseMs: number;
   /** Interval between in-process sweep cycles. */
   pollIntervalMs: number;
+  /**
+   * How long a task may stay `unknown` (no persisted result) before the
+   * sweeper settles it as `failed` and refunds the original spend. A result
+   * that arrives after that point is discarded, so a refunded task never also
+   * delivers an image.
+   */
+  unknownRefundAfterMs: number;
 }
 
 /**
@@ -59,6 +66,10 @@ const DEFAULT_BATCH_SIZE = 10;
 const MIN_LEASE_MS = 30_000;
 const MAX_LEASE_MS = 3_600_000;
 const DEFAULT_LEASE_MS = 180_000;
+
+const MIN_UNKNOWN_REFUND_AFTER_MS = 60_000;
+const MAX_UNKNOWN_REFUND_AFTER_MS = 86_400_000;
+const DEFAULT_UNKNOWN_REFUND_AFTER_MS = 900_000;
 
 const MIN_POLL_INTERVAL_MS = 1_000;
 const MAX_POLL_INTERVAL_MS = 60_000;
@@ -121,6 +132,12 @@ export function getNanoServerConfig(): NanoServerConfig {
       DEFAULT_POLL_INTERVAL_MS,
       MIN_POLL_INTERVAL_MS,
       MAX_POLL_INTERVAL_MS,
+    ),
+    unknownRefundAfterMs: boundedInt(
+      process.env.NANO_UNKNOWN_REFUND_AFTER_MS,
+      DEFAULT_UNKNOWN_REFUND_AFTER_MS,
+      MIN_UNKNOWN_REFUND_AFTER_MS,
+      MAX_UNKNOWN_REFUND_AFTER_MS,
     ),
   };
 }

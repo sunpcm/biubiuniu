@@ -139,6 +139,15 @@ export interface NanoTaskRepository {
   transitionToFailed(id: string, claim: NanoClaim | null): Promise<NanoTask | null>;
   transitionToCanceled(id: string): Promise<NanoTask | null>;
   transitionToUnknown(id: string, claim: NanoClaim | null): Promise<NanoTask | null>;
+  /**
+   * Claim-less CAS for the unknown-expiry policy: `unknown` with no persisted
+   * result and `updatedAt <= enteredBefore` becomes `failed`, the lease is
+   * cleared so a late owner can no longer match, and the active job is
+   * released. Returns null when the row no longer matches.
+   */
+  expireUnknown(id: string, enteredBefore: Date): Promise<NanoTask | null>;
+  /** Ids of `unknown` rows without a result that entered `unknown` at or before the cutoff. */
+  listExpiredUnknown(enteredBefore: Date, limit: number): Promise<string[]>;
   stageResult(
     id: string,
     resultRef: string,
@@ -342,4 +351,41 @@ export async function markUnknown(
   const updated = await unit.tasks.transitionToUnknown(taskId, claim);
   if (!updated) throw new NanoInvalidStateError(`Cannot mark unknown nano task in state ${task.status}`);
   return updated;
+}
+
+export interface NanoExpireUnknownResult {
+  task: NanoTask;
+  /** True only for the caller whose CAS moved the task to `failed` and refunded it. */
+  refunded: boolean;
+}
+
+/**
+ * Unknown-expiry policy: a task that has stayed `unknown` (no persisted result)
+ * since `enteredBefore` is settled as `failed` and its original spend is
+ * refunded in the same transaction. The CAS is the serialization point, so
+ * concurrent sweepers refund at most once; a late result for the same task can
+ * no longer be staged because `failed` is not stageable. A task that is
+ * terminal, not `unknown`, already staged, or not old enough is returned
+ * unchanged with `refunded: false`.
+ */
+export async function expireUnknownTask(
+  unit: NanoUnit,
+  taskId: string,
+  enteredBefore: Date,
+): Promise<NanoExpireUnknownResult> {
+  const task = await unit.tasks.loadById(taskId);
+  if (!task) throw new NanoTaskNotFoundError();
+  if (task.status !== "unknown" || task.resultRef) return { task, refunded: false };
+
+  const updated = await unit.tasks.expireUnknown(taskId, enteredBefore);
+  if (!updated) {
+    return { task: (await unit.tasks.loadById(taskId)) ?? task, refunded: false };
+  }
+  if (updated.spendTxId) {
+    await unit.commerce.refundSpentCredits({
+      spendTxId: updated.spendTxId,
+      note: `nano-unknown-refund:${updated.feature}`,
+    });
+  }
+  return { task: updated, refunded: true };
 }

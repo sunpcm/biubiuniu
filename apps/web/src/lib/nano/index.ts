@@ -29,9 +29,12 @@ export {
   createNanoClaim,
   dispatchOne,
   sweepDispatchable,
+  sweepExpiredUnknown,
   sweepStaged,
   sweepStaleInFlight,
   type NanoDispatchConfig,
+  type NanoUnknownEvent,
+  type NanoUnknownRefundedEvent,
 } from "./dispatch.js";
 export {
   createNanoRuntimeController,

@@ -11,6 +11,7 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { findPlanByProviderPriceId, getPlanById, type PricingPlan } from "@/config/pricing";
 import { isPurchaseEnabled } from "@/config/features";
+import { PRODUCT_ID } from "@/config/product";
 import { siteConfig } from "@/config/site";
 import { db } from "@/lib/db";
 import { getLogger, type AppLogger } from "@/lib/logger";
@@ -120,7 +121,7 @@ export function createAppCommerce(options: AppCommerceOptions = {}): AppCommerce
   const store = options.store ?? createPgCommerceStore(db);
   const self: { commerce?: Commerce } = {};
   const commerce = createCommerce({
-    productId: options.productId ?? siteConfig.name,
+    productId: options.productId ?? PRODUCT_ID,
     catalog: options.catalog ?? defaultCatalog,
     clock: options.clock ?? { now: () => new Date() },
     identity: options.identity ?? {

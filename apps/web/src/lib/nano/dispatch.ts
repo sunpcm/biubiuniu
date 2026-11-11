@@ -24,6 +24,24 @@ export interface NanoDispatchConfig {
   model: string;
   batchSize: number;
   maxConcurrent: number;
+  /**
+   * Shutdown gate. Once it returns true no new task is leased: the current
+   * batch finishes its in-flight provider calls, later batches are skipped.
+   */
+  shouldStop?: () => boolean;
+  /** Called after a task was durably marked `unknown` by this dispatcher. */
+  onUnknown?: (event: NanoUnknownEvent) => void;
+}
+
+export interface NanoUnknownEvent {
+  taskId: string;
+  /** `provider`: uncertain provider failure; `stale`: lease expired with no result. */
+  reason: "provider" | "stale";
+}
+
+export interface NanoUnknownRefundedEvent {
+  taskId: string;
+  cost: number;
 }
 
 export function createNanoClaim(owner: string): NanoClaim {
@@ -37,6 +55,7 @@ export async function dispatchOne(
   config: NanoDispatchConfig,
 ): Promise<NanoTask> {
   const now = new Date();
+  if (config.shouldStop?.()) return task;
   if (dispatchDecision(task, now) !== "dispatch") return task;
 
   const claim = createNanoClaim(config.owner);
@@ -59,7 +78,11 @@ export async function dispatchOne(
   } catch (error) {
     if (error instanceof NanoProviderError && error.unknown) {
       try {
-        return await coordinator.markUnknown(task.id, claim);
+        const unknown = await coordinator.markUnknown(task.id, claim);
+        if (unknown.status === "unknown") {
+          config.onUnknown?.({ taskId: task.id, reason: "provider" });
+        }
+        return unknown;
       } catch {
         return (await coordinator.get(task.id)) ?? task;
       }
@@ -89,6 +112,7 @@ export async function sweepDispatchable(
 ): Promise<number> {
   const tasks = await coordinator.listDispatchable(now, config.batchSize);
   for (let i = 0; i < tasks.length; i += config.maxConcurrent) {
+    if (config.shouldStop?.()) break;
     const batch = tasks.slice(i, i + config.maxConcurrent);
     await Promise.all(batch.map((task) => dispatchOne(coordinator, provider, task, config)));
   }
@@ -121,14 +145,48 @@ export async function sweepStaleInFlight(
   coordinator: NanoCoordinator,
   now = new Date(),
   limit = 100,
+  onUnknown?: (event: NanoUnknownEvent) => void,
 ): Promise<number> {
   const stale = await coordinator.listStaleInFlight(now, limit);
   for (const task of stale) {
     try {
-      await coordinator.markUnknown(task.id);
+      const updated = await coordinator.markUnknown(task.id);
+      if (updated.status === "unknown") onUnknown?.({ taskId: task.id, reason: "stale" });
     } catch {
       // Already terminal or lost a race; both are safe.
     }
   }
   return stale.length;
+}
+
+/**
+ * Unknown-expiry policy. A task that has stayed `unknown` with no persisted
+ * result for `refundAfterMs` is settled as `failed` and its spend is refunded
+ * in one transaction (`coordinator.expireUnknown`). This is the only automatic
+ * exit for an `unknown` whose owner is gone or whose provider outcome was
+ * uncertain; it also releases the active job that blocks account deletion.
+ * Returns the number of tasks this call refunded.
+ */
+export async function sweepExpiredUnknown(
+  coordinator: NanoCoordinator,
+  refundAfterMs: number,
+  now = new Date(),
+  limit = 100,
+  onRefunded?: (event: NanoUnknownRefundedEvent) => void,
+): Promise<number> {
+  const enteredBefore = new Date(now.getTime() - refundAfterMs);
+  const ids = await coordinator.listExpiredUnknown(enteredBefore, limit);
+  let refunded = 0;
+  for (const id of ids) {
+    try {
+      const result = await coordinator.expireUnknown(id, enteredBefore);
+      if (result.refunded) {
+        refunded += 1;
+        onRefunded?.({ taskId: id, cost: result.task.cost });
+      }
+    } catch {
+      // Lost a race or a transient database error; the next sweep retries.
+    }
+  }
+  return refunded;
 }

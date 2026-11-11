@@ -8,6 +8,7 @@ import {
   cancelTask,
   completeTask,
   dispatchDecision,
+  expireUnknownTask,
   failTask,
   markUnknown,
   nanoSubjectKey,
@@ -126,7 +127,26 @@ function makeFakeUnit() {
         return null;
       }
       t.status = "unknown";
+      t.updatedAt = new Date();
       return t;
+    },
+    async expireUnknown(id, enteredBefore) {
+      const t = tasks.get(id);
+      if (!t || t.status !== "unknown" || t.resultRef) return null;
+      if (t.updatedAt.getTime() > enteredBefore.getTime()) return null;
+      t.status = "failed";
+      t.leaseOwner = null;
+      t.leaseToken = null;
+      activeJobs.delete(id);
+      return t;
+    },
+    async listExpiredUnknown(enteredBefore) {
+      return [...tasks.values()]
+        .filter(
+          (t) =>
+            t.status === "unknown" && !t.resultRef && t.updatedAt.getTime() <= enteredBefore.getTime(),
+        )
+        .map((t) => t.id);
     },
     async stageResult(id, resultRef, resultSummary, claimArg) {
       const t = tasks.get(id);
@@ -428,4 +448,80 @@ test("success/fail race serializes: fail after succeed returns terminal without 
   const failed = await failTask(f.unit, admitted.task.id, c);
   assert.equal(failed.status, "succeeded");
   assert.equal(f.refunds.length, 0);
+});
+
+async function admitUnknown(f, requestKey) {
+  const admitted = await admitTask(f.unit, admitInput({ requestKey }));
+  const c = claim("worker", `tok-${requestKey}`);
+  await f.unit.tasks.markLeased(admitted.task.id, c, new Date(Date.now() - 1));
+  await f.unit.tasks.markDispatching(admitted.task.id, requestKey, c);
+  await markUnknown(f.unit, admitted.task.id);
+  return { id: admitted.task.id, claim: c };
+}
+
+test("an expired unknown task fails, refunds once, and releases its active job", async () => {
+  const f = makeFakeUnit();
+  const { id } = await admitUnknown(f, "rk-expire");
+  const cutoff = new Date(Date.now() + 1_000);
+
+  assert.deepEqual(await f.unit.tasks.listExpiredUnknown(cutoff), [id]);
+  const first = await expireUnknownTask(f.unit, id, cutoff);
+  assert.equal(first.refunded, true);
+  assert.equal(first.task.status, "failed");
+  assert.equal(first.task.leaseToken, null);
+  assert.equal(f.activeJobs.has(id), false);
+  assert.equal(f.refunds.length, 1);
+  assert.equal(f.refunds[0].spendTxId, "spend-1");
+  assert.match(f.refunds[0].note, /^nano-unknown-refund:/);
+
+  const second = await expireUnknownTask(f.unit, id, cutoff);
+  assert.equal(second.refunded, false);
+  assert.equal(second.task.status, "failed");
+  assert.equal(f.refunds.length, 1);
+});
+
+test("an unknown task younger than the cutoff is left untouched", async () => {
+  const f = makeFakeUnit();
+  const { id } = await admitUnknown(f, "rk-young");
+  const cutoff = new Date(Date.now() - 60_000);
+
+  assert.deepEqual(await f.unit.tasks.listExpiredUnknown(cutoff), []);
+  const result = await expireUnknownTask(f.unit, id, cutoff);
+  assert.equal(result.refunded, false);
+  assert.equal(result.task.status, "unknown");
+  assert.equal(f.activeJobs.has(id), true);
+  assert.equal(f.refunds.length, 0);
+});
+
+test("unknown expiry never refunds a staged, in-flight, or terminal task", async () => {
+  const f = makeFakeUnit();
+  const cutoff = new Date(Date.now() + 1_000);
+
+  const staged = await admitUnknown(f, "rk-staged");
+  await f.unit.tasks.stageResult(staged.id, "ref", "1 image", staged.claim);
+  assert.equal((await expireUnknownTask(f.unit, staged.id, cutoff)).refunded, false);
+  assert.equal(f.tasks.get(staged.id).status, "unknown");
+
+  const queued = await admitTask(f.unit, admitInput({ requestKey: "rk-queued" }));
+  assert.equal((await expireUnknownTask(f.unit, queued.task.id, cutoff)).refunded, false);
+  assert.equal(f.tasks.get(queued.task.id).status, "queued");
+
+  const done = await admitUnknown(f, "rk-done");
+  await expireUnknownTask(f.unit, done.id, cutoff);
+  assert.equal((await expireUnknownTask(f.unit, done.id, cutoff)).refunded, false);
+
+  assert.equal(f.refunds.length, 1);
+  await assert.rejects(expireUnknownTask(f.unit, "missing", cutoff), /not found/i);
+});
+
+test("a late result cannot be staged after an unknown task expired", async () => {
+  const f = makeFakeUnit();
+  const { id, claim: c } = await admitUnknown(f, "rk-late");
+  await expireUnknownTask(f.unit, id, new Date(Date.now() + 1_000));
+
+  assert.equal(await f.unit.tasks.stageResult(id, "ref", "1 image", c), null);
+  const late = await completeTask(f.unit, id, { resultRef: "ref", resultSummary: "1 image" }, c);
+  assert.equal(late.status, "failed");
+  assert.equal(late.resultRef, null);
+  assert.equal(f.refunds.length, 1);
 });

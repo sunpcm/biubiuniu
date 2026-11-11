@@ -65,6 +65,7 @@ async function bootstrap(): Promise<void> {
     batchSize: runtime.config.dispatchBatchSize,
     maxConcurrent: runtime.config.maxConcurrentDispatches,
     pollIntervalMs: runtime.config.pollIntervalMs,
+    unknownRefundAfterMs: runtime.config.unknownRefundAfterMs,
   });
   controller.start();
 

@@ -158,12 +158,16 @@ Nano 状态为 `queued -> leased -> dispatching -> running -> ...`，终态为
 
 1. 接纳任务时，幂等检查、积分扣减、`spendTxId` 关联、活动任务记录和待扫描意图在同一
    产品-owned PG 事务内完成。
-2. 进程内 scheduler 先派发 queued 任务，再收尾已持久化结果，最后把失去结果且 lease
-   过期的 in-flight 任务标成 `unknown`。
+2. 进程内 scheduler 先派发 queued 任务，再收尾已持久化结果，然后把失去结果且 lease
+   过期的 in-flight 任务标成 `unknown`，最后处理超期的 `unknown`（见第 4 条）。各步互相隔离，
+   前一步失败不会跳过后面的收敛步骤。
 3. 远程 provider 调用不持有数据库事务。每次派发生成随机 claim token；后续状态推进用
    owner、token 和状态做 compare-and-swap。
-4. 确定失败或 queued 取消只有在 CAS 成功后，才在同一事务中退款。`unknown` 不自动退款，
-   也不会在缺少 provider 查询/幂等合同时盲目重发。
+4. 确定失败或 queued 取消只有在 CAS 成功后，才在同一事务中退款。`unknown` 不会在缺少
+   provider 查询/幂等合同时盲目重发。没有持久化结果的 `unknown` 停留超过
+   `NANO_UNKNOWN_REFUND_AFTER_MS`（默认 15 分钟）后，由 scheduler 用一次不带 claim 的 CAS
+   改为 `failed`，在同一事务中退款、清除 lease 并释放 active job。此后迟到的结果无法再写入，
+   所以不会出现“既退款又交付”。进入 `unknown` 和超期退款各记一条只含稳定 code 与任务 id 的日志。
 5. 关闭新接纳后，只要 provider 仍配置，已接纳任务可以继续收尾；没有 provider 时仍可
    完成 staged result 和 stale-in-flight 收敛。
 
@@ -227,7 +231,8 @@ contract version、sentinel table/column 和物理 schema。见
 
 Commerce 实例必须收到非空 `productId`；Nano coordinator 要求自己的 `productId` 与
 绑定 Commerce 完全一致，并在查询、claim 和 case stats 中按产品过滤。参考应用默认用
-`siteConfig.name`，其他产品可以显式注入自己的稳定产品 ID。
+`apps/web/src/config/product.ts` 的 `PRODUCT_ID` 常量，其他产品可以显式注入自己的稳定产品 ID。
+这个值会落库并参与所有 Nano 查询的过滤，它是标识符而不是展示名：改品牌名不能改它，改它需要数据迁移。
 
 当前 schema 合同按“一个产品一个数据库”设计，不承诺多个产品共享同一 PostgreSQL
 database 时的完整租户隔离。尤其 Commerce 的订单和订阅表没有可替代数据库边界的
@@ -239,6 +244,8 @@ database 时的完整租户隔离。尤其 Commerce 的订单和订阅表没有�
 
 ## 9. 当前限制与保留范围
 
+- 进程收到停止信号后不再领取新任务，但不等待在途的 provider 调用；被中断的任务在 lease 过期后
+  进入 `unknown`，再按超期策略退款。
 - Nano 的并发上限和重叠 sweep 保护是进程内约束。数据库 claim 能防止旧 owner 覆盖状态，
   但不能给多实例提供全局并发配额；如需全局节流，应增加 PG 协调 lease/额度机制。
 - `persistence-pg` 强依赖多个 core 包。`minimal`、`auth`、`auth_credits` 等 profile

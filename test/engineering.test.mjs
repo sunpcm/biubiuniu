@@ -39,6 +39,7 @@ const hashedBuildEnvironmentOverrides = Object.freeze([
   ["NANO_MODEL", "gemini-2.5-flash-image-preview-alt"],
   ["NANO_POLL_INTERVAL_MS", "10000"],
   ["NANO_PROVIDER_TIMEOUT_MS", "30000"],
+  ["NANO_UNKNOWN_REFUND_AFTER_MS", "600000"],
 ]);
 
 function commandEnv(overrides = {}) {
