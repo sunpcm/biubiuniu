@@ -10,6 +10,7 @@ import {
   UNKNOWN_IP,
   adminAccessRoles,
   createGrantSignupRewards,
+  createStaticBillingPort,
   isAdminUserRole,
   isBanActive,
   isSuperAdminUserRole,
@@ -289,4 +290,28 @@ test("organization plugin rejects a missing invitation mail port", async () => {
       }),
     /sendOrganizationInvitation/i,
   );
+});
+
+test("static billing port gives organizations a fixed seat cap without Commerce", async () => {
+  const port = createStaticBillingPort({ seats: 5 });
+  assert.deepEqual(await port.getOrgSeatCap("any-org"), { seats: 5, hasTeamSubscription: true });
+  assert.equal(await port.hasLivePersonalSubscription("any-user"), false);
+  assert.deepEqual(await port.getOrganizationDeletionBlockers("any-org"), {
+    hasTeamSubscription: false,
+    hasBillingHistory: false,
+  });
+  for (const seats of [0, -1, 1.5, Number.NaN]) {
+    assert.throws(() => createStaticBillingPort({ seats }), /positive integer/);
+  }
+
+  const { createStaticAuthPgBillingQueries } = await import(
+    "../../packages/persistence-pg/dist/auth/index.js"
+  );
+  const queries = createStaticAuthPgBillingQueries({ seats: 5 });
+  const neverQueried = new Proxy({}, { get() { throw new Error("must not touch the database"); } });
+  assert.deepEqual(await queries.getOrgSeatCap(neverQueried, "any-org"), {
+    seats: 5,
+    hasTeamSubscription: true,
+  });
+  assert.throws(() => createStaticAuthPgBillingQueries({ seats: 0 }), /positive integer/);
 });

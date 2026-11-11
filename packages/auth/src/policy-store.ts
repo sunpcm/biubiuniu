@@ -75,3 +75,27 @@ export interface AuthBillingPort {
     organizationId: string,
   ): Promise<OrganizationDeletionBlockers>;
 }
+
+/**
+ * Fixed-seat billing port for a product that enables organizations without
+ * Commerce. Every organization gets the same seat cap, there is no personal
+ * subscription, and nothing blocks organization deletion. It never touches a
+ * billing table, so it works with the `auth` migration profile alone.
+ *
+ * `hasTeamSubscription` is reported as true so a full team gets the "all seats
+ * are taken" message rather than "requires an active team subscription".
+ */
+export function createStaticBillingPort(options: { seats: number }): AuthBillingPort {
+  const { seats } = options;
+  if (!Number.isSafeInteger(seats) || seats < 1) {
+    throw new Error("Static billing port requires seats to be a positive integer.");
+  }
+  return {
+    getOrgSeatCap: async () => ({ seats, hasTeamSubscription: true }),
+    hasLivePersonalSubscription: async () => false,
+    getOrganizationDeletionBlockers: async () => ({
+      hasTeamSubscription: false,
+      hasBillingHistory: false,
+    }),
+  };
+}

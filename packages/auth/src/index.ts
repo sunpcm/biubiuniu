@@ -26,6 +26,7 @@ export type {
   SignupRewardsDeps,
 } from "./signup-rewards.js";
 
+export { createStaticBillingPort } from "./policy-store.js";
 export type {
   AuthPolicyStore,
   AuthBillingPort,

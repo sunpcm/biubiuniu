@@ -31,6 +31,23 @@ export interface AuthPgBillingQueries<
   ): Promise<OrgSeatCap>;
 }
 
+/**
+ * Fixed-seat counterpart of the Commerce seat query, for a product that enables
+ * organizations without Commerce. It ignores the queryable and reads no billing
+ * table; pair it with `createStaticBillingPort` from `@sunpcm/niu-auth`.
+ */
+export function createStaticAuthPgBillingQueries<
+  TSchema extends PgAuthSchema = PgAuthSchema,
+>(options: { seats: number }): AuthPgBillingQueries<TSchema> {
+  const { seats } = options;
+  if (!Number.isSafeInteger(seats) || seats < 1) {
+    throw new Error("Static billing queries require seats to be a positive integer.");
+  }
+  return {
+    getOrgSeatCap: async () => ({ seats, hasTeamSubscription: true }),
+  };
+}
+
 export interface AuthPolicyStoreDeps<
   TSchema extends PgAuthSchema = PgAuthSchema,
 > {

@@ -95,7 +95,7 @@
       "outputs": []
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"],
+      "dependsOn": ["^build", "^typecheck"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/turbo.json",
