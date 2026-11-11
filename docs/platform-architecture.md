@@ -210,6 +210,9 @@ contract version 或 checksum 不得漂移。
 contract version、sentinel table/column 和物理 schema。见
 [runner.ts](../packages/persistence-pg/src/migrations/runner.ts)。
 
+参考应用当前仍使用 `_n2` 链，启动时未调用上述兼容检查；应用中的兼容 CLI 也需要显式执行，
+不能把包内只读检查能力当作已经接入应用启动保护。
+
 ## 7. 版本合同、兼容与回退
 
 - npm 包版本、模块 `version`、数据库 `contractVersion` 是三个不同层面，不能相互代替。

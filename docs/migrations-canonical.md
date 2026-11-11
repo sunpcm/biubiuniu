@@ -2,6 +2,10 @@
 
 本文记录 N2 migration 单元把产品 CLI 与领域测试统一到同一个 canonical runner 的实现，以及兼容路径、checksum 语义和自测边界。它不是独立验收结论，PG 回归由主控受控代跑。
 
+本文讲参考应用的 `_n2` 链；包内另有 `_niu` 模块/profile 链，见
+[`docs/platform-architecture.md` §6](platform-architecture.md#6-migration-profile-与数据库合同)。下述 N2 三库配置是历史说明，
+当前领域应用库及完整变量以 [测试手册](agent-review-loop.md#runner-清单) 为准。
+
 ## 文件
 
 - `apps/web/src/lib/db/migration-types.ts`：`MigrationFile`、`MigrationSource`、`MigrationReport`、`MigrationRunnerOptions` 等类型。

@@ -1,7 +1,7 @@
 /**
  * Explicit read-only legacy-reference compatibility CLI.
  *
- * Verifies the existing `_n2_migration_journal` (two canonical identities and
+ * Verifies the existing `_n2_migration_journal` (three canonical identities and
  * their checksums) and the necessary physical schema without creating the
  * journal, writing `_niu` metadata, or running any DDL. This is the startup
  * gate for the old canonical chain and is deliberately separate from the new

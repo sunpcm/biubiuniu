@@ -20,6 +20,15 @@
 | `ENGINEERING_PNPM_EXECUTABLE`   | 可选的 pnpm 可执行文件路径或命令名。                                               |
 | `ENGINEERING_TAR_EXECUTABLE`    | 可选的 tar 可执行文件路径或命令名。                                                |
 
+代理环境下默认在线安装可能挂起。先在仓库外用 Node `24.15.0` / pnpm `10.26.0` 预热一个
+仅安装 `prettier@3.8.0`、`prettier-plugin-tailwindcss@0.7.2` 的 pnpm store，再执行：
+
+```bash
+ENGINEERING_PNPM_INSTALL_MODE=offline ENGINEERING_PNPM_STORE_DIR=<已预热的-store> pnpm test:engineering
+```
+
+离线缓存缺依赖时应报告安装失败，不改在线模式绕过；不把本地消费当作真实 registry 发布。
+
 测试不会删除已有的 tarball、消费者或其他历史目录。需要保留本次外部消费产物时，设置现有父目录与 `ENGINEERING_KEEP_SCRATCH=1`；新产物位于测试新建的唯一子目录。
 
 ## 可运行入口
@@ -29,6 +38,7 @@
 | 根工程       | `pnpm test:engineering`                  | 真实 Node `node:test`：私有边界、`.env` 忽略、tarball 合同、Workspace 外消费、Tailwind 插件、Turbo CLI hash    |
 | 根 routing   | `pnpm test:routing`                      | 真实 Node `node:test` 通过 Next adapter 加载应用 proxy，覆盖 absolute rewrite、redirect、外部 target 与 origin |
 | 根 domain    | `pnpm test:domain`                       | Node 24 module mocks + `tsx`；运行 `test/domain/*.test.ts`，领域 PG 与迁移用例需主控按下方变量表注入隔离连接 |
+| 本地合成 PG | `pnpm test:pg:local` | 本机临时 PG16、注入合成连接、串行运行全部 domain/packages，拒绝任何 skip 并清理；前置条件见 [本地 PG 说明](local-pg-tests.md) |
 | 包产物       | `pnpm test:packages`                     | `build:packages` 先按 `@sunpcm/niu-*` 构建 dist，再执行 `check:boundaries`，最后跑 `test/packages/*.test.mjs`；真实 PG 变量缺失则对应用例 skip |
 | 根总测试     | `pnpm test`                              | 串行运行 `test:engineering`、`test:routing`、`test:domain` 和 `test:packages`                                   |
 | 根 lint      | `pnpm exec turbo run lint`               | 只覆盖存在 `lint` script 的包                                                                                  |
@@ -65,8 +75,8 @@ N2 开始设统一停写门，并沿用于 N3 及后续批次：产品 writer、
 - `apps/web`：存在 `dev`、`build`、`build:turbopack`、`start`、`lint`、`typecheck`、`analyze`、`db:migrate`。默认 `build` 与 `analyze` 都显式使用官方 Webpack；Turbopack 只通过独立脚本显式选择，构建失败时不会静默切换。
 - `db:migrate` 是 N2 的 canonical 产品迁移入口：`apps/web/scripts/migrate.ts` 读取显式 `DATABASE_URL`，调用 `src/lib/db/migration-runner.ts` 的 `runMigrations`，不做本地库兜底。CLI 当前不自行加载 `.env`，变量由运行环境或主控受控注入。
 - 根 `test:domain` 在 Node 24 下使用 `node --experimental-test-module-mocks --import tsx --test --test-concurrency=1 test/domain/*.test.ts`，并通过 `TSX_TSCONFIG_PATH=test/domain/tsconfig.json` 加载测试路径；它不包含 `routing.test.mjs`。`test:routing` 仍是独立的 `.test.mjs` 入口，不能并入或替代 domain 漂移。
-- 当前 PG runner 所需变量只列名称，不保存 URL 或凭据：`test/domain/helpers.ts` 与领域 PG 用例使用 `DATABASE_URL`；`test/domain/migration.test.ts` 另用 `MIGRATION_C01_DATABASE_URL`、`MIGRATION_FAULT_DATABASE_URL`；`test/packages/auth-pg.test.mjs` 用 `AUTH_PG_TEST_URL`、`AUTH_PG_TEST_DB`、`AUTH_CREDITS_PG_TEST_URL`、`AUTH_CREDITS_PG_TEST_DB`；`test/packages/commerce-pg.test.mjs` 及 `test/domain/commerce-instance-isolation.test.ts` 用 `COMMERCE_PG_DATABASE_URL`、`COMMERCE_PG_FOREIGN_DATABASE_URL`、`COMMERCE_PG_EXPECTED_DATABASE`、`COMMERCE_PG_EXPECTED_ROLE`；`test/packages/pg-profiles-pg.test.mjs` 用 `PG_PROFILES_TEST_URL`、`PG_PROFILES_TEST_EXPECTED_DATABASE`、`PG_PROFILES_TEST_EXPECTED_ROLE`。
-- 隔离身份与 guard 先于写入：参考库为 `nexty_overnight_20261105_test`，C01 空库为 `nexty_overnight_20261105_migration_c01`，故障/修复空库为 `nexty_overnight_20261105_migration_fault_c01`；N3 专用库名前缀为 `nexty_overnight_20261105_n3_`，测试角色均为 `nexty_overnight_test`。配置检查先核变量齐全、expected database/role 与库名前缀、禁用库名；随后连接身份用 `current_database()` / `current_user()` 核对，配置不全或身份不符时 fail closed。只有 guard 通过后才允许 DDL、migration、DML、seed 或 cleanup；未注入连接变量时 PG 用例只 skip，不记为通过。
+- 当前 PG runner 所需变量只列名称，不保存 URL 或凭据：`test/domain/helpers.ts` 与领域 PG 用例需要 `DATABASE_URL`、`DOMAIN_TEST_EXPECTED_DATABASE`、`DOMAIN_TEST_EXPECTED_PORT`；Auth 用例另需合成 `BETTER_AUTH_SECRET`，HTTP 验证的 `NEXT_PUBLIC_SITE_URL`、`NEXT_PUBLIC_BETTER_AUTH_URL` 必须与请求 Origin 对齐，不能靠 `NODE_ENV=test` 关闭 Origin 检查。`test/domain/migration.test.ts` 另用 `N2_REFERENCE_DATABASE_URL`、`MIGRATION_C01_DATABASE_URL`、`MIGRATION_FAULT_DATABASE_URL`；`test/packages/auth-pg.test.mjs` 用 `AUTH_PG_TEST_URL`、`AUTH_PG_TEST_DB`、`AUTH_CREDITS_PG_TEST_URL`、`AUTH_CREDITS_PG_TEST_DB`；`test/packages/commerce-pg.test.mjs` 及 `test/domain/commerce-instance-isolation.test.ts` 用 `COMMERCE_PG_DATABASE_URL`、`COMMERCE_PG_FOREIGN_DATABASE_URL`、`COMMERCE_PG_EXPECTED_DATABASE`、`COMMERCE_PG_EXPECTED_ROLE`；`test/packages/pg-profiles-pg.test.mjs` 用 `PG_PROFILES_TEST_URL`、`PG_PROFILES_TEST_EXPECTED_DATABASE`、`PG_PROFILES_TEST_EXPECTED_ROLE`。
+- 隔离身份与 guard 先于写入：领域应用库为 `nexty_overnight_20261105_n4_app`，旧链参考库（仅供 `N2_REFERENCE_DATABASE_URL`）为 `nexty_overnight_20261105_test`，C01 空库为 `nexty_overnight_20261105_migration_c01`，故障/修复空库为 `nexty_overnight_20261105_migration_fault_c01`；N3 专用库名前缀为 `nexty_overnight_20261105_n3_`，测试角色均为 `nexty_overnight_test`。配置检查先核变量齐全、expected database/role 与库名前缀、禁用库名；随后连接身份用 `current_database()` / `current_user()` 核对，配置不全或身份不符时 fail closed。只有 guard 通过后才允许 DDL、migration、DML、seed 或 cleanup。`test:domain` 缺少必需变量会 fail；部分 package PG 用例缺变量才 skip，skip 不能记为通过。
 - DDL/DML/cleanup 边界：`migration.test.ts` 仅在 guard 后 `drop schema` / `create schema`；`helpers.ts` 仅在事务内校验身份后 `truncate ... restart identity cascade`；`auth-pg.test.mjs` 的 seed/delete 与 `pg-profiles-pg.test.mjs` 的 drop/type cleanup 同样受 guard 约束。上述执行都留待全部 writer 停写后由主控在隔离 PG 代跑，本卡未执行。
 - 当前根 `package.json` 已把 `better-auth`、`drizzle-orm`、`next`、`postgres`、React、Stripe 等列为直接 devDependency；lock 的受控 frozen install 是前序记录，本卡未复跑。不得用 `NODE_PATH`、手工 symlink、根临时 tsconfig 或源码 alias 绕过真实依赖和 peer-context 解析。
 - `apps/web/src/lib/logger`：所有公开日志方法的 message 与结构化 payload 先经过共享不可变脱敏层，再写入 Pino 与 Sentry；覆盖 Authorization/Cookie、token/API secret、connection string 和嵌套 Error。原始 Pino 实例不对外暴露。自由文本只识别带 Bearer/Basic、凭据键值或 URL userinfo 等明确格式，无法识别没有标签的任意字符串秘密。
@@ -98,7 +108,7 @@ N2 开始设统一停写门，并沿用于 N3 及后续批次：产品 writer、
 - 外部消费者使用本地产 tarball，不是私有 registry 发布；registry 只验证 manifest 路由，没有上传或权限回读。
 - Prettier 消费测试在唯一 scratch 中打包并安装；安装模式与可选 store 由上文变量配置，不写死开发者机器路径或历史交付目录。
 - 构建检查可使用主控合成的 `runtime/build-test.env`。禁止读取或复制源目录真实 `.env`、凭据和用户数据。
-- 历史：N1 的空 PostgreSQL 仅作为隔离身份，不创建 schema、不跑 Drizzle migration、不执行领域 DDL。当前：`test/domain` 与 `test/packages` 已定义按 guard 执行 schema/migration/DDL/DML/cleanup 的 PG runner；连接变量缺失时相应用例 skip，注入后的执行由主控在全部 writer 停写后代跑，本卡未执行，也未宣称 PG 测试绿。
+- 历史：N1 的空 PostgreSQL 仅作为隔离身份，不创建 schema、不跑 Drizzle migration、不执行领域 DDL。当前：`test/domain` 与 `test/packages` 已定义按 guard 执行 schema/migration/DDL/DML/cleanup 的 PG runner；domain 缺必需变量会 fail，部分 package PG 用例缺变量才 skip。历史段落不声明当前源码通过，当前检查以本轮日志为准。
 
 ## 本批坑清单
 
