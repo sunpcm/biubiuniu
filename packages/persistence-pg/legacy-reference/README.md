@@ -1,25 +1,19 @@
-# Legacy reference migrations
+# Legacy reference：截至 0001 的冻结迁移副本
 
-This directory contains a **byte-for-byte frozen copy** of the N2 reference
-application migration resources:
+本目录保存 N2 参考应用**截至 0001 的逐字节冻结副本**，不包含 `0002_nano.sql`。
+它不是当前 `apps/web/src/lib/db/migrations/` 全目录的镜像，也不会随应用新增迁移而同步。
 
-- `migrations/0000_narrow_morbius.sql` — full N2 schema DDL (enums, tables,
-  foreign keys, and indexes).
-- `migrations/0001_nappy_charles_xavier.sql` — `ALTER TABLE "session" ADD COLUMN
-  "impersonated_by" uuid;`.
-- `migrations/meta/_journal.json` — drizzle journal (version, dialect, entry
-  tags).
-- `migrations/meta/0000_snapshot.json` / `0001_snapshot.json` — drizzle
-  snapshot metadata.
+- `migrations/0000_narrow_morbius.sql`：冻结时的 N2 schema DDL，含枚举、表、外键和索引。
+- `migrations/0001_nappy_charles_xavier.sql`：为 `session` 追加 `impersonated_by` 列。
+- `migrations/meta/_journal.json`：冻结时的 Drizzle journal，只记录 0000、0001；下表哈希对应冻结时的版本，
+  不对应后来加入 Nano 后的应用 journal。
+- `migrations/meta/0000_snapshot.json` / `0001_snapshot.json`：冻结时的 Drizzle snapshot metadata。
 
-These files are preserved only as a reference for existing-product upgrade
-planning. They are **not** part of the new composable product migration chain
-under `src/migrations/`, and no file here is renamed, recomputed, or replayed
-as if it were the new chain's `0000`.
+这些资源仅供现有产品升级规划参考，不属于 `src/migrations/` 中的新产品模块化迁移链。
+不要补入新迁移、重命名、重算历史资源，或把它们当作新链的 `0000` 重放。T5 只修正本 README，
+上述 SQL 与 metadata 的原始字节保持冻结。
 
-Source (read-only): `apps/web/src/lib/db/migrations/`.
-
-SHA-256 of the frozen copies:
+冻结来源（只读）：`apps/web/src/lib/db/migrations/`。各冻结文件的 SHA-256：
 
 | File | SHA-256 |
 | --- | --- |
