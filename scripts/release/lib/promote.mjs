@@ -2,6 +2,7 @@ import { sha256Hex } from "./util.mjs";
 
 const REQUIRED_CHECKS = [
   { id: "minimal", kind: "profile" },
+  { id: "auth", kind: "profile" },
   { id: "auth_credits", kind: "profile" },
   { id: "nano_payments", kind: "profile" },
   { id: "node", kind: "runtime" },

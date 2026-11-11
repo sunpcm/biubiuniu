@@ -163,6 +163,7 @@ function registryFetch(records, base = "http://127.0.0.1:4873", getDistTags) {
 
 const REQUIRED_GATE_IDS = [
   ["minimal", "profile"],
+  ["auth", "profile"],
   ["auth_credits", "profile"],
   ["nano_payments", "profile"],
   ["node", "runtime"],
@@ -468,6 +469,29 @@ test("validateGate: accepts a complete bound gate and rejects empty/wrong/missin
   const uncovered = structuredClone(gate);
   uncovered.checks = gate.checks.map((c) => ({ ...c, packages: [] }));
   assert.equal(validateGate({ manifest, gate: uncovered, readEvidence }).ok, false);
+});
+
+test("validateGate: auth profile and its bound passing evidence are required", () => {
+  const dir = mkdtempSync(join(tmpdir(), "release-gate-auth-"));
+  const records = new Map([["@sunpcm/niu-utils", makeRecord(dir, "@sunpcm/niu-utils", "1.0.0")]]);
+  const manifest = makeManifest(dir, records, "candidate");
+  const gate = buildGate(dir, manifest, manifest.packages["@sunpcm/niu-utils"]);
+  const readEvidence = (p) => readFileSync(p);
+  assert.equal(validateGate({ manifest, gate, readEvidence }).ok, true);
+
+  const missing = structuredClone(gate);
+  missing.checks = missing.checks.filter((check) => check.id !== "auth");
+  const rejected = validateGate({ manifest, gate: missing, readEvidence });
+  assert.equal(rejected.ok, false);
+  assert.ok(rejected.reasons.includes("missing required check: auth"));
+
+  const noEvidence = structuredClone(gate);
+  noEvidence.checks.find((check) => check.id === "auth").evidence = null;
+  assert.equal(validateGate({ manifest, gate: noEvidence, readEvidence }).ok, false);
+
+  const wrongKind = structuredClone(gate);
+  wrongKind.checks.find((check) => check.id === "auth").kind = "runtime";
+  assert.equal(validateGate({ manifest, gate: wrongKind, readEvidence }).ok, false);
 });
 
 test("promoteRelease: evidence read, full receipts, stable semver, stable dist-tag", async () => {
