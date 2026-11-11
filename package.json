@@ -18,6 +18,7 @@
     "test:engineering": "node --test --test-concurrency=1 test/engineering.test.mjs",
     "test:routing": "node --import tsx --test --test-concurrency=1 test/domain/routing.test.mjs",
     "test:domain": "TSX_TSCONFIG_PATH=test/domain/tsconfig.json node --experimental-test-module-mocks --import tsx --test --test-concurrency=1 test/domain/*.test.ts",
+    "test:pg:local": "node scripts/test-pg-local.mjs",
     "build:packages": "turbo run build --filter=\"@sunpcm/niu-*\"",
     "check:boundaries": "node scripts/dependency-boundaries.mjs .",
     "test:packages": "pnpm build:packages && pnpm check:boundaries && node --test --test-concurrency=1 test/packages/*.test.mjs",
