@@ -2,7 +2,8 @@
  * [INPUT]: Depends on ../AdjustCreditsDialog's credit-adjustment dialog,
  *          next-intl's useTranslations (Users.detail.balance.adjust),
  *          next/navigation's useRouter, @tanstack/react-query's useQueryClient,
- *          @/components/ui/button
+ *          @/components/ui/button, @/lib/admin-credit-query-keys for the shared
+ *          per-user ledger cache-key prefix
  * [OUTPUT]: exports the AdjustCreditsButton component (the button that opens the
  *           credit-adjustment dialog)
  * [POS]: The client interaction bridge of admin/users/[userId] — the only client
@@ -16,6 +17,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { adminCreditQueryKeys } from "@/lib/admin-credit-query-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -32,7 +34,7 @@ export function AdjustCreditsButton({ userId, userEmail }: { userId: string; use
   const handleAdjusted = () => {
     // Mark every cached page stale; React Query refetches only the visible page.
     void queryClient.invalidateQueries({
-      queryKey: ["admin-user-credit-tx", userId],
+      queryKey: adminCreditQueryKeys.userTransactions(userId),
       exact: false,
       refetchType: "active",
     });

@@ -3,7 +3,8 @@
  *          AdminCreditTransactionItem, @/hooks/use-data-table for useDataTable
  *          (server-side pagination), @/components/shared for the table
  *          container/toolbar/pinned columns, ./BatchGrantDialog, next-intl for
- *          useTranslations
+ *          useTranslations, @/lib/admin-credit-query-keys for the shared ledger
+ *          cache-key prefix
  * [OUTPUT]: exports the CreditsDataTable component (filters + pagination +
  *           batch grant entry point)
  * [POS]: The data-table layer of admin/credits; owns BatchGrantDialog state
@@ -14,19 +15,10 @@
 
 "use client";
 
-import {
-  AdminCreditTransactionItem,
-  getAdminCreditTransactions,
-} from "@/actions/credits/admin";
-import {
-  DataTableContainer,
-  DataTableEmptyState,
-} from "@/components/shared/data-table-container";
+import { AdminCreditTransactionItem, getAdminCreditTransactions } from "@/actions/credits/admin";
+import { DataTableContainer, DataTableEmptyState } from "@/components/shared/data-table-container";
 import { DataTableToolbar } from "@/components/shared/data-table-toolbar";
-import {
-  PinnedTableCell,
-  PinnedTableHead,
-} from "@/components/shared/pinned-column";
+import { PinnedTableCell, PinnedTableHead } from "@/components/shared/pinned-column";
 import { TablePagination } from "@/components/shared/table-elements";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,12 +31,9 @@ import {
 } from "@/components/ui/select";
 import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
 import { useDataTable } from "@/hooks/use-data-table";
+import { adminCreditQueryKeys } from "@/lib/admin-credit-query-keys";
 import { CreditTransactionType } from "@/lib/db/schema";
-import {
-  ColumnDef,
-  ColumnPinningState,
-  flexRender,
-} from "@tanstack/react-table";
+import { ColumnDef, ColumnPinningState, flexRender } from "@tanstack/react-table";
 import { Gift } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -103,7 +92,7 @@ export function CreditsDataTable({ columns, pageSize }: DataTableProps) {
     refetch,
   } = useDataTable<AdminCreditTransactionItem, CreditFilters>({
     columns,
-    queryKey: ["admin-credit-transactions"],
+    queryKey: [...adminCreditQueryKeys.globalTransactions],
     pageSize,
     initialFilters: {
       search: "",
@@ -135,8 +124,7 @@ export function CreditsDataTable({ columns, pageSize }: DataTableProps) {
 
         return null;
       } catch (error: unknown) {
-        const message =
-          error instanceof Error ? error.message : "Unknown error";
+        const message = error instanceof Error ? error.message : "Unknown error";
         toast.error(t("toast.fetchFailed"), { description: message });
         return null;
       }
@@ -146,16 +134,12 @@ export function CreditsDataTable({ columns, pageSize }: DataTableProps) {
   const hasData = data.length > 0;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 gap-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       <DataTableToolbar
         onRefresh={refetch}
         isRefreshing={isFetching}
         actions={
-          <Button
-            size="sm"
-            className="h-8"
-            onClick={() => setGrantOpen(true)}
-          >
+          <Button size="sm" className="h-8" onClick={() => setGrantOpen(true)}>
             <Gift className="h-4 w-4" />
             {t("batchGrant.button")}
           </Button>
@@ -169,11 +153,9 @@ export function CreditsDataTable({ columns, pageSize }: DataTableProps) {
         />
         <Select
           value={filters.type || "all"}
-          onValueChange={(value) =>
-            updateFilter("type", value === "all" ? "" : value)
-          }
+          onValueChange={(value) => updateFilter("type", value === "all" ? "" : value)}
         >
-          <SelectTrigger className="w-[180px] h-8 text-xs">
+          <SelectTrigger className="h-8 w-[180px] text-xs">
             <SelectValue placeholder={t("filters.typePlaceholder")} />
           </SelectTrigger>
           <SelectContent>
@@ -202,10 +184,7 @@ export function CreditsDataTable({ columns, pageSize }: DataTableProps) {
                   <PinnedTableHead key={header.id} header={header}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </PinnedTableHead>
                 ))}
               </TableRow>
@@ -214,10 +193,7 @@ export function CreditsDataTable({ columns, pageSize }: DataTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <PinnedTableCell key={cell.id} cell={cell} />
                   ))}
@@ -244,11 +220,7 @@ export function CreditsDataTable({ columns, pageSize }: DataTableProps) {
         infoMode="range"
       />
 
-      <BatchGrantDialog
-        open={grantOpen}
-        onOpenChange={setGrantOpen}
-        onSuccess={refetch}
-      />
+      <BatchGrantDialog open={grantOpen} onOpenChange={setGrantOpen} onSuccess={refetch} />
     </div>
   );
 }
