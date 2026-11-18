@@ -52,7 +52,9 @@ skip、`test:routing` 4/4、`test:engineering` 4/4（离线模式）、Nano 相�
 
 - **E1 管理员 credit ledger query key 统一**：独立 Review 已通过，已提交并推送（`9bc85df`）。
 - **E2 Google 字体构建期下载依赖**：验收事实已通过；最终 Review 及提交推送见主控同卡回执，用户 Review 待。
-- **E3 构建默认 4 GiB 内存不足**：未修（临时 8 GiB 通过不等于修复），待排期。
+- **E3 构建默认 V8 堆内存不足**：默认 V8 堆 OOM 已复现；单独
+  `webpackMemoryOptimizations` 候选同条件仍失败，已撤回；未修，需后续剖析；不能等同
+  4 GiB 容器限制。
 
 ## 等用户决定，暂时不做
 
