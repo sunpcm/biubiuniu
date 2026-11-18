@@ -58,6 +58,14 @@ export interface MigrationReport {
   modules: ResolvedModule[];
 }
 
+/** Application-owned physical objects required by a migration consumer. */
+export interface MigrationSchemaSentinelOptions {
+  /** Additional required public tables. */
+  tables?: readonly string[];
+  /** Additional required public enum types. */
+  enums?: readonly string[];
+}
+
 /**
  * Result of a read-only compatibility check.
  *

@@ -22,6 +22,8 @@ const names = Object.freeze({
   product: `${prefix}n3_product`,
   takeover: `${prefix}n3_takeover`,
   takeoverReference: `${prefix}n3_takeover_reference`,
+  cliFresh: `${prefix}n3_cli_fresh`,
+  cliLegacy: `${prefix}n3_cli_legacy`,
 });
 
 function processEnvironment(source = process.env) {

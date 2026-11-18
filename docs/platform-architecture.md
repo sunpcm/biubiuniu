@@ -36,18 +36,18 @@ CMS、反馈和具体外部服务连接都留在应用层；可复用包只接�
 
 发布集合由九项能力包和 `@sunpcm/niu-prettier-config` 组成，共十项：
 
-| 包 | 职责 | 关键入口 |
-| --- | --- | --- |
-| `@sunpcm/niu-contracts` | 跨边界原语、错误和标识符 | 根入口 |
-| `@sunpcm/niu-utils` | 无框架格式化和字符串工具 | 根入口 |
-| `@sunpcm/niu-auth` | Better Auth 工厂、认证规则和纯 Node guards | 根入口；`/client` |
-| `@sunpcm/niu-commerce` | 订单、订阅、积分和退款领域逻辑 | 根入口；`/providers/stripe`、`/providers/creem`、`/providers/paypal` |
-| `@sunpcm/niu-ui` | React 组件、hooks、主题和预编译 CSS | 根入口；组件、`/cn`、hook、`styles.css` |
-| `@sunpcm/niu-db` | 显式 PostgreSQL/Drizzle 连接工厂 | 根入口 |
-| `@sunpcm/niu-next` | Next 认证服务端适配和客户端薄转发 | 根入口；`/client` |
-| `@sunpcm/niu-feature-nano` | Nano 纯领域、provider 端口和 React hook | 根入口；`/provider/google`、`/react` |
-| `@sunpcm/niu-persistence-pg` | Migration、schema slices 和 PG 适配器 | 根入口；`/migrations`、`/schema/*`、`/auth`、`/commerce`、`/nano` |
-| `@sunpcm/niu-prettier-config` | 仓库共享的 Prettier/Tailwind 插件配置 | 配置包根入口 |
+| 包                            | 职责                                       | 关键入口                                                             |
+| ----------------------------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| `@sunpcm/niu-contracts`       | 跨边界原语、错误和标识符                   | 根入口                                                               |
+| `@sunpcm/niu-utils`           | 无框架格式化和字符串工具                   | 根入口                                                               |
+| `@sunpcm/niu-auth`            | Better Auth 工厂、认证规则和纯 Node guards | 根入口；`/client`                                                    |
+| `@sunpcm/niu-commerce`        | 订单、订阅、积分和退款领域逻辑             | 根入口；`/providers/stripe`、`/providers/creem`、`/providers/paypal` |
+| `@sunpcm/niu-ui`              | React 组件、hooks、主题和预编译 CSS        | 根入口；组件、`/cn`、hook、`styles.css`                              |
+| `@sunpcm/niu-db`              | 显式 PostgreSQL/Drizzle 连接工厂           | 根入口                                                               |
+| `@sunpcm/niu-next`            | Next 认证服务端适配和客户端薄转发          | 根入口；`/client`                                                    |
+| `@sunpcm/niu-feature-nano`    | Nano 纯领域、provider 端口和 React hook    | 根入口；`/provider/google`、`/react`                                 |
+| `@sunpcm/niu-persistence-pg`  | Migration、schema slices 和 PG 适配器      | 根入口；`/migrations`、`/schema/*`、`/auth`、`/commerce`、`/nano`    |
+| `@sunpcm/niu-prettier-config` | 仓库共享的 Prettier/Tailwind 插件配置      | 配置包根入口                                                         |
 
 发布成员由 [release/packages.json](../release/packages.json) 的显式 allowlist 固定；
 [release-artifacts.test.mjs](../test/packages/release-artifacts.test.mjs) 验证该集合、
@@ -182,19 +182,21 @@ Nano 状态为 `queued -> leased -> dispatching -> running -> ...`，终态为
 迁移模块是静态、显式导入的 append-only manifest。当前
 `DATABASE_CONTRACT_VERSION` 为 `1`，每个模块另有自身 `version` 与 `contractVersion`。
 
-| Module | 直接依赖 | 物理对象 |
-| --- | --- | --- |
-| `auth` | 无 | user、session、account、verification、organization、member、invitation 等身份/组织表 |
-| `payments` | `auth` | orders、subscriptions 和 billing enums |
-| `credits` | `auth`、`payments` | 两个余额表和 append-only 积分流水 |
-| `nano` | `auth`、`credits` | persistent tasks、active jobs、case-selection stats |
+| Module         | 直接依赖           | 物理对象                                                                             |
+| -------------- | ------------------ | ------------------------------------------------------------------------------------ |
+| `auth`         | 无                 | user、session、account、verification、organization、member、invitation 等身份/组织表 |
+| `payments`     | `auth`             | orders、subscriptions 和 billing enums                                               |
+| `credits`      | `auth`、`payments` | 两个余额表和 append-only 积分流水                                                    |
+| `nano`         | `auth`、`credits`  | persistent tasks、active jobs、case-selection stats                                  |
+| `cms_feedback` | `auth`             | posts、tags、post_tags、feedback、feedback_replies 五表及其 6 个 enum                |
 
-| Profile | 解析后的模块闭包 |
-| --- | --- |
-| `minimal` | 无业务模块，只创建 migration journal/profile metadata |
-| `auth` | `auth` |
-| `auth_credits` | `auth`、`payments`、`credits` |
-| `nano_payments` | `auth`、`payments`、`credits`、`nano` |
+| Profile             | 解析后的模块闭包                                      |
+| ------------------- | ----------------------------------------------------- |
+| `minimal`           | 无业务模块，只创建 migration journal/profile metadata |
+| `auth`              | `auth`                                                |
+| `auth_credits`      | `auth`、`payments`、`credits`                         |
+| `nano_payments`     | `auth`、`payments`、`credits`、`nano`                 |
+| `nano_payments_cms` | `auth`、`payments`、`credits`、`nano`、`cms_feedback` |
 
 `nano` 因 `spend_tx_id` 引用积分流水而依赖 `credits`；`credits` 因 `order_id` 引用订单而
 依赖 `payments`，所以 profile 会自动展开完整闭包。规划器在执行 SQL 前拒绝未知模块、
@@ -206,12 +208,33 @@ Nano 状态为 `queued -> leased -> dispatching -> running -> ...`，终态为
 `_niu_migration_journal`/profile metadata；失败整体回滚。已经记录的 module version、
 contract version 或 checksum 不得漂移。
 
-启动兼容检查是只读的：不建 journal、不执行 DDL、不自动迁移，同时核对 journal、支持的
-contract version、sentinel table/column 和物理 schema。见
-[runner.ts](../packages/persistence-pg/src/migrations/runner.ts)。
+截至 2026-11-18，参考应用的 `pnpm --filter @niu/web db:migrate` 使用包内
+`PRODUCT_MIGRATION_PLAN`。CLI 接受受控入口显式注入的 `DATABASE_URL`，用单连接只读查询核对
+`current_database()`、`current_user()` 和 `public._n2_migration_journal` 是否存在，然后关闭探针连接：
 
-参考应用当前仍使用 `_n2` 链，启动时未调用上述兼容检查；应用中的兼容 CLI 也需要显式执行，
-不能把包内只读检查能力当作已经接入应用启动保护。
+- 新空库或只有原生 `_niu` 元数据的库由包内 `runMigrations` 执行 `nano_payments_cms` profile。
+- 存在 `_n2_migration_journal` 的旧库由包内 `takeoverMigrations` 核对三条旧 journal 和冻结的 PG16
+  结构合同；通过后只回填 `_niu` 账本，不执行产品模块 SQL。
+- CLI 失败只输出安全错误，不打印连接串或数据库内容，并以 exit 1 结束。应用内旧 runner 只保留为
+  历史只读诊断或 fixture 资产，不再被当前 `db:migrate` 导入。
+
+真实 Node 服务在 `apps/web/src/instrumentation.ts` 的 `instrumentation.register()` 中、应用层 Sentry 与
+Nano runtime 初始化之前执行只读产品兼容检查。参考应用传入固定的 5 表/6 enum sentinel，并以
+`requireProfileActivation: true` 要求 `_niu_migration_profile` 包含 `nano_payments_cms`；包内 API 不传
+这些可选参数时保持原默认行为和返回结构。检查逐行要求 `_niu_migration_journal` 的
+`contract_version` 精确匹配，不能只取最大版本；缺少 enum sentinel 时沿用 `missingTables` 并记为
+`enum:name`。所有表 sentinel 都通过 `pg_catalog` 核对 public schema 的 `relkind`，只接受普通表 `r` 或
+分区表 `p`，同名 view 被判为缺失。检查不执行 DML/DDL，并由 `finally` 关闭 PG 连接。
+
+`NEXT_PHASE=phase-production-build` 与 `phase-export` 跳过业务数据库 gate；edge 分支保持原有 Sentry
+接线。Next 16.3.3 的框架层会先完成端口 bind 并打印 `Ready`，随后执行 `instrumentation`；兼容性失败使
+进程 exit 1，不启动 Sentry/Nano，不进入可服务状态，但不承诺失败前尚未 bind。`check-db-compat.ts` 仍可
+作为显式只读诊断使用。共享旧库上线前必须停用旧应用 DDL runner。
+
+P1-2 的结构合同冻结为 PG16 合成验收合同。保留 `_n2_migration_journal` 后，后续重复执行
+`db:migrate` 仍会进入 takeover 分支并重新核对同一冻结合同；保留旧账本不代表当前合同会自动吸收未来
+模块或结构变化。新增模块、改变产品结构或改变冻结指纹都需要显式、版本化的接管/升级协议和新的独立
+验收。
 
 ## 7. 版本合同、兼容与回退
 
@@ -256,5 +279,9 @@ database 时的完整租户隔离。尤其 Commerce 的订单和订阅表没有�
 - 组织结构、CMS、反馈、邮件模板、AI demo、存储、分析和具体 UI 文案仍属于参考应用。
   它们不会被拆包行为自动变成通用平台能力。
 - 当前没有微服务拆分、跨数据库事务、统一 SSO/租户控制面，也没有真实包公开发布承诺。
-- 本地构建、release consumer 和独立 Review 分别代表不同证据等级；外部 provider、登录态
-  浏览器、私有 registry 和真实部署门槛仍需按正式报告核验。
+- 截至 2026-11-18 的 P1-3 最终门禁，PG16 domain 280、packages 211 在 14 个独占合成库中以零 skip 通过；
+  typecheck 20、lint 106 个既有 warning/0 error/0 新增、routing 4 和离线 engineering 4 也均 exit 0。
+  临时 8 GiB 堆下的 Webpack 冷构建通过，兼容库 `next start` HTTP 200，缺产品表时 exit 1。
+- 本地构建、release consumer 和独立 Review 分别代表不同证据等级；真实依赖/环境、provider、SSO、
+  registry、真实业务数据、生产部署和其他 PostgreSQL 版本仍未验。E3 的默认 V8 堆内存问题仍开放，8
+  GiB 只是本次冷构建 workaround。

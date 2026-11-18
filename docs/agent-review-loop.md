@@ -33,24 +33,24 @@ ENGINEERING_PNPM_INSTALL_MODE=offline ENGINEERING_PNPM_STORE_DIR=<已预热的-s
 
 ## 可运行入口
 
-| 范围         | 入口                                     | 性质                                                                                                           |
-| ------------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| 根工程       | `pnpm test:engineering`                  | 真实 Node `node:test`：私有边界、`.env` 忽略、tarball 合同、Workspace 外消费、Tailwind 插件、Turbo CLI hash    |
-| 根 routing   | `pnpm test:routing`                      | 真实 Node `node:test` 通过 Next adapter 加载应用 proxy，覆盖 absolute rewrite、redirect、外部 target 与 origin |
-| 根 domain    | `pnpm test:domain`                       | Node 24 module mocks + `tsx`；运行 `test/domain/*.test.ts`，领域 PG 与迁移用例需主控按下方变量表注入隔离连接 |
-| 本地合成 PG | `pnpm test:pg:local` | 本机临时 PG16、注入合成连接、串行运行全部 domain/packages，拒绝任何 skip 并清理；前置条件见 [本地 PG 说明](local-pg-tests.md) |
+| 范围         | 入口                                     | 性质                                                                                                                                           |
+| ------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 根工程       | `pnpm test:engineering`                  | 真实 Node `node:test`：私有边界、`.env` 忽略、tarball 合同、Workspace 外消费、Tailwind 插件、Turbo CLI hash                                    |
+| 根 routing   | `pnpm test:routing`                      | 真实 Node `node:test` 通过 Next adapter 加载应用 proxy，覆盖 absolute rewrite、redirect、外部 target 与 origin                                 |
+| 根 domain    | `pnpm test:domain`                       | Node 24 module mocks + `tsx`；运行 `test/domain/*.test.ts`，领域 PG 与迁移用例需主控按下方变量表注入隔离连接                                   |
+| 本地合成 PG  | `pnpm test:pg:local`                     | 本机临时 PG16、注入合成连接、串行运行全部 domain/packages，拒绝任何 skip 并清理；前置条件见 [本地 PG 说明](local-pg-tests.md)                  |
 | 包产物       | `pnpm test:packages`                     | `build:packages` 先按 `@sunpcm/niu-*` 构建 dist，再执行 `check:boundaries`，最后跑 `test/packages/*.test.mjs`；真实 PG 变量缺失则对应用例 skip |
-| 根总测试     | `pnpm test`                              | 串行运行 `test:engineering`、`test:routing`、`test:domain` 和 `test:packages`                                   |
-| 根 lint      | `pnpm exec turbo run lint`               | 只覆盖存在 `lint` script 的包                                                                                  |
-| 根 typecheck | `pnpm exec turbo run typecheck`          | 只覆盖存在 `typecheck` script 的包                                                                             |
-| 根 build     | `pnpm exec turbo run build`              | 当前覆盖 Web 和所有声明 `build` 的 `@sunpcm/niu-*` 业务包，不只有 Web；配置包与 `@niu/mail` 没有 build script |
-| Web          | `pnpm --filter @niu/web lint`            | ESLint `src`                                                                                                   |
-| Web          | `pnpm --filter @niu/web typecheck`       | `tsc -p tsconfig.json --noEmit`                                                                                |
-| Web          | `pnpm --filter @niu/web build`           | Next.js production build through official Webpack (`next build --webpack`)                                     |
-| Web          | `pnpm --filter @niu/web build:turbopack` | Explicit optional Next.js production build through Turbopack (`next build --turbopack`)                        |
-| Web          | `pnpm --filter @niu/web db:migrate`      | Canonical migration CLI (`tsx scripts/migrate.ts`); requires a controller-injected `DATABASE_URL`              |
-| UI 包产物    | `pnpm --filter @sunpcm/niu-ui test`      | 包内 `node --test ../../test/packages/ui-artifact.test.mjs`：产物、ESM 声明、CSS 与 client 边界               |
-| Utils 包产物 | `pnpm --filter @sunpcm/niu-utils test`   | 包内 `node --test ../../test/packages/utils.test.mjs`：ESM 声明、根导入与工具函数                             |
+| 根总测试     | `pnpm test`                              | 串行运行 `test:engineering`、`test:routing`、`test:domain` 和 `test:packages`                                                                  |
+| 根 lint      | `pnpm exec turbo run lint`               | 只覆盖存在 `lint` script 的包                                                                                                                  |
+| 根 typecheck | `pnpm exec turbo run typecheck`          | 只覆盖存在 `typecheck` script 的包                                                                                                             |
+| 根 build     | `pnpm exec turbo run build`              | 当前覆盖 Web 和所有声明 `build` 的 `@sunpcm/niu-*` 业务包，不只有 Web；配置包与 `@niu/mail` 没有 build script                                  |
+| Web          | `pnpm --filter @niu/web lint`            | ESLint `src`                                                                                                                                   |
+| Web          | `pnpm --filter @niu/web typecheck`       | `tsc -p tsconfig.json --noEmit`                                                                                                                |
+| Web          | `pnpm --filter @niu/web build`           | Next.js production build through official Webpack (`next build --webpack`)                                                                     |
+| Web          | `pnpm --filter @niu/web build:turbopack` | Explicit optional Next.js production build through Turbopack (`next build --turbopack`)                                                        |
+| Web          | `pnpm --filter @niu/web db:migrate`      | Canonical migration CLI (`tsx scripts/migrate.ts`); requires a controller-injected `DATABASE_URL`                                              |
+| UI 包产物    | `pnpm --filter @sunpcm/niu-ui test`      | 包内 `node --test ../../test/packages/ui-artifact.test.mjs`：产物、ESM 声明、CSS 与 client 边界                                                |
+| Utils 包产物 | `pnpm --filter @sunpcm/niu-utils test`   | 包内 `node --test ../../test/packages/utils.test.mjs`：ESM 声明、根导入与工具函数                                                              |
 
 Turbo dry-run 可使用：
 
@@ -73,10 +73,11 @@ N2 开始设统一停写门，并沿用于 N3 及后续批次：产品 writer、
 - 根：`scripts/dependency-boundaries.mjs` 与 `test/packages/dependency-boundaries.test.mjs` 固定检查包图无环、无未声明依赖（第三方与 workspace 均按真正包根归一化，含 scoped/subpath，Node builtin 排除）、workspace 子路径须在 `exports` 声明、运行时 value 依赖不得只藏在 devDependencies、无 `@/` 或相对路径逃逸到 app/别包、core（contracts/utils/auth/commerce）根入口不泄漏 Next/PG/SDK 且 provider/client 子路径合法可选依赖不误判、UI 不泄漏 server-only/Node/数据库、导出目标缺 dist 不默认 green；负向变异按统一停写门留待主控全停后代跑，本卡未执行。
 - N2 attempt-04 新增 `test:routing`；它在 Node adapter 层验证 proxy header 语义，但不替代生产 build、HTTP 或浏览器 E2E。
 - `apps/web`：存在 `dev`、`build`、`build:turbopack`、`start`、`lint`、`typecheck`、`analyze`、`db:migrate`。默认 `build` 与 `analyze` 都显式使用官方 Webpack；Turbopack 只通过独立脚本显式选择，构建失败时不会静默切换。
-- `db:migrate` 是 N2 的 canonical 产品迁移入口：`apps/web/scripts/migrate.ts` 读取显式 `DATABASE_URL`，调用 `src/lib/db/migration-runner.ts` 的 `runMigrations`，不做本地库兜底。CLI 当前不自行加载 `.env`，变量由运行环境或主控受控注入。
+- `db:migrate` 是当前 canonical 产品迁移入口：`apps/web/scripts/migrate.ts` 读取受控入口显式注入的 `DATABASE_URL`，用单连接只读探针核对连接身份和 `_n2` 账本，再关闭探针；新空库/原生 `_niu` 库调用包内 `runMigrations`，存在 `_n2` 的旧库调用 `takeoverMigrations` 与冻结 PG16 合同。CLI 不导入旧 `_n2` runner/旧 SQL 模块，不自行加载 `.env`，也不做本地库兜底。旧 runner 只保留为历史回归和只读诊断资产。
+- 真实 Node 服务的启动 gate 位于 `apps/web/src/instrumentation.ts`：`instrumentation.register()` 在应用层 Sentry/Nano 初始化前调用只读产品兼容检查，核对 `_niu` journal、逐模块精确 `contract_version`、`nano_payments_cms` profile activation、产品 5 表/6 enum 以及 public `relkind` 为 `r`/`p`。build/export 跳过，edge 分支不变。Next 16.3.3 会先 bind 并打印 `Ready` 再执行 instrumentation；兼容性失败使进程 exit 1，不启动 Sentry/Nano，不进入可服务状态。
 - 根 `test:domain` 在 Node 24 下使用 `node --experimental-test-module-mocks --import tsx --test --test-concurrency=1 test/domain/*.test.ts`，并通过 `TSX_TSCONFIG_PATH=test/domain/tsconfig.json` 加载测试路径；它不包含 `routing.test.mjs`。`test:routing` 仍是独立的 `.test.mjs` 入口，不能并入或替代 domain 漂移。
 - 当前 PG runner 所需变量只列名称，不保存 URL 或凭据：`test/domain/helpers.ts` 与领域 PG 用例需要 `DATABASE_URL`、`DOMAIN_TEST_EXPECTED_DATABASE`、`DOMAIN_TEST_EXPECTED_PORT`；Auth 用例另需合成 `BETTER_AUTH_SECRET`，HTTP 验证的 `NEXT_PUBLIC_SITE_URL`、`NEXT_PUBLIC_BETTER_AUTH_URL` 必须与请求 Origin 对齐，不能靠 `NODE_ENV=test` 关闭 Origin 检查。`test/domain/migration.test.ts` 另用 `N2_REFERENCE_DATABASE_URL`、`MIGRATION_C01_DATABASE_URL`、`MIGRATION_FAULT_DATABASE_URL`；`test/packages/auth-pg.test.mjs` 用 `AUTH_PG_TEST_URL`、`AUTH_PG_TEST_DB`、`AUTH_CREDITS_PG_TEST_URL`、`AUTH_CREDITS_PG_TEST_DB`；`test/packages/commerce-pg.test.mjs` 及 `test/domain/commerce-instance-isolation.test.ts` 用 `COMMERCE_PG_DATABASE_URL`、`COMMERCE_PG_FOREIGN_DATABASE_URL`、`COMMERCE_PG_EXPECTED_DATABASE`、`COMMERCE_PG_EXPECTED_ROLE`；`test/packages/pg-profiles-pg.test.mjs` 用 `PG_PROFILES_TEST_URL`、`PG_PROFILES_TEST_EXPECTED_DATABASE`、`PG_PROFILES_TEST_EXPECTED_ROLE`。
-- 隔离身份与 guard 先于写入：领域应用库为 `nexty_overnight_20261105_n4_app`，旧链参考库（仅供 `N2_REFERENCE_DATABASE_URL`）为 `nexty_overnight_20261105_test`，C01 空库为 `nexty_overnight_20261105_migration_c01`，故障/修复空库为 `nexty_overnight_20261105_migration_fault_c01`；N3 专用库名前缀为 `nexty_overnight_20261105_n3_`，测试角色均为 `nexty_overnight_test`。配置检查先核变量齐全、expected database/role 与库名前缀、禁用库名；随后连接身份用 `current_database()` / `current_user()` 核对，配置不全或身份不符时 fail closed。只有 guard 通过后才允许 DDL、migration、DML、seed 或 cleanup。`test:domain` 缺少必需变量会 fail；部分 package PG 用例缺变量才 skip，skip 不能记为通过。
+- 隔离身份与 guard 先于写入：领域应用库为 `nexty_overnight_20261105_n4_app`，旧链参考库（仅供 `N2_REFERENCE_DATABASE_URL`）为 `nexty_overnight_20261105_test`，C01 空库为 `nexty_overnight_20261105_migration_c01`，故障/修复空库为 `nexty_overnight_20261105_migration_fault_c01`；N3 专用库名前缀为 `nexty_overnight_20261105_n3_`，P1-3 真实 CLI 使用 `nexty_overnight_20261105_n3_cli_fresh` 和 `nexty_overnight_20261105_n3_cli_legacy`，本地入口合计 14 个独占库，测试角色均为 `nexty_overnight_test`。配置检查先核变量齐全、expected database/role 与库名前缀、禁用库名；随后连接身份用 `current_database()` / `current_user()` 核对，配置不全或身份不符时 fail closed。只有 guard 通过后才允许 DDL、migration、DML、seed 或 cleanup。`test:domain` 缺少必需变量会 fail；部分 package PG 用例缺变量才 skip，skip 不能记为通过。
 - DDL/DML/cleanup 边界：`migration.test.ts` 仅在 guard 后 `drop schema` / `create schema`；`helpers.ts` 仅在事务内校验身份后 `truncate ... restart identity cascade`；`auth-pg.test.mjs` 的 seed/delete 与 `pg-profiles-pg.test.mjs` 的 drop/type cleanup 同样受 guard 约束。上述执行都留待全部 writer 停写后由主控在隔离 PG 代跑，本卡未执行。
 - 当前根 `package.json` 已把 `better-auth`、`drizzle-orm`、`next`、`postgres`、React、Stripe 等列为直接 devDependency；lock 的受控 frozen install 是前序记录，本卡未复跑。不得用 `NODE_PATH`、手工 symlink、根临时 tsconfig 或源码 alias 绕过真实依赖和 peer-context 解析。
 - `apps/web/src/lib/logger`：所有公开日志方法的 message 与结构化 payload 先经过共享不可变脱敏层，再写入 Pino 与 Sentry；覆盖 Authorization/Cookie、token/API secret、connection string 和嵌套 Error。原始 Pino 实例不对外暴露。自由文本只识别带 Bearer/Basic、凭据键值或 URL userinfo 等明确格式，无法识别没有标签的任意字符串秘密。
@@ -125,5 +126,8 @@ N2 开始设统一停写门，并沿用于 N3 及后续批次：产品 writer、
 - 历史记录（前序批次）：工程测试、pack allowlist、外部 tarball 消费、Tailwind 插件、Turbo hash 对照曾在本机通过；本卡未复跑，不能据此声明当前 N3 测试绿。
 - 历史记录：主控公开受控子集 Auth + application + migration + permissions 的 78/78 状态只到 pre-GPT 冻结，只能作为当时该子集事实，不能写成全 N2 或当前 N3 通过；本卡不读报告确认。
 - 历史：N2 当时 Commerce 尚未完成、整体未批准。当前：N3 attempt-01 只完成本单文档的 runner 事实刷新与静态对照，整体测试与 Review 结果待主控独立验收；本卡不提供 N3 批准。
-- 不可声明：领域业务测试已通过、真实 PostgreSQL 迁移已执行、私有 registry 发布、Next 冷构建等价性、浏览器/Vite 消费、生产或真实业务 provider API 已验证。
+- 历史边界（P1-3 门禁前）：当时不可声明领域业务测试、真实 PostgreSQL 迁移、私有 registry、Next 冷构建等价性、浏览器/Vite 消费、生产或真实业务 provider API 已验证；这些表述只描述当时冻结状态。
+- 2026-11-18 P1-3 最终门禁：PG16 domain 280、packages 211，零 skip、14 个独占合成库，exit 0；typecheck 20、lint 106 个既有 warning/0 error/0 新增、routing 4、离线 engineering 4，也全部 exit 0。真实 CLI 的新空库和旧链接管路径均 exit 0；结构漂移拒绝、同名 view 拒绝、只读快照及账本保留通过。
+- 同日真实 Next 16.3.3 门禁：临时 8 GiB 堆 Webpack 冷构建 exit 0，兼容库 `next start` HTTP 200；缺 `feedback_replies` 时 exit 1，两张 `_niu` 元数据和缺表状态保持不变。首轮 `prepare().catch` 只记录错误但进程继续存活的 RED 已修正；实际框架仍会先 bind/打印 `Ready`，最终保证是进程 exit 1、不启动 Sentry/Nano、不进入可服务状态。
+- 仍未验：真实依赖/环境、provider、SSO、registry、真实业务数据和生产环境；E3 的默认 V8 堆内存问题仍开放，8 GiB 只是本次冷构建 workaround。根 `test/` 仍没有自动 Next E2E runner，上述 Next 正反例由主控门禁实跑，不能由本地 PG 入口推导。
 - 任何最终检查失败都应以实际命令和退出码记录；未运行项保持“待代跑”或“未覆盖”。

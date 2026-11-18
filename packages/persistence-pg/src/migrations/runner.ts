@@ -6,6 +6,7 @@ import type {
   MigrationModule,
   MigrationPlan,
   MigrationReport,
+  MigrationSchemaSentinelOptions,
   ResolvedModule,
 } from "./types.js";
 
@@ -33,6 +34,13 @@ export interface MigrationRunnerOptions {
    * derived from the plan's module contract versions.
    */
   supportedContractVersions?: readonly number[];
+  /** Application-owned additions to the built-in physical schema sentinels. */
+  sentinels?: MigrationSchemaSentinelOptions;
+  /**
+   * Require the fixed product profile table to contain this plan's profile.
+   * This is opt-in so existing compatibility consumers keep their behavior.
+   */
+  requireProfileActivation?: boolean;
 }
 
 export function resolveMigrationPlan(options: MigrationRunnerOptions): MigrationPlan {
@@ -143,6 +151,10 @@ export interface SchemaSentinels {
   columns: string[];
 }
 
+interface ResolvedSchemaSentinels extends SchemaSentinels {
+  enums: string[];
+}
+
 /**
  * Declared physical-schema sentinels for the selected modules.
  *
@@ -180,6 +192,18 @@ export function migrationSchemaSentinels(modules: readonly ResolvedModule[]): Sc
     tables.add("nano_case_selections");
   }
   return { tables: [...tables].sort(), columns: [...columns].sort() };
+}
+
+function resolvedSentinels(
+  modules: readonly ResolvedModule[],
+  additional: MigrationSchemaSentinelOptions | undefined,
+): ResolvedSchemaSentinels {
+  const builtIn = migrationSchemaSentinels(modules);
+  return {
+    tables: [...new Set([...builtIn.tables, ...(additional?.tables ?? [])])].sort(),
+    columns: builtIn.columns,
+    enums: [...new Set(additional?.enums ?? [])].sort(),
+  };
 }
 
 function splitColumnSentinel(column: string): { table: string; column: string } {
@@ -305,6 +329,21 @@ export async function runMigrations(options: MigrationRunnerOptions): Promise<Mi
   return report;
 }
 
+async function publicTableExists(sql: postgres.Sql, table: string): Promise<boolean> {
+  const [row] = await sql<{ exists: boolean }[]>`
+    select exists (
+      select 1
+      from pg_catalog.pg_class as relation
+      join pg_catalog.pg_namespace as namespace
+        on namespace.oid = relation.relnamespace
+      where namespace.nspname = 'public'
+        and relation.relname = ${table}
+        and relation.relkind in ('r', 'p')
+    ) as exists
+  `;
+  return row?.exists === true;
+}
+
 /**
  * Read-only compatibility check.
  *
@@ -321,10 +360,11 @@ export async function checkProfileCompatibility(
 ): Promise<MigrationCompatibility> {
   const { url, guard } = options;
   const plan = resolveMigrationPlan(options);
-  const { journal } = assertMigrationJournalNames(options);
+  const { journal, profile } = assertMigrationJournalNames(options);
   const journalQ = publicRelation(journal);
+  const profileQ = publicRelation(profile);
   const supported = supportedContractVersions(options, plan);
-  const sentinels = migrationSchemaSentinels(plan.modules);
+  const sentinels = resolvedSentinels(plan.modules, options.sentinels);
   const sql = postgres(url, { max: 1 });
   const result: MigrationCompatibility = {
     profile: plan.profile,
@@ -340,13 +380,15 @@ export async function checkProfileCompatibility(
   try {
     await assertMigrationGuard(sql, guard);
 
-    const [journalRow] = await sql<{ exists: boolean }[]>`
-      select pg_catalog.to_regclass(${`public.${journal}`}) is not null as exists
-    `;
-
-    if (!journalRow?.exists) {
+    if (!(await publicTableExists(sql, journal))) {
       result.missing.push(...plan.modules.map((module) => module.name));
-      result.missingTables.push(...sentinels.tables);
+      result.missingTables.push(
+        ...sentinels.tables,
+        ...sentinels.enums.map((name) => `enum:${name}`),
+      );
+      if (options.requireProfileActivation) {
+        result.incompatible.push(`profile:${plan.profile}`);
+      }
       return result;
     }
 
@@ -364,11 +406,12 @@ export async function checkProfileCompatibility(
       const [row] = await sql<
         {
           version: number;
+          contract_version: number;
           checksum: string;
           raw_checksum: string;
         }[]
       >`
-        select version, checksum, raw_checksum
+        select version, contract_version, checksum, raw_checksum
         from ${sql.unsafe(journalQ)}
         where module_name = ${module.name}
       `;
@@ -380,6 +423,7 @@ export async function checkProfileCompatibility(
 
       if (
         row.version !== module.version ||
+        row.contract_version !== module.contractVersion ||
         row.checksum !== module.checksum ||
         row.raw_checksum !== module.rawChecksum
       ) {
@@ -390,11 +434,25 @@ export async function checkProfileCompatibility(
       result.applied.push(module.name);
     }
 
+    if (options.requireProfileActivation) {
+      let profileApplied = false;
+      if (await publicTableExists(sql, profile)) {
+        const [activation] = await sql<{ exists: boolean }[]>`
+          select exists (
+            select 1
+            from ${sql.unsafe(profileQ)}
+            where profile_name = ${plan.profile}
+          ) as exists
+        `;
+        profileApplied = activation?.exists === true;
+      }
+      if (!profileApplied) {
+        result.incompatible.push(`profile:${plan.profile}`);
+      }
+    }
+
     for (const table of sentinels.tables) {
-      const [row] = await sql<{ exists: boolean }[]>`
-      select pg_catalog.to_regclass(${`public.${table}`}) is not null as exists
-      `;
-      if (!row?.exists) result.missingTables.push(table);
+      if (!(await publicTableExists(sql, table))) result.missingTables.push(table);
     }
 
     for (const column of sentinels.columns) {
@@ -408,6 +466,21 @@ export async function checkProfileCompatibility(
         ) as exists
       `;
       if (!row?.exists) result.missingTables.push(column);
+    }
+
+    for (const enumName of sentinels.enums) {
+      const [row] = await sql<{ exists: boolean }[]>`
+        select exists (
+          select 1
+          from pg_catalog.pg_type as enum_type
+          join pg_catalog.pg_namespace as namespace
+            on namespace.oid = enum_type.typnamespace
+          where namespace.nspname = 'public'
+            and enum_type.typtype = 'e'
+            and enum_type.typname = ${enumName}
+        ) as exists
+      `;
+      if (!row?.exists) result.missingTables.push(`enum:${enumName}`);
     }
   } finally {
     await sql.end();

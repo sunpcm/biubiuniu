@@ -1,63 +1,82 @@
-# 统一迁移 runner 与 canonical journal
+# Migration 活跃入口、历史链与兼容边界
 
-本文记录 N2 migration 单元把产品 CLI 与领域测试统一到同一个 canonical runner 的实现，以及兼容路径、checksum 语义和自测边界。它不是独立验收结论，PG 回归由主控受控代跑。
+本文记录截至 2026-11-18 的迁移入口和已验证边界。P1-1、P1-2 已独立 Review 并发布；P1-3 实施与合成
+验收通过，独立 Review 和提交发布状态以同卡回执为准。阶段 1 后续停在整体 Review，PR 由用户创建。
+包内模块/profile 合同见
+[`platform-architecture.md` §6](platform-architecture.md#6-migration-profile-与数据库合同)。
 
-本文讲参考应用的 `_n2` 链；包内另有 `_niu` 模块/profile 链，见
-[`docs/platform-architecture.md` §6](platform-architecture.md#6-migration-profile-与数据库合同)。下述 N2 三库配置是历史说明，
-当前领域应用库及完整变量以 [测试手册](agent-review-loop.md#runner-清单) 为准。
+## 当前权威入口
 
-## 文件
-
-- `apps/web/src/lib/db/migration-types.ts`：`MigrationFile`、`MigrationSource`、`MigrationReport`、`MigrationRunnerOptions` 等类型。
-- `apps/web/src/lib/db/migration-source.ts`：严格消费 `meta/_journal.json` 的冻结顺序，派生文件名并计算两种 checksum；缺/坏 meta、缺声明 SQL、重复身份、异常 tag path 都立即失败，不兜底目录排序。
-- `apps/web/src/lib/db/migration-runner.ts`：canonical runner（advisory lock + journal + DDL + 验证，同一事务）。
-- `apps/web/scripts/migrate.ts`：产品 CLI 入口。
-- `test/domain/helpers.ts`：`migrate()` 改为消费 runner，不再复制第二套算法。
-- `test/domain/migration.test.ts`：新建、重复、并发、checksum drift、DDL 失败、journal 写失败、修复重跑、参考库兼容校验。
-- `test/domain/migration-source.test.ts`：把真实资源复制到自有 scratch，覆盖缺声明资源、损坏/空 meta、重复身份、异常 tag path 与正常副本读取（无 PG 依赖）。
-
-## Checksum 语义
-
-- 身份 checksum 是 drizzle 语句流 hash：`raw.split("--> statement-breakpoint").map(trim).filter(Boolean).join(";\n")` 的 SHA-256，不是 raw 文件 hash。
-- 每个 `MigrationFile` 同时携带 `checksum`（语句流 hash，journal 身份）和 `rawChecksum`（raw 字节 hash，补充完整性），后者进入 `MigrationReport.files` 与 CLI 输出，但不写入 journal，避免改动参考库既有 journal schema。
-- 身份按文件 name（含 `.sql`）写入 `_n2_migration_journal`，绝不用 `user` 表是否存在作为跳过依据；`user` / `session.impersonated_by` 只作为应用后的验证信号。
-- 默认源严格消费已冻结的 meta/资源顺序：`_journal.json` 不可读、空 entries、任一声明 SQL 缺失、tag 重复或 tag 派生为非 basename 路径都抛错，绝不让缺失旧 SQL 从待校验清单消失；不补写/改名历史文件。
-
-## Runner 事务与故障语义
-
-- 每次运行在单事务内：`pg_advisory_xact_lock` 串行化并发写者，检查 guard，建 journal（`if not exists`），逐文件比对 checksum，执行 DDL，写 journal，最后验证 `user` 与 `session.impersonated_by`。
-- 已存在且 checksum 一致则跳过；checksum 漂移抛错。DDL 失败、journal 写失败或验证失败整轮回滚，不留下半迁移或没有 DDL 的 journal 行。
-- 资源可注入（`source`、`journalWrite`），仅测试故障 fixture 使用；生产默认走同一文件系统 source 与参数化 INSERT。
-- 产品 CLI 只消费 `_n2_migration_journal`，不落另一个 drizzle-kit migrate 账本。旧两条 SQL 文件名 / tag / meta / raw bytes 原样读取，不重命名。
-
-## 运行方式
-
-canonical 产品入口已接到 `apps/web/package.json` 的 `db:migrate`。由主控在 Node 24、pnpm 10.26 的冻结环境中注入 `DATABASE_URL` 后运行：
+`apps/web/package.json` 的唯一活跃产品迁移入口仍是：
 
 ```bash
 pnpm --filter @niu/web db:migrate
 ```
 
-CLI 不自行加载 `.env`；`DATABASE_URL` 由运行环境或主控受控注入。不要绕过 package script 直接复制另一套迁移命令。
+它执行 `tsx apps/web/scripts/migrate.ts`，读取显式 `DATABASE_URL`，不自行加载 `.env`，也不从本地配置
+兜底。当前 CLI 不再 import 应用内旧 `_n2` runner 或旧 SQL 模块；实际编排为：
 
-领域测试需要下面三个环境变量（全部由主控 runtime 合成注入，不打印、不落仓库）：
+1. 以单连接只读查询 `current_database()`、`current_user()` 和
+   `to_regclass('public._n2_migration_journal')`，先核对连接身份，查询结束在 `finally` 中关闭连接。
+2. 新空库或只有原生 `_niu` 元数据的库调用包内 `runMigrations`，使用 `PRODUCT_MIGRATION_PLAN` 的
+   `nano_payments_cms` profile、五个模块和固定根集。
+3. 存在 `_n2_migration_journal` 的旧库调用包内 `takeoverMigrations`，核对 P1-2 冻结的 PG16 结构合同
+   和三条旧 journal 身份；通过后只回填 `_niu` 账本，不执行 `module.statements`。
+4. 失败只输出固定安全错误，不打印连接串或数据库内容，并以 exit 1 结束。
 
-- `DATABASE_URL`：参考库 `nexty_overnight_20261105_test`（只兼容校验，不清表/重建）。
-- 额外的 `MIGRATION_C01_DATABASE_URL`：空库 `nexty_overnight_20261105_migration_c01`（新建/重复/并发）。
-- 额外的 `MIGRATION_FAULT_DATABASE_URL`：空库 `nexty_overnight_20261105_migration_fault_c01`（drift/DDL/写失败/修复）。
+`apps/web/scripts/check-db-compat.ts` 与应用内旧 runner 仍作为历史只读诊断/回归资产保留，不是当前
+`db:migrate` 的活跃写入口。历史迁移 SQL、meta、module 和 `legacy-reference` 继续按字节冻结。
 
-三个连接均使用测试角色 `nexty_overnight_test`。两个任务空库由测试用 `drop schema public cascade; create schema public` 做自有资源清理；参考库不被清表或重建。
+## 启动 gate
 
-`migration-source.test.ts` 无 PG/env 依赖，只复制资源到 `os.tmpdir()` 自有 scratch 并清理，不变异真实历史 SQL/meta。
+真实 Node 服务通过 `apps/web/src/instrumentation.ts` 的 `instrumentation.register()` 接入只读
+`assertProductDatabaseCompatibility()`。它在 Sentry 和 Nano runtime 启动前运行，核对 `_niu` journal、
+逐模块精确 `contract_version`、`_niu_migration_profile` 中的 `nano_payments_cms` activation、产品固定
+5 表/6 enum sentinel 以及物理 schema；所有表 sentinel 都要求 public `relkind` 为 `r` 或 `p`，同名 view
+不算表。检查只执行 SELECT，并由 `finally` 关闭 PG 连接。
 
-## 接线建议（app 集成人员）
+`NEXT_PHASE=phase-production-build` 与 `phase-export` 不触发该业务数据库 gate；edge 分支保持原有 Sentry
+接线。真实 Node server 的 build/export 判定复用现有 bootstrap phase 语义。
 
-> 历史接线草案曾建议显式追加两个迁移测试文件并新增名为 `migrate` 的 app script；当前实际接线已由根 `test:domain` 的 `test/domain/*.test.ts` glob 和 app 的 `db:migrate` 取代，该旧建议不再执行。
+首轮 Next 16.3.3 实测曾发现：缺 `feedback_replies` 时检查已经报告安全错误，但 Next
+`prepare().catch` 只记录日志，进程继续存活 30 秒。修正后失败分支保留脱敏诊断并显式
+`process.exit(1)`，兼容性失败使进程 exit 1，不启动 Sentry/Nano，不进入可服务状态。Next 框架层会先完成
+端口 bind 并打印 `Ready`，随后执行 `instrumentation`，所以这里不承诺失败前尚未 bind。复验结果为兼容
+库 HTTP 200、缺表时 exit 1，且两张 `_niu` 元数据和缺表状态不被修改。
 
-当前接线已完成：
+## 历史 N2 `_n2` 链
 
-- `apps/web/package.json` 使用 `"db:migrate": "tsx scripts/migrate.ts"`。
-- 根 `test:domain` 自动匹配 `test/domain/*.test.ts`，不再维护容易漂移的手工文件列表；`test/domain/routing.test.mjs` 仍由独立的 `test:routing` 运行。
-- 迁移 PG 回归只在全部 writer 停写后，由主控合成注入前文三个数据库变量并统一运行。
+以下语义仅描述历史 N2 `_n2` 资产和旧链测试，不再描述当前 `db:migrate`：
 
-本单元只收口公开文档，不修改产品/测试/package/lock/schema，也不以文档修改替代 PG 或全树验收。
+- `apps/web/src/lib/db/migration-types.ts` 定义旧文件、source、report 和 runner options。
+- `apps/web/src/lib/db/migration-source.ts` 严格消费冻结 `meta/_journal.json`，计算语句流 checksum
+  与 raw checksum；缺/坏 meta、缺 SQL、重复身份和异常 tag path 均失败。
+- `apps/web/src/lib/db/migration-runner.ts` 在单事务内获取旧 `_n2` advisory lock、校验 guard、建
+  `_n2_migration_journal`、执行历史 DDL、写账本并验证旧 sentinel。
+- `test/domain/migration*.test.ts` 与部分 legacy/takeover fixture 继续使用该历史链；它们不恢复旧 runner
+  作为应用产品入口。
+
+历史 checksum 身份是 drizzle 语句流 hash，另保存 raw 字节 hash 作补充；`_n2` 账本只记录语句流
+checksum。历史两条/三条 SQL 的文件名、tag、meta 和 raw bytes 始终原样读取，不补写、改名或删除。
+
+## 旧库切换边界
+
+包内 advisory lock 只协调包内普通迁移与 takeover，旧 runner 使用不同锁域，二者不能假定互斥。对共享
+旧库执行接管前，运维必须先停用旧应用 DDL 执行入口，包括历史 `db:migrate`/旧 runner 的任何活跃调用。
+停用的是活跃写路径，不是删除历史资产。
+
+当前 P1-2 结构合同冻结为 PG16 合成验收合同。保留 `_n2_migration_journal` 后，后续重复执行
+`db:migrate` 仍会进入 takeover 分支并重新核对同一冻结合同；这不是“自动兼容未来 schema”的承诺。
+新增模块、改变产品结构或改变冻结指纹都需要显式、版本化的接管/升级协议与新的独立验收，不能直接扩展
+当前合同或放宽校验。
+
+## 测试与验收
+
+`pnpm test:pg:local` 创建 14 个独占 PG16 合成库，串行执行全部 domain/package PG 用例并拒绝 skip。
+P1-3 最终门禁为 domain 280、packages 211、零 skip，14 库，exit 0；typecheck 20、lint 106 个既有
+warning/0 error/0 新增、routing 4、离线 engineering 4 也均 exit 0。真实 CLI 在新空库和旧链演练后均
+exit 0 并写入预期账本；结构漂移时 exit 1 且两代账本/物理对象不变。临时库、故障注入和容器均已清理。
+
+同一时点的 Webpack 冷构建使用临时 8 GiB 堆通过，兼容库 `next start` HTTP 200、缺产品表时 exit 1；
+这验证了当前合成应用路径，不代表真实依赖/环境、provider、SSO、registry、真实业务数据、生产迁移或
+其他 PostgreSQL 版本。E3 的默认 V8 堆内存问题仍未解决，8 GiB 只是验收 workaround。

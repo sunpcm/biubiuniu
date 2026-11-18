@@ -47,27 +47,44 @@ skip、`test:routing` 4/4、`test:engineering` 4/4（离线模式）、Nano 相�
 
 ## 下一步
 
-阶段 0 独立 Review 已通过。阶段 1（参考应用改用包内迁移链，P1-D）方案 A 已于 2026-11-18 由用户确认；
-P1-1 已审核发布，P1-2 已实现并通过正式合成验收，当前下一张卡为 P1-3。设计见
+阶段 0 独立 Review 已通过。阶段 1（参考应用改用包内迁移链，P1-D）方案 A 已于 2026-11-18 由用户确认。
+P1-1、P1-2 已独立 Review 并发布；P1-3 实施与合成验收通过，独立 Review 和提交发布状态以同卡回执为准。
+当前停在阶段 1 整体 Review，后续 PR 由用户创建。设计见
 [阶段 1 设计](docs/plans/2026-11-17-platform-phase1-design.md)。
 
 - **P1-1 产品 CMS/反馈迁移模块**：已完成并审核发布，基线提交为 `260f664`。产品模块以静态 SQL 复用旧链的
   5 张表、6 个枚举、13 个约束和 21 个索引；`nano_payments_cms` 装配由四个平台模块加
   `cms_feedback` 组成。
-- **P1-2 接管核对 + 账本回填**：实现与合成验收已完成，独立 Review 和提交发布见本卡回执。包内
+- **P1-2 接管核对 + 账本回填**：已独立 Review 并发布，发布提交为 `ac42561`。包内
   `/migrations` 导出 `captureMigrationSchemaContract` 与 `takeoverMigrations`；公开合同固定为
   `formatVersion`、`postgresMajor`、`profile`、`modules`、`schemaHash`，完整结构类别在包内生成摘要并保留
   分项 hash 诊断。接管复用普通 runner 的默认 advisory lock、事务、账本 DDL 与写入，锁后先核完整旧
   `_n2` journal、实际结构指纹和完整 `_niu` 元数据，验证通过才允许缺失账本的首次回填；接管路径不执行
   任何 `module.statements`。半份账本、错误旧 ref、结构漂移和自定义账本名均 fail closed，旧账本与旧业务
   数据保留。正式 PG16 测试还以合成触发器令第二个元数据 DDL 报错，确认两个账本原子回滚。
-- **P1-3 应用接线 + 启动只读检查**：下一张卡，未开始。
+- **P1-3 应用接线 + 启动只读检查**：实施与合成验收通过，独立 Review、提交发布以同卡回执为准。
+  `pnpm --filter @niu/web db:migrate` 现使用 `PRODUCT_MIGRATION_PLAN`：单连接只读探针先核对连接身份和
+  `_n2` 是否存在，探针关闭连接后，空库/原生 `_niu` 库走包内 `runMigrations`，保留 `_n2` 的旧库走
+  `takeoverMigrations` 与冻结的 PG16 结构合同。真实 Node 服务的 `instrumentation.register` 在 Sentry、
+  Nano 启动前执行只读产品兼容检查；build/export 跳过，edge 分支保持原状。Next 16.3.3 的框架层会先
+  bind 并打印 `Ready`，随后执行 `instrumentation`；兼容性失败使进程 exit 1，不启动 Sentry/Nano，不进入
+  可服务状态。
 
-P1-2 正式验收结果：typecheck 20 个 task 通过；lint 为 106 个既有 warning、0 个 error；PG16 下 domain
-273 项、packages 211 项均通过且零 skip；routing 4 项和离线 engineering 4 项通过。从包链合成参考库
-生成的 PG16 结构指纹与完整旧链匹配；并发接管得到一次 applied[5]、一次 skipped[5]，重复接管与普通
-runner 均保持 `_n2`、`_niu` 两代账本。临时数据库、故障注入与容器均已清理。该指纹只证明本阶段 PG16
-合成合同，不声明其他 PostgreSQL 版本、真实数据或生产迁移已获验收。
+历史阶段验收保留如下，均只代表当次冻结范围：
+
+- **P1-1（P1-2 开始前）**：PG16 domain 267、packages 211，零 skip；合成库在验收后清理。
+- **P1-2（P1-3 开始前）**：typecheck 20、lint 106 个既有 warning/0 error、PG16 domain 273、packages 211、
+  routing 4、离线 engineering 4。包链参考结构指纹与完整旧链匹配；并发接管得到一次 applied[5]、一次
+  skipped[5]，重复接管与普通 runner 均保持 `_n2`、`_niu` 两代账本；故障注入确认两个账本原子回滚。
+- **P1-3（2026-11-18 最终门禁）**：PG16 domain 280、packages 211，零 skip、14 个独立合成库；
+  typecheck 20、lint 106 个既有 warning/0 error/0 新增、routing 4、离线 engineering 4，均 exit 0。
+  Webpack 冷构建在临时 8 GiB 堆内存条件下 exit 0；兼容库 `next start` 返回 HTTP 200，删除
+  `feedback_replies` 后 `next start` exit 1，两张 `_niu` 元数据和缺表状态保持不变。测试容器已清理。
+
+首轮真实 Next 16.3.3 启动验收曾出现“检查已报告安全错误，但 `prepare().catch` 只记录日志、进程继续存活
+30 秒”的 RED。修正后 Node 实际服务入口在兼容检查失败时先完成只读检查的 `finally` 清理，再输出安全错误并
+显式非零退出；真实 `next start` 复验通过。该结果不包含真实 provider、SSO、registry、真实业务数据或生产
+环境，真实依赖/环境仍未验；E3 的默认构建内存问题仍未解决，8 GiB 只是本次冷构建 workaround。
 
 接管期间必须在运维上停用旧应用 DDL 执行入口（包括旧 `db:migrate`/旧 runner 的活跃调用）。包内
 advisory lock 只协调包内迁移与 takeover；旧 runner 使用不同锁域，不能假定二者会互斥。历史迁移 SQL、
