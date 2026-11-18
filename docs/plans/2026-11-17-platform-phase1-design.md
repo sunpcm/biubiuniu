@@ -1,6 +1,6 @@
-# 阶段 1 设计：参考应用改用包内迁移链（P1-D，待用户确认）
+# 阶段 1 设计：参考应用改用包内迁移链（P1-D，方案 A 已确认，实施暂停）
 
-本页只设计，不实施。目标是让 `apps/web` 成为 `_niu` 链的第一个真实消费者：`apps/web` 使用包内
+方案 A 已确认，实施暂停；本页只记录已确认设计。目标是让 `apps/web` 成为 `_niu` 链的第一个真实消费者：`apps/web` 使用包内
 runner（`packages/persistence-pg` 的 `runMigrations` / `checkProfileCompatibility`），CMS/反馈表变成
 产品自有迁移模块，启动时接入只读兼容检查，并废弃应用内重复 runner 的活跃接线。阶段 0 的 auth gate
 （release gate 加 `auth` profile、`_niu`↔`_n2` DDL 等价守护、`legacy-reference` 口径修正）已完成，本卡
@@ -57,10 +57,11 @@ runner（`packages/persistence-pg` 的 `runMigrations` / `checkProfileCompatibil
 | 2 接管核对 + 账本回填     | 新增“结构核对 + 仅回填 `_niu` 账本”的 takeover 能力（建议落在 `packages/persistence-pg/src/migrations` 的 takeover 导出）。建议测试入口 `test/packages/pg-takeover.test.mjs`（需合成 PG）                                                                                                                                                                                                         | 用既有 `_n2` runner 建好合成旧库后跑接管：通过后 `_niu` 账本含各模块行、`_n2` 账本仍保留、无业务 DDL；故意改一处列差异时拒绝且不写 `_niu` 账本。`pg-takeover.test.mjs` 属待新增，本卡未运行                                                                                                                                 | 连接非自建合成 PG、自动修差异、删除旧账本或执行业务 DDL                   |
 | 3 应用接线 + 启动只读检查 | `apps/web` 的 `db:migrate` 与启动路径改走包内 runner（含产品模块）；废弃重复 runner 活跃 import；启动接入 `checkProfileCompatibility`（含产品 sentinel）。建议测试入口 `test/packages/pg-startup-compat.test.mjs`（需合成 PG）                                                                                                                                                                    | 空库与旧 `_n2` 库上 `pnpm --filter @niu/web db:migrate` 都走包内入口；构造不兼容库时检查返回 incompatible 且应用拒绝启动。`pg-startup-compat.test.mjs` 属待新增，本卡未运行                                                                                                                                                 | 改历史迁移字节、自动迁移生产/非自建库、启动检查建 journal                 |
 
-## 四、待确认、回退前提与不变量
+## 四、方案 A 已确认、回退前提与不变量
 
-本设计待用户确认后再拆卡实施。`docs/plans/2026-11-11-nano-followups.md` 末段“接管等触发再立项”与
-路线图阶段 1“唯一不该等触发条件”冲突：本卡不改这两个旧文件，用户确认本设计后由主控统一修正该口径。
+方案 A 已由用户确认（2026-11-18），当前实施暂停，恢复从 P1-1 先红测试开始。`docs/plans/2026-11-11-nano-followups.md`
+末段“接管等触发再立项”与路线图阶段 1“唯一不该等触发条件”冲突：方案 A 已获批准，以本设计为阶段 1
+实施依据；两个旧文件的口径调整留对应实施卡处理，本收口不扩写集。
 
 回退前提仅限本阶段未改业务 schema 且旧应用仍接受当前数据库合同；不承诺后续任意版本重部署必可回退。
 

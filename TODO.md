@@ -47,11 +47,16 @@ skip、`test:routing` 4/4、`test:engineering` 4/4（离线模式）、Nano 相�
 
 ## 下一步
 
-阶段 0 独立 Review 已通过。阶段 1（参考应用改用包内迁移链，P1-D）设计见
-[阶段 1 设计](docs/plans/2026-11-17-platform-phase1-design.md)，**待用户确认；确认前不拆卡实施**。
+阶段 0 独立 Review 已通过。阶段 1（参考应用改用包内迁移链，P1-D）方案 A 已于 2026-11-18 由用户确认；
+当前整体实施暂停，恢复从 P1-1 先红测试开始。设计见
+[阶段 1 设计](docs/plans/2026-11-17-platform-phase1-design.md)。
+
+- **P1-1 产品 CMS/反馈迁移模块**：仅完成只读准备，未创建测试或产品代码。
+- **P1-2 接管核对 + 账本回填**：未开始。
+- **P1-3 应用接线 + 启动只读检查**：未开始。
 
 - **E1 管理员 credit ledger query key 统一**：独立 Review 已通过，已提交并推送（`9bc85df`）。
-- **E2 Google 字体构建期下载依赖**：验收事实已通过；最终 Review 及提交推送见主控同卡回执，用户 Review 待。
+- **E2 Google 字体构建期下载依赖**：独立 Review 已通过并提交推送（`3f78981`），用户 Review 待。
 - **E3 构建默认 V8 堆内存不足**：默认 V8 堆 OOM 已复现；单独
   `webpackMemoryOptimizations` 候选同条件仍失败，已撤回；未修，需后续剖析；不能等同
   4 GiB 容器限制。
