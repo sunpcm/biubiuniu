@@ -64,6 +64,15 @@ pnpm build:packages
 
 ```
 
+首次启动或迁移版本变化后，只面向已授权的合成数据库或明确授权的开发数据库，由宿主或受控密钥入口
+显式安全注入 `DATABASE_URL`，不要从真实 `.env` 读取或把连接串写入仓库。在已注入该变量的进程环境中
+执行：
+
+```bash
+pnpm --filter @niu/web db:migrate
+
+```
+
 随后启动 Nexty 参考 Web 应用：
 
 ```bash

@@ -84,6 +84,7 @@ export function productMigrationOptions(rawUrl?: string): MigrationRunnerOptions
     modules: PRODUCT_MIGRATION_PLAN.modules,
     roots: PRODUCT_MIGRATION_PLAN.roots,
     guard: targetGuard(target),
+    sentinels: PRODUCT_SCHEMA_SENTINELS,
   };
 }
 
@@ -92,7 +93,6 @@ export function checkProductDatabaseCompatibility(
 ): Promise<MigrationCompatibility> {
   return checkProfileCompatibility({
     ...productMigrationOptions(rawUrl),
-    sentinels: PRODUCT_SCHEMA_SENTINELS,
     requireProfileActivation: true,
   });
 }

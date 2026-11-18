@@ -68,12 +68,23 @@ interface RelationKindRow {
   relation_kind: string;
 }
 
+type PublicRelationState =
+  | { kind: "missing" }
+  | { kind: "table" }
+  | { kind: "other"; relationKind: string };
+
 interface ProductJournalRow {
   module_name: string;
   version: number;
   contract_version: number;
   checksum: string;
   raw_checksum: string;
+}
+
+interface ForeignKeyTriggerRow {
+  table_name: string;
+  trigger_name: string;
+  enabled: string;
 }
 
 function compareText(left: string, right: string): number {
@@ -157,6 +168,40 @@ async function assertPublicRelationKinds(sql: postgres.Sql): Promise<void> {
     throw new Error(
       "Unsupported public relation in migration schema contract: " +
         rejected.map((row) => `${row.relation_name}(${row.relation_kind})`).join(", "),
+    );
+  }
+}
+
+async function assertForeignKeyTriggerExecution(sql: postgres.Sql): Promise<void> {
+  const rows = await sql<ForeignKeyTriggerRow[]>`
+    select
+      table_class.relname as table_name,
+      trigger_record.tgname as trigger_name,
+      trigger_record.tgenabled::text as enabled
+    from pg_catalog.pg_trigger as trigger_record
+    join pg_catalog.pg_class as table_class
+      on table_class.oid = trigger_record.tgrelid
+    join pg_catalog.pg_namespace as namespace
+      on namespace.oid = table_class.relnamespace
+    join pg_catalog.pg_constraint as constraint_record
+      on constraint_record.oid = trigger_record.tgconstraint
+    where namespace.nspname = 'public'
+      and table_class.relkind in ('r', 'p')
+      and trigger_record.tgisinternal
+      and constraint_record.contype = 'f'
+    order by
+      table_class.relname collate "C",
+      trigger_record.tgname collate "C"
+  `;
+  const rejected = rows.filter(({ enabled }) => enabled !== "O" && enabled !== "A");
+  if (rejected.length > 0) {
+    throw new Error(
+      "Foreign key trigger execution is not enabled for origin: " +
+        rejected
+          .map(
+            ({ table_name, trigger_name, enabled }) => `${table_name}.${trigger_name}(${enabled})`,
+          )
+          .join(", "),
     );
   }
 }
@@ -476,11 +521,21 @@ export async function captureMigrationSchemaContract(
   };
 }
 
-async function relationExists(sql: postgres.Sql, identifier: string): Promise<boolean> {
-  const [row] = await sql<{ exists: boolean }[]>`
-    select pg_catalog.to_regclass(${publicRelation(identifier)}) is not null as exists
+async function publicRelationState(
+  sql: postgres.Sql,
+  identifier: string,
+): Promise<PublicRelationState> {
+  const [row] = await sql<{ relation_kind: string }[]>`
+    select relation.relkind::text as relation_kind
+    from pg_catalog.pg_class as relation
+    join pg_catalog.pg_namespace as namespace
+      on namespace.oid = relation.relnamespace
+    where namespace.nspname = 'public'
+      and relation.relname = ${identifier}
   `;
-  return row?.exists === true;
+  if (!row) return { kind: "missing" };
+  if (row.relation_kind === "r" || row.relation_kind === "p") return { kind: "table" };
+  return { kind: "other", relationKind: row.relation_kind };
 }
 
 async function assertLegacyJournal(
@@ -496,8 +551,14 @@ async function assertLegacyJournal(
   if (expected.length === 0) {
     throw new Error("Legacy migration journal expectation is empty");
   }
-  if (!(await relationExists(tx, LEGACY_JOURNAL))) {
+  const state = await publicRelationState(tx, LEGACY_JOURNAL);
+  if (state.kind === "missing") {
     throw new Error("Legacy migration journal is missing");
+  }
+  if (state.kind === "other") {
+    throw new Error(
+      `Legacy migration journal must be an ordinary or partitioned table, found (${state.relationKind})`,
+    );
   }
 
   const actualResult = await tx<{ name: string; checksum: string }[]>`
@@ -531,8 +592,20 @@ async function inspectProductMetadata(
   names: { journal: string; profile: string },
   plan: MigrationPlan,
 ): Promise<"missing" | "complete"> {
-  const journalExists = await relationExists(tx, names.journal);
-  const profileExists = await relationExists(tx, names.profile);
+  const journalState = await publicRelationState(tx, names.journal);
+  const profileState = await publicRelationState(tx, names.profile);
+  for (const [name, state] of [
+    [names.journal, journalState],
+    [names.profile, profileState],
+  ] as const) {
+    if (state.kind === "other") {
+      throw new Error(
+        `Product migration metadata ${name} must be an ordinary or partitioned table, found (${state.relationKind})`,
+      );
+    }
+  }
+  const journalExists = journalState.kind === "table";
+  const profileExists = profileState.kind === "table";
   if (journalExists !== profileExists) {
     throw new Error("Product migration metadata is incomplete: journal/profile mismatch");
   }
@@ -597,6 +670,7 @@ export async function takeoverMigrations(
 
       await assertLegacyJournal(tx, options.legacyJournal);
       await assertPublicRelationKinds(tx);
+      await assertForeignKeyTriggerExecution(tx);
       const captured = await captureSchemaSnapshot(tx);
       assertSchemaContract(options.schemaContract, plan, captured);
 

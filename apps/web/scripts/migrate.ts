@@ -16,19 +16,28 @@ async function legacyJournalExists(
       {
         database: string;
         role: string;
-        legacy_journal: boolean;
+        legacy_journal_kind: string | null;
       }[]
     >`
       select
         pg_catalog.current_database() as database,
         current_user as role,
-        pg_catalog.to_regclass('public._n2_migration_journal') is not null as legacy_journal
+        (
+          select relation.relkind::text
+          from pg_catalog.pg_class as relation
+          join pg_catalog.pg_namespace as namespace
+            on namespace.oid = relation.relnamespace
+          where namespace.nspname = 'public'
+            and relation.relname = '_n2_migration_journal'
+        ) as legacy_journal_kind
     `;
     if (!probe) {
       throw new Error("Migration database probe returned no identity");
     }
     guard(probe.database, probe.role);
-    return probe.legacy_journal;
+    if (probe.legacy_journal_kind === null) return false;
+    if (probe.legacy_journal_kind === "r" || probe.legacy_journal_kind === "p") return true;
+    throw new Error("Legacy migration journal must be an ordinary or partitioned table");
   } finally {
     await sql.end();
   }

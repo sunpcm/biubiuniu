@@ -230,7 +230,7 @@ export async function runMigrations(options: MigrationRunnerOptions): Promise<Mi
   const plan = resolveMigrationPlan(options);
   const names = assertMigrationJournalNames(options);
   const journalQ = publicRelation(names.journal);
-  const sentinels = migrationSchemaSentinels(plan.modules);
+  const sentinels = resolvedSentinels(plan.modules, options.sentinels);
   const sql = postgres(url, { max: 1 });
   const report: MigrationReport = {
     profile: plan.profile,
@@ -296,10 +296,7 @@ export async function runMigrations(options: MigrationRunnerOptions): Promise<Mi
 
       if (verifySchema) {
         for (const table of sentinels.tables) {
-          const [row] = await tx<{ exists: boolean }[]>`
-          select pg_catalog.to_regclass(${`public.${table}`}) is not null as exists
-          `;
-          if (row?.exists) report.verified.push(table);
+          if (await publicTableExists(tx, table)) report.verified.push(table);
         }
 
         for (const column of sentinels.columns) {
@@ -315,7 +312,15 @@ export async function runMigrations(options: MigrationRunnerOptions): Promise<Mi
           if (row?.exists) report.verified.push(column);
         }
 
-        const expected = [...sentinels.tables, ...sentinels.columns];
+        for (const enumName of sentinels.enums) {
+          if (await publicEnumExists(tx, enumName)) report.verified.push(`enum:${enumName}`);
+        }
+
+        const expected = [
+          ...sentinels.tables,
+          ...sentinels.columns,
+          ...sentinels.enums.map((name) => `enum:${name}`),
+        ];
         const missing = expected.filter((item) => !report.verified.includes(item));
         if (missing.length > 0) {
           throw new Error(`Migration verification failed: missing=${missing.join(",")}`);
@@ -339,6 +344,21 @@ async function publicTableExists(sql: postgres.Sql, table: string): Promise<bool
       where namespace.nspname = 'public'
         and relation.relname = ${table}
         and relation.relkind in ('r', 'p')
+    ) as exists
+  `;
+  return row?.exists === true;
+}
+
+async function publicEnumExists(sql: postgres.Sql, enumName: string): Promise<boolean> {
+  const [row] = await sql<{ exists: boolean }[]>`
+    select exists (
+      select 1
+      from pg_catalog.pg_type as enum_type
+      join pg_catalog.pg_namespace as namespace
+        on namespace.oid = enum_type.typnamespace
+      where namespace.nspname = 'public'
+        and enum_type.typtype = 'e'
+        and enum_type.typname = ${enumName}
     ) as exists
   `;
   return row?.exists === true;
@@ -469,18 +489,9 @@ export async function checkProfileCompatibility(
     }
 
     for (const enumName of sentinels.enums) {
-      const [row] = await sql<{ exists: boolean }[]>`
-        select exists (
-          select 1
-          from pg_catalog.pg_type as enum_type
-          join pg_catalog.pg_namespace as namespace
-            on namespace.oid = enum_type.typnamespace
-          where namespace.nspname = 'public'
-            and enum_type.typtype = 'e'
-            and enum_type.typname = ${enumName}
-        ) as exists
-      `;
-      if (!row?.exists) result.missingTables.push(`enum:${enumName}`);
+      if (!(await publicEnumExists(sql, enumName))) {
+        result.missingTables.push(`enum:${enumName}`);
+      }
     }
   } finally {
     await sql.end();

@@ -66,7 +66,6 @@ node --version   # 期望 v24.15.0
 pnpm --version   # 期望 10.26.0
 HUSKY=0 pnpm install --frozen-lockfile
 pnpm build:packages
-pnpm dev:web
 ```
 
 `apps/web/.env.example` 只作为变量模板；实际值由宿主安全注入。不得复制本机真实 `.env`。
@@ -74,6 +73,14 @@ pnpm dev:web
 skip 语义见 [`docs/agent-review-loop.md`](docs/agent-review-loop.md)；迁移入口和合同见
 [`docs/migrations-canonical.md`](docs/migrations-canonical.md)。缺变量导致用例 skip 时，该项仍为
 未验证。
+
+正式启动 Web 前，由宿主或受控密钥入口显式安全注入 `DATABASE_URL`；不要读取真实 `.env` 或把连接串
+写入仓库。只在已授权的合成数据库或明确授权的开发数据库上执行构建包和迁移步骤：
+
+```bash
+pnpm --filter @niu/web db:migrate
+pnpm dev:web
+```
 
 不要复制会话、数据库卷、依赖缓存或整个 review 目录。本机技能、模型别名、MCP、浏览器和历史
 资源在远端不保证可用；先按宿主实际能力核验。缺少浏览器能力时，把浏览器验收保留为本地执行点，
