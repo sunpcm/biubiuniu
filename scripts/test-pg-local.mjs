@@ -20,6 +20,8 @@ const names = Object.freeze({
   foreign: `${prefix}n3_commerce_foreign`,
   profiles: `${prefix}n3_profiles`,
   product: `${prefix}n3_product`,
+  takeover: `${prefix}n3_takeover`,
+  takeoverReference: `${prefix}n3_takeover_reference`,
 });
 
 function processEnvironment(source = process.env) {
