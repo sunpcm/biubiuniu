@@ -101,15 +101,15 @@ React 中的预览和提示词。
 
 下列各处与当前代码不符，都是纯文档改动：
 
-| 文件 | 问题 | 改成 |
-| --- | --- | --- |
-| `docs/agent-review-loop.md` | 写领域参考库是 `nexty_overnight_20261105_test` | `test/domain/helpers.ts:13` 实际要求 `nexty_overnight_20261105_n4_app`，并需要 `DOMAIN_TEST_EXPECTED_DATABASE`、`DOMAIN_TEST_EXPECTED_PORT` |
-| 同上 | 写“未注入连接变量时 PG 用例只 skip” | `test:domain` 缺变量时是 fail；auth 相关用例还需要 `BETTER_AUTH_SECRET` |
-| 同上 | 没提代理环境下 `test:engineering` 要用离线模式 | 补上通用规则里那段做法 |
-| `docs/migrations-canonical.md` | 只讲 `_n2`，读者会以为只有一条链 | 开头加一句指向 `docs/platform-architecture.md` §6 的 `_niu` 链 |
-| `docs/platform-architecture.md` §6 | “启动兼容检查是只读的”读起来像应用已接入 | 补一句：参考应用当前用 `_n2` 链，没有在启动时调用任何兼容检查 |
-| `apps/web/scripts/check-db-compat.ts:4` | 注释写“two canonical identities” | 现在是三份迁移 |
-| `TODO.md` 第 1 项 | 写“按 userId 隔离” | 已在本分支按 subject 实现，改为已完成并指向 T2 的浏览器验证 |
+| 文件                                    | 问题                                           | 改成                                                                                                                                        |
+| --------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/agent-review-loop.md`             | 写领域参考库是 `nexty_overnight_20261105_test` | `test/domain/helpers.ts:13` 实际要求 `nexty_overnight_20261105_n4_app`，并需要 `DOMAIN_TEST_EXPECTED_DATABASE`、`DOMAIN_TEST_EXPECTED_PORT` |
+| 同上                                    | 写“未注入连接变量时 PG 用例只 skip”            | `test:domain` 缺变量时是 fail；auth 相关用例还需要 `BETTER_AUTH_SECRET`                                                                     |
+| 同上                                    | 没提代理环境下 `test:engineering` 要用离线模式 | 补上通用规则里那段做法                                                                                                                      |
+| `docs/migrations-canonical.md`          | 只讲 `_n2`，读者会以为只有一条链               | 开头加一句指向 `docs/platform-architecture.md` §6 的 `_niu` 链                                                                              |
+| `docs/platform-architecture.md` §6      | “启动兼容检查是只读的”读起来像应用已接入       | 补一句：参考应用当前用 `_n2` 链，没有在启动时调用任何兼容检查                                                                               |
+| `apps/web/scripts/check-db-compat.ts:4` | 注释写“two canonical identities”               | 现在是三份迁移                                                                                                                              |
+| `TODO.md` 第 1 项                       | 写“按 userId 隔离”                             | 已在本分支按 subject 实现，改为已完成并指向 T2 的浏览器验证                                                                                 |
 
 ### T7 连接建立前的网络失败改判为确定失败
 
@@ -128,17 +128,18 @@ React 中的预览和提示词。
 
 ## 需要用户先决策，暂时不要做
 
-| 事项 | 卡在哪 |
-| --- | --- |
-| provider 返回 5xx 且未收到任何流内容时，是否算确定失败 | 取决于 provider 对 5xx 是否计费，仓库里查不到 |
-| 输入图和结果图的保留期 | 合规和产品口径。现状是永久留在 `nano_tasks` 行里 |
-| 团队工作区内成员能否互相查看、取消任务 | 产品口径。现状是可以 |
-| 结果图迁出 PG 行、改存对象存储 | 等保留期定了再做；读取投影已经先缓解了热路径 |
+| 事项                                                   | 卡在哪                                           |
+| ------------------------------------------------------ | ------------------------------------------------ |
+| provider 返回 5xx 且未收到任何流内容时，是否算确定失败 | 取决于 provider 对 5xx 是否计费，仓库里查不到    |
+| 输入图和结果图的保留期                                 | 合规和产品口径。现状是永久留在 `nano_tasks` 行里 |
+| 团队工作区内成员能否互相查看、取消任务                 | 产品口径。现状是可以                             |
+| 结果图迁出 PG 行、改存对象存储                         | 等保留期定了再做；读取投影已经先缓解了热路径     |
 
 ## 明确不做
 
 - 不拆独立 Worker。部署是长驻 Node 进程，进程内 sweeper 够用。
 - 不为 unknown 做管理员人工处置页面和审计表。已按用户决定采用超时自动退款。
 - 不新增 `AuthSeatPolicy` 接口。静态 billing 端口已经满足“有组织、无计费”。
-- `_n2` 到 `_niu` 的接管、`persistence-pg` 内部依赖改 optional peer、统一生命周期容器：
-  等出现具体触发条件再立项。
+- `_n2` 到 `_niu` 的接管已由方案 A 批准，归入阶段 1 的 P1-2，不再等待触发条件；见
+  [`2026-11-17-platform-phase1-design.md`](2026-11-17-platform-phase1-design.md)。
+- `persistence-pg` 内部依赖改 optional peer、统一生命周期容器：等出现具体触发条件再立项。

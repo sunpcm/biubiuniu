@@ -9,14 +9,15 @@
 pnpm test:pg:local
 ```
 
-命令构建实际包产物，创建本次独占的临时 PG，初始化九个合成库，串行运行全部
+命令构建实际包产物，创建本次独占的临时 PG，初始化十个独立合成库，串行运行全部
 `test/domain/*.test.ts` 和 `test/packages/*.test.mjs`，最后停止并删除本次容器。数据位于 tmpfs，
 不挂载已有卷；宿主只发布 `127.0.0.1` 随机端口。正常、失败和 SIGINT/SIGTERM 路径都校验
 本次随机 owner 标签后清理。不要用 `git clean` 或删除共享 Docker 卷处理测试失败。
 
 脚本不读 `.env`，不继承调用者的数据库、provider、支付或 SSO 凭据；连接、secret 和测试身份均
 临时生成。领域应用库、两份迁移故障库、冻结参考库、Auth-only、Auth+Credits、两个 Commerce
-实例库和 profile 库相互分开。参考库仅应用原始 `0000`、`0001`，不含 `0002_nano`。
+实例库、profile 库和 product 库相互分开。参考库仅应用原始 `0000`、`0001`，不含 `0002_nano`；
+product 库用于从固定旧链基准读取并核验 `nano_payments_cms` 新装配的空库产物。
 
 domain 测试对齐合成 `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_BETTER_AUTH_URL`，保留 Origin 检查；
 package 测试单独使用 `NODE_ENV=test`，适配现有显式短 secret 的测试夹具。这不代表验证了真实

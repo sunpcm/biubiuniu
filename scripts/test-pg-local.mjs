@@ -19,6 +19,7 @@ const names = Object.freeze({
   commerce: `${prefix}n3_commerce`,
   foreign: `${prefix}n3_commerce_foreign`,
   profiles: `${prefix}n3_profiles`,
+  product: `${prefix}n3_product`,
 });
 
 function processEnvironment(source = process.env) {
@@ -291,7 +292,8 @@ export async function main() {
             }
             await delay(100);
           }
-          if (!removed) throw new Error("Temporary PG stopped but container removal did not finish");
+          if (!removed)
+            throw new Error("Temporary PG stopped but container removal did not finish");
           console.log(`[PG local] Removed ${container}`);
         }
       }
