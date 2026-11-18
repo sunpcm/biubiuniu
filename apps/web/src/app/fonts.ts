@@ -1,5 +1,6 @@
 /**
- * [INPUT]: Depends on next/font/google self-hosted font loading
+ * [INPUT]: Depends on next/font/local with pinned, license-complete local
+ *           assets (see fonts/SOURCES.md for upstream commit / SHA / OFL)
  * [OUTPUT]: Exports inter, karla and pacifico (brand script face, injects the
  *           --font-pacifico variable, mapped to the font-brand utility in
  *           styles/custom.utilities.css)
@@ -7,27 +8,28 @@
  * [PROTOCOL]: Update this header on changes, then check CLAUDE.md
  */
 
-// https://fonts.google.com/
+import localFont from "next/font/local";
 
-import { Inter, Karla, Pacifico } from 'next/font/google'
-
-export const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-})
+export const inter = localFont({
+  src: "./fonts/Inter-Variable.ttf",
+  weight: "100 900",
+  display: "swap",
+  variable: "--font-sans",
+});
 
 /* ------------------------------------------------------------------ */
 /*  Brand face: Pacifico script, same spirit as the cursive "n" logo   */
 /*  Usage: the font-brand utility (see styles/custom.utilities.css)    */
 /* ------------------------------------------------------------------ */
-export const pacifico = Pacifico({
+export const pacifico = localFont({
+  src: "./fonts/Pacifico-Regular.ttf",
   weight: "400",
   display: "swap",
-  subsets: ["latin"],
   variable: "--font-pacifico",
-})
+});
 
-export const karla = Karla({
-  subsets: ['latin'],
-  display: 'swap',
-})
+export const karla = localFont({
+  src: "./fonts/Karla-Variable.ttf",
+  weight: "200 800",
+  display: "swap",
+});

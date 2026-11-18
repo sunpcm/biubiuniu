@@ -20,7 +20,7 @@ import ToltScript from "@/components/tracking/ToltScript";
 import UmamiScript from "@/components/tracking/UmamiScript";
 import { UserSourceDeviceSync } from "@/components/tracking/UserSourceDeviceSync";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
-import { pacifico } from "@/app/fonts";
+import { inter, pacifico } from "@/app/fonts";
 import { DomTranslationGuard } from "@/components/shared/DomTranslationGuard";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
@@ -32,27 +32,15 @@ import "@/styles/loading.css";
 import { Analytics } from "@vercel/analytics/react";
 import { Metadata, Viewport } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import {
-  getMessages,
-  getTranslations,
-  setRequestLocale,
-} from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
-import { Inter as FontSans } from "next/font/google";
 import { notFound } from "next/navigation";
-
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
 
 type MetadataProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata({
-  params,
-}: MetadataProps): Promise<Metadata> {
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Home" });
 
@@ -76,8 +64,7 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const COOKIE_CONSENT_ENABLED =
-    process.env.NEXT_PUBLIC_COOKIE_CONSENT_ENABLED === "true";
+  const COOKIE_CONSENT_ENABLED = process.env.NEXT_PUBLIC_COOKIE_CONSENT_ENABLED === "true";
 
   // Ensure that the incoming `locale` is valid
   if (!hasLocale(routing.locales, locale)) {
@@ -91,11 +78,7 @@ export default async function LocaleLayout({
     // translate="no": whole-page browser translation mutates the text nodes
     // React manages, causing removeChild/insertBefore crashes
     // (facebook/react#11538) — disabled site-wide
-    <html
-      lang={locale || DEFAULT_LOCALE}
-      translate="no"
-      suppressHydrationWarning
-    >
+    <html lang={locale || DEFAULT_LOCALE} translate="no" suppressHydrationWarning>
       <head>
         <DomTranslationGuard />
         <meta name="google" content="notranslate" />
@@ -103,17 +86,13 @@ export default async function LocaleLayout({
       </head>
       <body
         className={cn(
-          "min-h-screen bg-background flex flex-col",
-          fontSans.variable,
-          pacifico.variable
+          "bg-background flex min-h-screen flex-col",
+          inter.variable,
+          pacifico.variable,
         )}
       >
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme={siteConfig.defaultNextTheme}
-            enableSystem
-          >
+          <ThemeProvider attribute="class" defaultTheme={siteConfig.defaultNextTheme} enableSystem>
             <PostHogProvider>
               <FeedbackProvider>
                 {messages.LanguageDetection && <LanguageDetectionAlert />}

@@ -50,8 +50,9 @@ skip、`test:routing` 4/4、`test:engineering` 4/4（离线模式）、Nano 相�
 阶段 0 独立 Review 已通过。阶段 1（参考应用改用包内迁移链，P1-D）设计见
 [阶段 1 设计](docs/plans/2026-11-17-platform-phase1-design.md)，**待用户确认；确认前不拆卡实施**。
 
-- **E1 管理员 credit ledger query key 统一**：实施完成；独立 Review 及提交状态见主控回执，本节点不自批。
-- 仍待评估、未排期：构建默认 4 GiB 内存不足（临时 8 GiB 通过不等于修复）；Google 字体的构建期下载依赖。
+- **E1 管理员 credit ledger query key 统一**：独立 Review 已通过，已提交并推送（`9bc85df`）。
+- **E2 Google 字体构建期下载依赖**：验收事实已通过；最终 Review 及提交推送见主控同卡回执，用户 Review 待。
+- **E3 构建默认 4 GiB 内存不足**：未修（临时 8 GiB 通过不等于修复），待排期。
 
 ## 等用户决定，暂时不做
 
