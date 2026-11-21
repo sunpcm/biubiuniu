@@ -1,6 +1,7 @@
 {
-  "name": "@biu/postcss-config",
+  "name": "@niu/postcss-config",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "main": "./index.js",
   "exports": {
@@ -11,9 +12,7 @@
     "autoprefixer": "catalog:",
     "tailwindcss": "catalog:"
   },
-  "scripts": {
-    "test": "echo \"(@biu/postcss-config) no tests\""
-  },
+  "scripts": {},
   "license": "ISC",
-  "prettier": "@biu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

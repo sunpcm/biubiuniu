@@ -5,7 +5,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "prettier": "@biu/prettier-config",
+  "prettier": "@sunpcm/niu-prettier-config",
 {{#if (eq kind "lib")}}
   "type": "module",
   "main": "./dist/index.js",
@@ -22,8 +22,7 @@
   "scripts": {
     "build": "pnpm exec tsc -p tsconfig.json --emitDeclarationOnly false",
     "lint": "pnpm exec eslint src --report-unused-disable-directives",
-    "typecheck": "pnpm exec tsc -p tsconfig.json --noEmit",
-    "test": "echo \"({{name}}) no tests\""
+    "typecheck": "pnpm exec tsc -p tsconfig.json --noEmit"
   },
 {{#if react}}
   "peerDependencies": {
@@ -32,8 +31,8 @@
   },
 {{/if}}
   "devDependencies": {
-    "@biu/eslint-config": "workspace:*",
-    "@biu/tsconfig": "workspace:*",
+    "@niu/eslint-config": "workspace:*",
+    "@niu/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
@@ -44,12 +43,10 @@
   "exports": {
     ".": "./index.js"
   },
-  "scripts": {
-    "test": "echo \"({{name}}) no tests\""
-  },
+  "scripts": {},
   "devDependencies": {
-    "@biu/eslint-config": "workspace:*",
-    "@biu/tsconfig": "workspace:*",
+    "@niu/eslint-config": "workspace:*",
+    "@niu/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"

@@ -1,0 +1,84 @@
+{
+  "title": "My Feedback",
+  "description": "Track your feedback and suggestions",
+  "admin": {
+    "title": "Feedbacks",
+    "description": "Manage user feedback"
+  },
+  "emptyState": {
+    "title": "No feedback yet",
+    "description": "Share your ideas or report issues to help us improve"
+  },
+  "button": {
+    "newFeedback": "Send Feedback",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "cancel": "Cancel",
+    "viewDetails": "View Details",
+    "reply": "Reply",
+    "replying": "Replying..."
+  },
+  "form": {
+    "title": "Send Feedback",
+    "description": "Your feedback helps us build a better product",
+    "type": {
+      "label": "Feedback Type",
+      "placeholder": "Select a type",
+      "feature_request": "Feature Request",
+      "bug_report": "Bug Report",
+      "improvement": "Improvement",
+      "other": "Other"
+    },
+    "subject": {
+      "label": "Subject",
+      "placeholder": "Brief summary of your feedback",
+      "error": "Subject must be {min}-{max} characters"
+    },
+    "descriptionField": {
+      "label": "Description",
+      "placeholder": "Describe your feedback in detail...",
+      "error": "Description must be {min}-{max} characters"
+    }
+  },
+  "filter": {
+    "type": "Type",
+    "status": "Status",
+    "all": "All"
+  },
+  "type": {
+    "feature_request": "Feature Request",
+    "bug_report": "Bug Report",
+    "improvement": "Improvement",
+    "other": "Other"
+  },
+  "status": {
+    "submitted": "Submitted",
+    "under_review": "Under Review",
+    "planned": "Planned",
+    "in_progress": "In Progress",
+    "completed": "Completed",
+    "declined": "Declined"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "detail": {
+    "title": "Feedback Detail",
+    "replies": "Replies",
+    "noReplies": "No replies yet",
+    "latestReplyAdmin": "Admin",
+    "replyPlaceholder": "Write your reply...",
+    "submitted": "Submitted {time}",
+    "updated": "Updated {time}",
+    "adminReply": "Admin · {time}",
+    "userReply": "{name} · {time}"
+  },
+  "toast": {
+    "submitSuccess": "Feedback submitted successfully!",
+    "submitError": "Failed to submit feedback. Please try again.",
+    "replyError": "Failed to send reply.",
+    "loginRequired": "Please sign in to submit feedback"
+  }
+}

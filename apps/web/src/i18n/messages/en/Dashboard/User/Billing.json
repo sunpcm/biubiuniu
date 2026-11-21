@@ -1,0 +1,98 @@
+{
+  "title": "Billing & Credits",
+  "description": "Manage your subscription, credit balance and purchase history.",
+  "balance": {
+    "title": "Credit balance",
+    "subscription": "Subscription credits",
+    "purchased": "Purchased credits",
+    "buyMore": "Buy more credits"
+  },
+  "sidebar": {
+    "subscriptionShort": "Sub",
+    "packShort": "Pack",
+    "upgrade": "Upgrade",
+    "buyPack": "Get credits",
+    "creditsTooltip": "Credit balance: {credits}"
+  },
+  "plan": {
+    "title": "Current plan",
+    "noPlan": "No active subscription",
+    "noPlanDescription": "Subscribe to get monthly credits at the best rate.",
+    "viewPlans": "View plans",
+    "manage": "Manage subscription",
+    "manageFailed": "Could not open the billing portal. Please try again.",
+    "monthlyCredits": "{credits} credits / month",
+    "renewsOn": "Renews on {date}",
+    "endsOn": "Ends on {date}",
+    "cancelNotice": "Your subscription will not renew. It ends on {date}.",
+    "nextRefresh": "Next credits refresh: {date}",
+    "nextRefreshUtc": "UTC {date}",
+    "interval": {
+      "month": "Monthly",
+      "year": "Yearly"
+    },
+    "status": {
+      "active": "Active",
+      "trialing": "Trial",
+      "past_due": "Past due",
+      "unpaid": "Unpaid"
+    }
+  },
+  "tabs": {
+    "orders": "Purchase history",
+    "credits": "Credit history"
+  },
+  "orders": {
+    "empty": "No purchases yet.",
+    "columns": {
+      "date": "Date",
+      "plan": "Plan",
+      "type": "Type",
+      "provider": "Provider",
+      "credits": "Credits",
+      "amount": "Amount"
+    },
+    "type": {
+      "one_time": "Credit pack",
+      "subscription_initial": "Subscription",
+      "subscription_renewal": "Renewal",
+      "subscription_upgrade": "Upgrade"
+    },
+    "status": {
+      "pending": "Pending settlement",
+      "failed": "Failed",
+      "partially_refunded": "Partially refunded",
+      "refunded": "Refunded"
+    },
+    "refundedAmount": "{amount} refunded"
+  },
+  "credits": {
+    "empty": "No credit activity yet.",
+    "columns": {
+      "date": "Date",
+      "type": "Type",
+      "note": "Details",
+      "amount": "Amount",
+      "balance": "Balance after"
+    },
+    "type": {
+      "purchase": "Purchase",
+      "subscription_grant": "Subscription grant",
+      "usage": "Usage",
+      "usage_refund": "Task refund",
+      "refund_revoke": "Refund clawback",
+      "subscription_end_revoke": "Subscription ended",
+      "admin_adjustment": "Adjustment",
+      "signup_bonus": "Welcome bonus"
+    },
+    "balanceBreakdown": "{subscription} sub · {purchased} purchased"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "range": "{from}-{to} of {total}"
+  },
+  "loadError": "Failed to load data. Please try again.",
+  "teamWorkspaceNotice": "You are in a team workspace — usage there draws from the team pool. This page shows your personal billing.",
+  "teamWorkspaceCta": "Go to team"
+}

@@ -1,0 +1,84 @@
+{
+  "title": "我的反馈",
+  "description": "追踪你的反馈和建议",
+  "admin": {
+    "title": "反馈管理",
+    "description": "管理用户反馈"
+  },
+  "emptyState": {
+    "title": "暂无反馈",
+    "description": "分享你的想法或反馈问题，帮助我们改进产品"
+  },
+  "button": {
+    "newFeedback": "发送反馈",
+    "submit": "提交",
+    "submitting": "提交中...",
+    "cancel": "取消",
+    "viewDetails": "查看详情",
+    "reply": "回复",
+    "replying": "回复中..."
+  },
+  "form": {
+    "title": "发送反馈",
+    "description": "你的反馈帮助我们打造更好的产品",
+    "type": {
+      "label": "反馈类型",
+      "placeholder": "选择类型",
+      "feature_request": "功能建议",
+      "bug_report": "问题报告",
+      "improvement": "改进建议",
+      "other": "其他"
+    },
+    "subject": {
+      "label": "标题",
+      "placeholder": "简要描述你的反馈",
+      "error": "标题需要 {min}-{max} 个字符"
+    },
+    "descriptionField": {
+      "label": "描述",
+      "placeholder": "详细描述你的反馈...",
+      "error": "描述需要 {min}-{max} 个字符"
+    }
+  },
+  "filter": {
+    "type": "类型",
+    "status": "状态",
+    "all": "全部"
+  },
+  "type": {
+    "feature_request": "功能建议",
+    "bug_report": "问题报告",
+    "improvement": "改进建议",
+    "other": "其他"
+  },
+  "status": {
+    "submitted": "已提交",
+    "under_review": "审核中",
+    "planned": "已计划",
+    "in_progress": "进行中",
+    "completed": "已完成",
+    "declined": "已关闭"
+  },
+  "priority": {
+    "low": "低",
+    "medium": "中",
+    "high": "高"
+  },
+  "detail": {
+    "title": "反馈详情",
+    "replies": "回复",
+    "noReplies": "暂无回复",
+    "latestReplyAdmin": "管理员",
+    "replyPlaceholder": "写下你的回复...",
+    "submitted": "提交于 {time}",
+    "updated": "更新于 {time}",
+    "adminReply": "管理员 · {time}",
+    "userReply": "{name} · {time}"
+  },
+  "toast": {
+    "submitSuccess": "反馈提交成功！",
+    "submitError": "提交失败，请重试。",
+    "replyError": "回复失败。",
+    "loginRequired": "请登录后再提交反馈"
+  }
+}

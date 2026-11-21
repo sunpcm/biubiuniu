@@ -1,0 +1,39 @@
+{
+  "metaTitle": "支付状态",
+  "metaDescription": "查看您的支付状态。",
+  "success": {
+    "title": "支付成功！",
+    "description": "感谢您的购买，积分已到账，随时可以使用。"
+  },
+  "asyncDescription": "感谢您的购买，支付已确认，积分将在片刻内到账 —— 请前往账单页查看。",
+  "details": {
+    "title": "购买详情",
+    "plan": "套餐",
+    "credits": "积分",
+    "creditsValue": "{credits} 积分",
+    "creditsPerMonth": "每月 {credits} 积分"
+  },
+  "processing": {
+    "title": "支付处理中",
+    "description": "您的支付正在确认中，通常只需片刻。",
+    "refreshHint": "请稍等几秒后刷新本页面查看最新状态。"
+  },
+  "failed": {
+    "title": "支付失败",
+    "description": "这笔支付未能完成，未发放任何积分。如有款项被暂扣，支付渠道会原路退回。您可以在定价页重新购买。"
+  },
+  "invalid": {
+    "title": "缺少支付凭证",
+    "description": "未找到可校验的支付会话。如果您已完成支付，积分仍会自动发放。"
+  },
+  "error": {
+    "title": "校验失败",
+    "description": "暂时无法校验本次支付。如果您已被扣款，积分仍会自动发放，请稍后在账单页查看。"
+  },
+  "buttons": {
+    "billing": "查看账单",
+    "dashboard": "前往控制台",
+    "refresh": "刷新",
+    "inviteTeam": "邀请成员"
+  }
+}

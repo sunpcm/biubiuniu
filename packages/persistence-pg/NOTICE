@@ -1,0 +1,8 @@
+Nexty persistence extraction
+
+The schema tables, enums, indexes, foreign keys, and migration SQL in this
+package reproduce the physical database model of the private Nexty reference
+application. This manifest uses UNLICENSED on purpose. The historical ISC
+default from the template generator does not mean the migrated database model
+may be redistributed. Product plans, brands, domains, and provider credentials
+stay with the caller.

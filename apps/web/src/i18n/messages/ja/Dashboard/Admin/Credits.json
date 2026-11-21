@@ -1,0 +1,60 @@
+{
+  "title": "クレジット管理",
+  "description": "全ユーザーのクレジット履歴 —— 付与・消費・返金回収・手動調整の一覧。",
+  "searchPlaceholder": "メールまたはメモで検索...",
+  "columns": {
+    "createdAt": "日時",
+    "user": "ユーザー",
+    "type": "種別",
+    "amount": "増減",
+    "balanceAfter": "変動後残高",
+    "note": "メモ"
+  },
+  "filters": {
+    "allTypes": "すべての種別",
+    "typePlaceholder": "種別"
+  },
+  "type": {
+    "purchase": "パック購入",
+    "subscription_grant": "サブスク付与",
+    "subscription_cycle_expire": "サイクル失効",
+    "usage": "消費",
+    "usage_refund": "タスク失敗返還",
+    "refund_revoke": "返金回収",
+    "subscription_end_revoke": "サブスク終了リセット",
+    "admin_adjustment": "管理者調整",
+    "signup_bonus": "登録ボーナス"
+  },
+  "balanceBreakdown": "サブスク {subscription} · 購入 {purchased}",
+  "actions": {
+    "menuLabel": "操作",
+    "copyUserId": "ユーザー ID をコピー",
+    "viewUser": "ユーザーを表示"
+  },
+  "batchGrant": {
+    "button": "クレジット付与",
+    "title": "クレジットを一括付与",
+    "description": "複数のユーザーに同じ数のクレジットを一括で付与します。すべての付与は同一トランザクションで実行されます。",
+    "emailsLabel": "対象ユーザーのメール",
+    "emailsPlaceholder": "one@example.com, two@example.com — または 1 行に 1 件",
+    "emailsHint": "カンマまたは改行で区切ります。1 回あたり最大 {max} 件。",
+    "amountLabel": "1 人あたりのクレジット",
+    "amountPlaceholder": "例：100",
+    "reasonLabel": "理由（必須）",
+    "reasonPlaceholder": "例：リリース記念キャンペーン",
+    "invalidEmails": "メールを 1 件以上入力してください。",
+    "tooManyEmails": "1 回あたり最大 {max} 件までです。",
+    "invalidAmount": "クレジットは正の整数で入力してください。",
+    "reasonRequired": "理由は必須です。",
+    "cancel": "キャンセル",
+    "confirm": "付与する",
+    "processing": "付与中...",
+    "success": "{count} 人のユーザーに {amount} クレジットずつ付与しました。",
+    "notFound": "見つかりません：{emails}",
+    "failed": "クレジットの付与に失敗しました"
+  },
+  "toast": {
+    "fetchFailed": "クレジット履歴の取得に失敗しました",
+    "copied": "クリップボードにコピーしました"
+  }
+}

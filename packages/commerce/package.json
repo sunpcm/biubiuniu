@@ -1,0 +1,71 @@
+{
+  "name": "@sunpcm/niu-commerce",
+  "version": "0.1.0-next.0",
+  "description": "Commerce credits, billing, and provider adapters extracted from the Nexty reference app. Redistribution of migrated product code is not granted by this manifest.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./providers/stripe": {
+      "types": "./dist/providers/stripe.d.ts",
+      "default": "./dist/providers/stripe.js"
+    },
+    "./providers/creem": {
+      "types": "./dist/providers/creem.d.ts",
+      "default": "./dist/providers/creem.js"
+    },
+    "./providers/paypal": {
+      "types": "./dist/providers/paypal.d.ts",
+      "default": "./dist/providers/paypal.js"
+    }
+  },
+  "files": [
+    "dist",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpcm/biubiuniu.git",
+    "directory": "packages/commerce"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --report-unused-disable-directives"
+  },
+  "peerDependencies": {
+    "creem": "^1.6.0",
+    "stripe": "^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "creem": {
+      "optional": true
+    },
+    "stripe": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "creem": "^1.6.0",
+    "stripe": "^18.0.0",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "commerce",
+    "credits",
+    "billing"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}

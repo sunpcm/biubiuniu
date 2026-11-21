@@ -1,0 +1,87 @@
+{
+  "name": "@sunpcm/niu-persistence-pg",
+  "version": "0.1.0-next.0",
+  "description": "PostgreSQL persistence adapter: explicit schema slices and composable migration profiles",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./migrations": {
+      "types": "./dist/migrations/index.d.ts",
+      "import": "./dist/migrations/index.js"
+    },
+    "./schema/auth": {
+      "types": "./dist/schema/auth.d.ts",
+      "import": "./dist/schema/auth.js"
+    },
+    "./schema/commerce": {
+      "types": "./dist/schema/commerce.d.ts",
+      "import": "./dist/schema/commerce.js"
+    },
+    "./schema/nano": {
+      "types": "./dist/schema/nano.d.ts",
+      "import": "./dist/schema/nano.js"
+    },
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "import": "./dist/auth/index.js"
+    },
+    "./commerce": {
+      "types": "./dist/commerce/index.d.ts",
+      "import": "./dist/commerce/index.js"
+    },
+    "./nano": {
+      "types": "./dist/nano/index.d.ts",
+      "import": "./dist/nano/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "legacy-reference",
+    "README.md",
+    "NOTICE"
+  ],
+  "scripts": {
+    "lint": "eslint src --report-unused-disable-directives",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@sunpcm/niu-auth": "workspace:*",
+    "@sunpcm/niu-commerce": "workspace:*",
+    "@sunpcm/niu-contracts": "workspace:*",
+    "@sunpcm/niu-feature-nano": "workspace:*",
+    "postgres": "^3.4.7"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.44.5"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "drizzle-orm": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunpcm/biubiuniu.git",
+    "directory": "packages/persistence-pg"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "keywords": [
+    "postgresql",
+    "drizzle",
+    "migrations",
+    "persistence"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}

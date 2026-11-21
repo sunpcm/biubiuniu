@@ -1,0 +1,11 @@
+This package includes components derived from shadcn/ui, distributed under
+the MIT License:
+
+https://github.com/shadcn-ui/ui
+
+The package also includes components and customizations extracted from the
+Nexty/biubiuniu application. The package-level license metadata is retained
+from the existing package, but contributors must review the upstream and
+application source notices before publishing or redistributing the package.
+The package-level ISC declaration does not assert that every incorporated
+upstream work has been re-licensed under ISC.

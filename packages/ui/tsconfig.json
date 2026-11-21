@@ -1,0 +1,7 @@
+{
+  "extends": "@niu/tsconfig/react.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src"]
+}

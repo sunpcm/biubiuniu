@@ -1,6 +1,7 @@
 {
-  "name": "@biu/tailwind-config",
+  "name": "@niu/tailwind-config",
   "version": "1.0.0",
+  "private": true,
   "main": "./theme.css",
   "exports": {
     ".": "./theme.css"
@@ -8,9 +9,7 @@
   "peerDependencies": {
     "tailwindcss": "catalog:"
   },
-  "scripts": {
-    "test": "echo \"(@biu/tailwind-config) no tests\""
-  },
+  "scripts": {},
   "license": "ISC",
-  "prettier": "@biu/prettier-config"
+  "prettier": "@sunpcm/niu-prettier-config"
 }

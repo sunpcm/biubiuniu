@@ -1,0 +1,23 @@
+{
+  "title": "我的订单",
+  "description": "查看您的订单历史记录。",
+  "load_error": "加载订单失败，请稍后重试。",
+  "no_records": "暂无订单记录。",
+  "header_date": "日期",
+  "header_plan": "套餐",
+  "header_type": "类型",
+  "header_provider": "支付渠道",
+  "header_credits": "积分",
+  "header_amount": "金额",
+  "header_status": "状态",
+  "type_one_time": "积分包",
+  "type_subscription_initial": "订阅",
+  "type_subscription_renewal": "续订",
+  "type_subscription_upgrade": "升级",
+  "status_pending": "待结算",
+  "status_completed": "已完成",
+  "status_partially_refunded": "部分退款",
+  "status_refunded": "已退款",
+  "status_failed": "支付失败",
+  "refunded_prefix": "已退款："
+}

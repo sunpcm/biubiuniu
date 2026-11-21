@@ -1,0 +1,60 @@
+{
+  "title": "Credits",
+  "description": "Every credit movement across all users — grants, usage, refunds and adjustments.",
+  "searchPlaceholder": "Search by email or note...",
+  "columns": {
+    "createdAt": "Date",
+    "user": "User",
+    "type": "Type",
+    "amount": "Amount",
+    "balanceAfter": "Balance After",
+    "note": "Note"
+  },
+  "filters": {
+    "allTypes": "All Types",
+    "typePlaceholder": "Type"
+  },
+  "type": {
+    "purchase": "Purchase",
+    "subscription_grant": "Subscription Grant",
+    "subscription_cycle_expire": "Cycle Expired",
+    "usage": "Usage",
+    "usage_refund": "Task Refund",
+    "refund_revoke": "Refund Clawback",
+    "subscription_end_revoke": "Subscription Ended",
+    "admin_adjustment": "Admin Adjustment",
+    "signup_bonus": "Signup Bonus"
+  },
+  "balanceBreakdown": "{subscription} sub · {purchased} purchased",
+  "actions": {
+    "menuLabel": "Actions",
+    "copyUserId": "Copy user ID",
+    "viewUser": "View user"
+  },
+  "batchGrant": {
+    "button": "Grant credits",
+    "title": "Grant credits to users",
+    "description": "Give the same amount of credits to multiple users at once. All grants succeed or fail together.",
+    "emailsLabel": "Recipient emails",
+    "emailsPlaceholder": "one@example.com, two@example.com — or one email per line",
+    "emailsHint": "Separate with commas or new lines. Up to {max} recipients.",
+    "amountLabel": "Credits per user",
+    "amountPlaceholder": "e.g. 100",
+    "reasonLabel": "Reason (required)",
+    "reasonPlaceholder": "e.g. Launch campaign gift",
+    "invalidEmails": "Enter at least one email.",
+    "tooManyEmails": "At most {max} recipients per batch.",
+    "invalidAmount": "Credits must be a positive integer.",
+    "reasonRequired": "A reason is required.",
+    "cancel": "Cancel",
+    "confirm": "Grant credits",
+    "processing": "Granting...",
+    "success": "Granted {amount} credits to {count} user(s).",
+    "notFound": "Not found: {emails}",
+    "failed": "Failed to grant credits"
+  },
+  "toast": {
+    "fetchFailed": "Failed to fetch credit transactions",
+    "copied": "Copied to clipboard"
+  }
+}

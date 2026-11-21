@@ -1,0 +1,6 @@
+This package includes Better Auth configuration, domain rules, and
+organization/guard/reward logic extracted from the Nexty/biubiuniu reference
+application. The package-level license metadata is retained from the existing
+package, but contributors must review the upstream application source notices
+before publishing or redistributing. The package-level ISC declaration does not
+assert that every incorporated upstream work has been re-licensed under ISC.

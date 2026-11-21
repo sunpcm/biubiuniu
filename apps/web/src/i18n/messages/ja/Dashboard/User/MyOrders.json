@@ -1,0 +1,23 @@
+{
+  "title": "注文履歴",
+  "description": "注文履歴を確認できます。",
+  "load_error": "注文の読み込みに失敗しました。しばらくしてから再度お試しください。",
+  "no_records": "注文が見つかりません。",
+  "header_date": "日付",
+  "header_plan": "プラン",
+  "header_type": "種類",
+  "header_provider": "決済方法",
+  "header_credits": "クレジット",
+  "header_amount": "金額",
+  "header_status": "ステータス",
+  "type_one_time": "クレジットパック",
+  "type_subscription_initial": "サブスクリプション",
+  "type_subscription_renewal": "更新",
+  "type_subscription_upgrade": "アップグレード",
+  "status_pending": "決済処理中",
+  "status_completed": "完了",
+  "status_partially_refunded": "一部返金済み",
+  "status_refunded": "返金済み",
+  "status_failed": "失敗",
+  "refunded_prefix": "返金額："
+}

@@ -1,0 +1,144 @@
+{
+  "title": "优惠码",
+  "description": "创建并管理用户在结账页输入的 Stripe 优惠码。",
+  "searchPlaceholder": "搜索优惠码或名称…",
+  "createButton": "新建优惠码",
+  "stripeDisabled": "未配置 Stripe，优惠码功能不可用。请设置 STRIPE_SECRET_KEY 与 STRIPE_WEBHOOK_SECRET 后启用。",
+  "truncatedWarning": "此处仅可检索最近 {count} 个优惠码，更早的请到 Stripe 后台查看。",
+  "empty": "没有符合当前筛选条件的优惠码。",
+  "emptyCreate": "创建第一个优惠码，它会立刻出现在这里。",
+  "columns": {
+    "code": "优惠码",
+    "discount": "折扣",
+    "appliesTo": "适用范围",
+    "duration": "生效周期",
+    "redemptions": "已兑换",
+    "expiresAt": "过期时间",
+    "status": "状态",
+    "actions": "操作"
+  },
+  "filters": {
+    "allStatuses": "全部状态",
+    "statusPlaceholder": "状态",
+    "allProducts": "全部套餐",
+    "productPlaceholder": "适用范围",
+    "unrestricted": "不限套餐"
+  },
+  "status": {
+    "active": "生效中",
+    "disabled": "已停用",
+    "expired": "已过期",
+    "exhausted": "已用完"
+  },
+  "statusHint": {
+    "active": "用户现在即可使用该优惠码。",
+    "disabled": "已手动关闭，随时可以重新开启。",
+    "expired": "已过期，Stripe 无法重新启用，请复制一份新建。",
+    "exhausted": "兑换次数已达上限，Stripe 无法重新启用，请复制一份新建。"
+  },
+  "discountValue": {
+    "percent": "{value}% 折扣",
+    "amount": "减 {value}"
+  },
+  "durationValue": {
+    "once": "仅首次付款",
+    "repeating": "前 {months} 个月",
+    "forever": "每次付款"
+  },
+  "allProducts": "全部套餐",
+  "unknownProducts": "{count} 个不在 config/pricing 中的产品",
+  "autoApplied": "自动",
+  "autoAppliedHint": "config/pricing 会在结账时自动应用该码。停用后所有访客的折扣会直接消失。",
+  "restrictionFirstTime": "仅限新客户",
+  "restrictionMinimum": "订单满 {amount}",
+  "unlimited": "不限",
+  "expiresNever": "永不过期",
+  "expiresRelative": "{days, plural, =0 {今天} other {# 天后}}",
+  "actions": {
+    "menuLabel": "操作",
+    "copyCode": "复制优惠码",
+    "duplicate": "复制一份…",
+    "openInStripe": "在 Stripe 中打开",
+    "enabledLabel": "启用"
+  },
+  "toasts": {
+    "fetchFailed": "加载优惠码失败",
+    "copied": "已复制 {code}",
+    "created": "优惠码 {code} 已生效",
+    "createFailed": "创建优惠码失败",
+    "updateFailed": "更新优惠码失败",
+    "activated": "已启用优惠码",
+    "deactivated": "已停用优惠码"
+  },
+  "form": {
+    "title": "新建优惠码",
+    "duplicateTitle": "复制优惠码",
+    "description": "创建后立即在 Stripe 生效。",
+    "duplicateDescription": "配置已从原优惠码复制，换个码即可。",
+    "code": "优惠码",
+    "codePlaceholder": "留空则自动生成",
+    "generate": "随机生成",
+    "codeChecking": "检查中…",
+    "codeAvailable": "可以使用",
+    "codeTaken": "已被占用",
+    "name": "内部名称",
+    "namePlaceholder": "例如：春季活动",
+    "discountType": "折扣类型",
+    "percent": "按百分比",
+    "amount": "按固定金额",
+    "percentValue": "折扣百分比",
+    "amountValue": "减免金额（{currency}）",
+    "appliesTo": "适用套餐",
+    "allProducts": "全部套餐",
+    "plansSelected": "已选 {count} 个套餐",
+    "planSearchPlaceholder": "搜索套餐…",
+    "planNoResults": "未找到套餐。",
+    "noStripePlans": "config/pricing 中没有走 Stripe 收款的套餐。",
+    "duration": "生效周期",
+    "durationDisabledHint": "所选套餐是一次性购买，折扣只生效一次。",
+    "durationOption": {
+      "once": "仅一次",
+      "repeating": "指定月数",
+      "forever": "永久"
+    },
+    "durationInMonths": "月数",
+    "maxRedemptions": "兑换次数上限",
+    "maxRedemptionsPlaceholder": "不限",
+    "minimumAmount": "订单门槛（{currency}）",
+    "minimumAmountPlaceholder": "无门槛",
+    "firstTimeOnly": "仅限新客户",
+    "firstTimeOnlyHint": "从未成功付款过的用户。",
+    "expiresAt": "过期时间",
+    "expiryCustom": "自定义",
+    "expiryPreset": {
+      "never": "永不过期",
+      "days7": "7 天",
+      "days30": "30 天",
+      "days90": "90 天"
+    },
+    "cancel": "取消",
+    "create": "创建优惠码",
+    "creating": "创建中…"
+  },
+  "formErrors": {
+    "codeFormat": "请输入 3-30 位字符：A-Z、0-9、短横线或下划线。",
+    "percentRange": "请输入 0 到 100 之间的百分比。",
+    "amountPositive": "请输入大于 0 的金额。",
+    "monthsRange": "请输入 1 到 36 之间的月数。",
+    "positiveInteger": "请输入不小于 1 的整数。",
+    "expiryFuture": "请选择将来的时间。"
+  },
+  "summary": {
+    "title": "用户实际获得",
+    "headline": "输入 {code} 的用户，在{scope}上可享 {discount}。",
+    "autoCode": "自动生成的优惠码",
+    "scopeAll": "任意套餐",
+    "discountPending": "尚未设置的折扣",
+    "redemptionsUnlimited": "兑换次数不限",
+    "redemptionsLimited": "总共可兑换 {count} 次",
+    "expiryNever": "永不过期",
+    "expiryUntil": "有效期至 {date}",
+    "firstTimeOnly": "仅限新客户",
+    "minimum": "订单满 {amount}"
+  }
+}

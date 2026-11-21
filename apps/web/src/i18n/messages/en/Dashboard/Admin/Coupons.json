@@ -1,0 +1,144 @@
+{
+  "title": "Coupons",
+  "description": "Create and manage the Stripe promotion codes customers enter at checkout.",
+  "searchPlaceholder": "Search code or name...",
+  "createButton": "New coupon",
+  "stripeDisabled": "Stripe is not configured, so coupons are unavailable. Set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET to enable them.",
+  "truncatedWarning": "Only the {count} most recent codes are searchable here — older ones live in the Stripe dashboard.",
+  "empty": "No coupon matches these filters.",
+  "emptyCreate": "Create your first coupon and it shows up here right away.",
+  "columns": {
+    "code": "Code",
+    "discount": "Discount",
+    "appliesTo": "Applies to",
+    "duration": "Duration",
+    "redemptions": "Redemptions",
+    "expiresAt": "Expires",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "filters": {
+    "allStatuses": "All statuses",
+    "statusPlaceholder": "Status",
+    "allProducts": "All plans",
+    "productPlaceholder": "Applies to",
+    "unrestricted": "No plan restriction"
+  },
+  "status": {
+    "active": "Active",
+    "disabled": "Disabled",
+    "expired": "Expired",
+    "exhausted": "Used up"
+  },
+  "statusHint": {
+    "active": "Customers can redeem this code right now.",
+    "disabled": "Switched off. You can turn it back on at any time.",
+    "expired": "Past its expiry date. Stripe cannot reactivate it — duplicate it instead.",
+    "exhausted": "Redemption limit reached. Stripe cannot reactivate it — duplicate it instead."
+  },
+  "discountValue": {
+    "percent": "{value}% off",
+    "amount": "{value} off"
+  },
+  "durationValue": {
+    "once": "First payment",
+    "repeating": "First {months} months",
+    "forever": "Every payment"
+  },
+  "allProducts": "All plans",
+  "unknownProducts": "{count, plural, one {# product outside config/pricing} other {# products outside config/pricing}}",
+  "autoApplied": "Auto",
+  "autoAppliedHint": "config/pricing applies this code automatically at checkout. Disabling it silently removes the discount for every visitor.",
+  "restrictionFirstTime": "New customers only",
+  "restrictionMinimum": "Minimum order {amount}",
+  "unlimited": "Unlimited",
+  "expiresNever": "Never",
+  "expiresRelative": "{days, plural, =0 {today} one {in # day} other {in # days}}",
+  "actions": {
+    "menuLabel": "Actions",
+    "copyCode": "Copy code",
+    "duplicate": "Duplicate...",
+    "openInStripe": "Open in Stripe",
+    "enabledLabel": "Enabled"
+  },
+  "toasts": {
+    "fetchFailed": "Failed to load coupons",
+    "copied": "Copied {code}",
+    "created": "Coupon {code} is live",
+    "createFailed": "Could not create the coupon",
+    "updateFailed": "Could not update the coupon",
+    "activated": "Coupon enabled",
+    "deactivated": "Coupon disabled"
+  },
+  "form": {
+    "title": "New coupon",
+    "duplicateTitle": "Duplicate coupon",
+    "description": "Goes live in Stripe the moment you create it.",
+    "duplicateDescription": "Copied from the original. Pick a new code.",
+    "code": "Code",
+    "codePlaceholder": "Leave empty to auto-generate",
+    "generate": "Generate",
+    "codeChecking": "Checking...",
+    "codeAvailable": "Available",
+    "codeTaken": "Already in use",
+    "name": "Internal name",
+    "namePlaceholder": "e.g. Spring launch",
+    "discountType": "Discount type",
+    "percent": "Percentage",
+    "amount": "Fixed amount",
+    "percentValue": "Percent off",
+    "amountValue": "Amount off ({currency})",
+    "appliesTo": "Applies to",
+    "allProducts": "All plans",
+    "plansSelected": "{count, plural, one {# plan} other {# plans}}",
+    "planSearchPlaceholder": "Search plans...",
+    "planNoResults": "No plan found.",
+    "noStripePlans": "No plan in config/pricing is sold through Stripe.",
+    "duration": "Billing duration",
+    "durationDisabledHint": "The selected plans are one-time purchases, so the discount applies once.",
+    "durationOption": {
+      "once": "Once",
+      "repeating": "Several months",
+      "forever": "Forever"
+    },
+    "durationInMonths": "Months",
+    "maxRedemptions": "Max redemptions",
+    "maxRedemptionsPlaceholder": "Unlimited",
+    "minimumAmount": "Minimum order ({currency})",
+    "minimumAmountPlaceholder": "No minimum",
+    "firstTimeOnly": "New customers only",
+    "firstTimeOnlyHint": "No previous successful payment.",
+    "expiresAt": "Expiry",
+    "expiryCustom": "Custom",
+    "expiryPreset": {
+      "never": "Never",
+      "days7": "7 days",
+      "days30": "30 days",
+      "days90": "90 days"
+    },
+    "cancel": "Cancel",
+    "create": "Create coupon",
+    "creating": "Creating..."
+  },
+  "formErrors": {
+    "codeFormat": "Use 3-30 characters: A-Z, 0-9, dash or underscore.",
+    "percentRange": "Enter a percentage between 0 and 100.",
+    "amountPositive": "Enter an amount greater than zero.",
+    "monthsRange": "Enter between 1 and 36 months.",
+    "positiveInteger": "Enter a whole number of at least 1.",
+    "expiryFuture": "Pick a moment in the future."
+  },
+  "summary": {
+    "title": "What the customer gets",
+    "headline": "Anyone entering {code} gets {discount} on {scope}.",
+    "autoCode": "the generated code",
+    "scopeAll": "any plan",
+    "discountPending": "a discount you have not set yet",
+    "redemptionsUnlimited": "Unlimited redemptions",
+    "redemptionsLimited": "{count, plural, one {# redemption} other {# redemptions}} in total",
+    "expiryNever": "No expiry",
+    "expiryUntil": "Valid until {date}",
+    "firstTimeOnly": "New customers only",
+    "minimum": "Orders from {amount}"
+  }
+}
